@@ -5,7 +5,12 @@ import { AppError } from "../../utils/appError.js"
 
 //add category
 const addCategory=catchError(async(req,res,next)=>{
-    if(req.file) req.body.img=req.file.path
+    if (req.file) {
+        // Upload image buffer to Cloudinary
+        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'category', req.file.originalname);
+        req.body.img = cloudinaryResult.secure_url; // Store Cloudinary URL in req.body
+    }
+    // if(req.file) req.body.img=req.file.path
     let category=new Category(req.body)
     await category.save()
     res.status(200).json({message:"تمت الاضافة بنجاح",category})

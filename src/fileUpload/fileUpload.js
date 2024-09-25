@@ -17,17 +17,8 @@ cloudinary.config({
 });
 
 const fileUpload = (folderName) => {
-    // console.log(process.env.CLOUDINARY_CLOUD_NAME); // Should print your cloud name
-
-    // Cloudinary storage setup
-    const storage = new CloudinaryStorage({
-        cloudinary: cloudinary,
-        params: {
-            folder: folderName,
-            format: async (req, file) => 'png', // You can set this dynamically if needed
-            public_id: (req, file) => uuidv4() + '-' + file.originalname
-        }
-    });
+    // Use memory storage for serverless environments
+    const storage = multer.memoryStorage();
 
     function fileFilter(req, file, cb) {
         if (file.mimetype.startsWith('image/')) {
@@ -47,8 +38,63 @@ const fileUpload = (folderName) => {
     return upload;
 };
 
-export const uploadSingleFile = (fieldname, folderName) => fileUpload(folderName).single(fieldname);
 export const uploadMixFiles = (arrayOfFields, folderName) => fileUpload(folderName).fields(arrayOfFields);
+export const uploadSingleFile = (fieldname, folderName) => fileUpload(folderName).single(fieldname);
+
+// Helper function to upload file buffer to Cloudinary
+export const uploadToCloudinary = async (fileBuffer, folderName, originalname) => {
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+            {
+                folder: folderName,
+                public_id: uuidv4() + '-' + originalname,
+                format: 'png', // Or keep it dynamic
+            },
+            (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            }
+        ).end(fileBuffer);
+    });
+};
+
+
+// const fileUpload = (folderName) => {
+//     // console.log(process.env.CLOUDINARY_CLOUD_NAME); // Should print your cloud name
+
+//     // Cloudinary storage setup
+//     const storage = new CloudinaryStorage({
+//         cloudinary: cloudinary,
+//         params: {
+//             folder: folderName,
+//             format: async (req, file) => 'png', // You can set this dynamically if needed
+//             public_id: (req, file) => uuidv4() + '-' + file.originalname
+//         }
+//     });
+
+//     function fileFilter(req, file, cb) {
+//         if (file.mimetype.startsWith('image/')) {
+//             cb(null, true);
+//         } else {
+//             cb(new AppError('Images only', 401), false);
+//         }
+//     }
+
+//     const upload = multer({
+//         storage,
+//         fileFilter,
+//         limits: {
+//             fileSize: 1024 * 1024 * 5, // 5 MB limit
+//         }
+//     });
+//     return upload;
+// };
+
+// export const uploadSingleFile = (fieldname, folderName) => fileUpload(folderName).single(fieldname);
+// export const uploadMixFiles = (arrayOfFields, folderName) => fileUpload(folderName).fields(arrayOfFields);
 
 
 

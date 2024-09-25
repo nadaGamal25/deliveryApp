@@ -12,7 +12,15 @@ const secretKey = process.env.SECRET_KEY;
 
 //Sign Up  
 const signup=catchError(async(req,res)=>{
-    if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
+    if (req.files.vehiclesImgs) {
+        req.body.vehiclesImgs = await Promise.all(
+            req.files.vehiclesImgs.map(async (img) => {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                return cloudinaryResult.secure_url; // Store the secure Cloudinary URL
+            })
+        );
+    }
+    // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 
     // if(req.files.vehiclesImgs) req.body.vehiclesImgs=req.files.vehiclesImgs.map(img=>img.filename)
     
@@ -92,7 +100,15 @@ const allowedTo=(...roles)=>{
 
 //update account.
 const updateAccount = catchError(async (req, res, next) => {
-    if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
+    if (req.files.vehiclesImgs) {
+        req.body.vehiclesImgs = await Promise.all(
+            req.files.vehiclesImgs.map(async (img) => {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                return cloudinaryResult.secure_url; // Store the secure Cloudinary URL
+            })
+        );
+    }
+    // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 
     // if(req.files.vehiclesImgs) req.body.vehiclesImgs=req.files.vehiclesImgs.map(img=>img.filename)
     let user = await User.findById(req.user._id);
