@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { sendEmail } from "../../email/email.js";
 import {deleteImageFile} from "../../utils/deleteOldImage.js"
 import moment from 'moment-timezone';
+import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
 dotenv.config();
 const secretKey = process.env.SECRET_KEY;
 

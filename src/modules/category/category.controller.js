@@ -1,4 +1,5 @@
 import { Category } from "../../../database/models/category.model.js"
+import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
 import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/appError.js"
 
