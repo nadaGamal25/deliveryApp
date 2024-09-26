@@ -59,10 +59,10 @@ const userSchema = new Schema({
       type:Number,
       default:0,
     },
-  //   category: {
-  //     type:mongoose.Types.ObjectId,
-  //     ref:'Category',
-  // },
+    categoryId: {
+      type:mongoose.Types.ObjectId,
+      ref:'Category',
+  },
   vehiclesImgs:{
     type:[String]
   },

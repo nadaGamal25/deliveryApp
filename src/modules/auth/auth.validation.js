@@ -21,6 +21,8 @@ const signupVal=Joi.object({
     startTime:Joi.string().min(5).max(5),
     endTime:Joi.string().min(5).max(5),
     vehiclesImgs: Joi.array().items().min(0),
+    categoryId:Joi.string().hex().length(24),
+
 
 })
 
@@ -40,6 +42,7 @@ const updateUserVal=Joi.object({
     startTime:Joi.string().min(5).max(5),
     endTime:Joi.string().min(5).max(5),
     vehiclesImgs: Joi.array().items().min(0),
+    categoryId:Joi.string().hex().length(24),
 })
 
 const changePasswordVal=Joi.object({
