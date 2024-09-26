@@ -143,7 +143,7 @@ const deleteUser = catchError(async (req, res, next) => {
 
 //Get user account data 
 const getAccountData=catchError(async(req,res)=>{
-    let user = await User.findById(req.user._id);
+    let user = await User.findById(req.user._id).populate('cacategoryId','name - img');
     if (!user) {
         return next(new AppError('المستخدم غير موجود', 404));
     }
