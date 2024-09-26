@@ -13,13 +13,18 @@ const secretKey = process.env.SECRET_KEY;
 
 //Sign Up  
 const signup=catchError(async(req,res)=>{
-    if (req.files.vehiclesImgs) {
-        req.body.vehiclesImgs = await Promise.all(
-            req.files.vehiclesImgs.map(async (img) => {
+    if (req.files && req.files.vehiclesImgs) {
+        req.body.vehiclesImgs = [];
+        
+        for (let img of req.files.vehiclesImgs) {
+            try {
                 const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
-                return cloudinaryResult.secure_url; // Store the secure Cloudinary URL
-            })
-        );
+                req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
+            } catch (error) {
+                console.error('Error uploading to Cloudinary', error);
+                // You can also handle this error and send a response accordingly
+            }
+        }
     }
     // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 
@@ -101,13 +106,18 @@ const allowedTo=(...roles)=>{
 
 //update account.
 const updateAccount = catchError(async (req, res, next) => {
-    if (req.files.vehiclesImgs) {
-        req.body.vehiclesImgs = await Promise.all(
-            req.files.vehiclesImgs.map(async (img) => {
+    if (req.files && req.files.vehiclesImgs) {
+        req.body.vehiclesImgs = [];
+        
+        for (let img of req.files.vehiclesImgs) {
+            try {
                 const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
-                return cloudinaryResult.secure_url; // Store the secure Cloudinary URL
-            })
-        );
+                req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
+            } catch (error) {
+                console.error('Error uploading to Cloudinary', error);
+                // You can also handle this error and send a response accordingly
+            }
+        }
     }
     // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 

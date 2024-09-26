@@ -45,13 +45,10 @@ export const uploadSingleFile = (fieldname, folderName) => fileUpload(folderName
 export const uploadToCloudinary = async (fileBuffer, folderName, originalname) => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
-            {
-                folder: folderName,
-                public_id: uuidv4() + '-' + originalname,
-                format: 'png', // Or keep it dynamic
-            },
+            { folder: folderName, public_id: uuidv4() + '-' + originalname, format: 'png' },
             (error, result) => {
                 if (error) {
+                    console.error('Cloudinary upload failed:', error);
                     reject(error);
                 } else {
                     resolve(result);
@@ -60,6 +57,7 @@ export const uploadToCloudinary = async (fileBuffer, folderName, originalname) =
         ).end(fileBuffer);
     });
 };
+
 
 
 // const fileUpload = (folderName) => {
