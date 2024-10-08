@@ -8,11 +8,19 @@ export const validate=(schema)=>{
             ...req.query
         };
         
-
-        if (req.files) {
+        if (req.file && req.file.fieldname === 'profileImg') {
+            dataToValidate.profileImg = req.file;
+        }
+        if (req.files && req.files.vehiclesImgs) {
          
             if (req.files.vehiclesImgs) {
                 dataToValidate.vehiclesImgs = req.files.vehiclesImgs;
+            }
+        }
+        if (req.files && req.files.orderImgs) {
+         
+            if (req.files.orderImgs) {
+                dataToValidate.orderImgs = req.files.orderImgs;
             }
         }
         const {error}=schema.validate(dataToValidate,{abortEarly:false});

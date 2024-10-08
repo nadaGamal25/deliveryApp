@@ -83,6 +83,9 @@ const userSchema = new Schema({
   endTime: {
     type: String,
   },
+  profileImg:{
+    type:String,
+  },
     passwordChangedAt:Date,  
     resetPasswordOTP: String,
     resetPasswordExpires: Date

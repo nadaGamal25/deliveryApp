@@ -11,6 +11,10 @@ const deleteCategoryVal=Joi.object({
     id:Joi.string().hex().length(24).required(),
 })
 
+const getDriversByCategoryVal=Joi.object({
+    id:Joi.string().hex().length(24).required(),
+})
+
 export{
-    addCategoryVal,deleteCategoryVal
+    addCategoryVal,deleteCategoryVal,getDriversByCategoryVal
 }

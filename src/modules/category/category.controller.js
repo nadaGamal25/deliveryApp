@@ -1,4 +1,5 @@
 import { Category } from "../../../database/models/category.model.js"
+import { User } from "../../../database/models/user.model.js";
 import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
 import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/appError.js"
@@ -37,8 +38,17 @@ const getCategories=catchError(async(req,res)=>{
     res.status(200).json({message:'success',categories})   
 })
 
+//get druvers by categgory id
+const getDriversByCategory=catchError(async(req,res)=>{
+    let drivers = await User.find({categoryId:req.params.id});
+    if (!drivers) {
+        return next(new AppError('لا يوجد سائقين', 404));
+    }
+    res.status(200).json({message:'success',drivers})   
+})
+
 
 
 export{
-    addCategory,deleteCategory,getCategories
+    addCategory,deleteCategory,getCategories,getDriversByCategory
 }

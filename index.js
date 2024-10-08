@@ -11,6 +11,8 @@ import authRouter from './src/modules/auth/auth.routes.js'
 import adminRouter from './src/modules/admin/admin.routes.js'
 import categoryRouter from './src/modules/category/category.routes.js'
 import cors from 'cors'
+import orderRouter from './src/modules/order/order.routes.js'
+import offerRouter from './src/modules/offer/offer.routes.js'
 dotenv.config();
 const port = process.env.PORT || 3000;
 // const port=3000
@@ -24,6 +26,8 @@ app.use('/uploads',express.static('uploads'))
 app.use('/api/auth',authRouter)  
 app.use('/api/admin',adminRouter)  
 app.use('/api/category',categoryRouter)  
+app.use('/api/order',orderRouter)  
+app.use('/api/offer',offerRouter)  
 
 
 

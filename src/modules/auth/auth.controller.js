@@ -22,9 +22,12 @@ const signup=catchError(async(req,res)=>{
                 req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
             } catch (error) {
                 console.error('Error uploading to Cloudinary', error);
-                // You can also handle this error and send a response accordingly
             }
         }
+    }
+    if (req.file && req.file.profileImg) {
+        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'category', req.file.originalname);
+        req.body.profileImg = cloudinaryResult.secure_url; // Store Cloudinary URL in req.body
     }
     // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 
@@ -119,6 +122,10 @@ const updateAccount = catchError(async (req, res, next) => {
             }
         }
     }
+    if (req.file && req.file.profileImg) {
+        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'category', req.file.originalname);
+        req.body.profileImg = cloudinaryResult.secure_url; // Store Cloudinary URL in req.body
+    }
     // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 
     // if(req.files.vehiclesImgs) req.body.vehiclesImgs=req.files.vehiclesImgs.map(img=>img.filename)
@@ -211,7 +218,19 @@ const regenerateOtp = catchError(async (req, res,next) => {
 }
 )
 
+// add connect for user
+const addConnect = catchError(async (req, res, next) => {
+    let user = await User.findById(req.params.id);
+    
+    if (!user) {
+        return next(new AppError("هذا المستخدم غير موجود", 404));
+    } else{
+        await User.updateOne({ _id:req.params.id},  { $inc: { numberOfConnect: 1 } } );
+        res.status(200).json({ message: "تم " ,user});
+    } 
+});
+
 export{
     signup,signin,updateAccount,deleteUser,getAccountData,changePassword,protectedRoutes,allowedTo,
-    forgetPassword,updatePassword,regenerateOtp
+    forgetPassword,updatePassword,regenerateOtp,addConnect
 }
