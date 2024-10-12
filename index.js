@@ -13,6 +13,8 @@ import categoryRouter from './src/modules/category/category.routes.js'
 import cors from 'cors'
 import orderRouter from './src/modules/order/order.routes.js'
 import offerRouter from './src/modules/offer/offer.routes.js'
+import positionRouter from './src/modules/position/position.routes.js'
+import villageRouter from './src/modules/village/village.routes.js'
 dotenv.config();
 const port = process.env.PORT || 3000;
 // const port=3000
@@ -26,6 +28,8 @@ app.use('/uploads',express.static('uploads'))
 app.use('/api/auth',authRouter)  
 app.use('/api/admin',adminRouter)  
 app.use('/api/category',categoryRouter)  
+app.use('/api/position',positionRouter)  
+app.use('/api/village',villageRouter)  
 app.use('/api/order',orderRouter)  
 app.use('/api/offer',offerRouter)  
 

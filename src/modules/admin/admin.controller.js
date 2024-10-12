@@ -15,6 +15,18 @@ const confirmUser=catchError(async(req,res,next)=>{
     
 })
 
+//block user
+const blockUser=catchError(async(req,res,next)=>{
+    let user = await User.findById(req.params.id)
+    if(user){
+        await User.findByIdAndUpdate(req.params.id, {isBlocked:true}, { new: true })
+        res.status(200).json({message:'تم تأكيد الحساب بنجاح',user})
+    }else{
+        return next(new AppError(' المستخدم غير موجود',400))
+    }
+    
+})
+
 export{
-    confirmUser
+    confirmUser,blockUser
 }

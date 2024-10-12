@@ -29,7 +29,9 @@ const signupVal=Joi.object({
 
 const signinVal = Joi.object({
     phone: Joi.string().required(),
-    password: Joi.string().pattern(/^[A-Z][A-Za-z0-9#@$]{8,20}$/).required()
+    password: Joi.string().pattern(/^[A-Z][A-Za-z0-9#@$]{8,20}$/).required(),
+    confirmPassword:Joi.string().valid(Joi.ref('password')),
+
 })
 
 const updateUserVal=Joi.object({
@@ -51,6 +53,8 @@ const updateUserVal=Joi.object({
 const changePasswordVal=Joi.object({
     oldPassword:Joi.string().pattern(/^[A-Z][A-Za-z0-9#@$]{8,20}$/).required(),
     newPassword:Joi.string().pattern(/^[A-Z][A-Za-z0-9#@$]{8,20}$/).required(),
+    confirmPassword:Joi.string().valid(Joi.ref('newPassword')),
+
 })
 
 const forgetPassVal=Joi.object({
@@ -59,7 +63,8 @@ const forgetPassVal=Joi.object({
 
 const updatePassVal=Joi.object({
     otp:Joi.string().required(),
-    newPassword :Joi.string().pattern(/^[A-Z][A-Za-z0-9#@$]{8,20}$/).required()
+    newPassword :Joi.string().pattern(/^[A-Z][A-Za-z0-9#@$]{8,20}$/).required(),
+    confirmPassword:Joi.string().valid(Joi.ref('newPassword')),
 })
 
 const regenerateOtpVal=Joi.object({

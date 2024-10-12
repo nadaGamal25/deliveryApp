@@ -5,6 +5,9 @@ const confirmUserVal=Joi.object({
     id:Joi.string().hex().length(24).required(),
 })
 
+const blockUserVal=Joi.object({
+    id:Joi.string().hex().length(24).required(),
+})
 export{
-    confirmUserVal
+    confirmUserVal,blockUserVal
 }
