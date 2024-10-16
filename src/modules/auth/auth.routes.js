@@ -4,10 +4,11 @@ import { validate } from '../../middleware/validate.js'
 import { addConnectVal, changePasswordVal, forgetPassVal, regenerateOtpVal, signinVal, signupVal, updatePassVal, updateUserVal } from './auth.validation.js'
 import { checkPhoneExist } from '../../middleware/checkPhoneExist.js'
 import { uploadMixFiles } from '../../fileUpload/fileUpload.js'
+import { checkEmailExist } from '../../middleware/checkEmailExist.js'
 
 const authRouter=express.Router()
 
-authRouter.post('/signup',uploadMixFiles([{name:'profileImg',maxCount:1},{name:'vehiclesImgs',maxCount:4}],'user'),validate(signupVal),checkPhoneExist,signup)
+authRouter.post('/signup',uploadMixFiles([{name:'profileImg',maxCount:1},{name:'vehiclesImgs',maxCount:4}],'user'),validate(signupVal),checkPhoneExist,checkEmailExist,signup)
 authRouter.post('/signin',validate(signinVal),signin)
 authRouter.put('/update-account',protectedRoutes,allowedTo('user','client') ,uploadMixFiles([{name:'profileImg',maxCount:1},{name:'vehiclesImgs',maxCount:4}],'user'),validate(updateUserVal),updateAccount)
 authRouter.patch('/change-Password',protectedRoutes,allowedTo('user','client') ,validate(changePasswordVal),changePassword)

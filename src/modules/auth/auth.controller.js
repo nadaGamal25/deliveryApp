@@ -37,10 +37,12 @@ const signup=catchError(async(req,res)=>{
     await user.save()
     let token = jwt.sign({userId:user._id, role:user.role},secretKey)
     if(user.role =='user'){
-        res.status(201).json({message:'سوف يتم التواصل معك لتأكيد الحساب فى خلال 48 ساعة',user,token,role:user.role})
+        res.status(201).json({message:'سوف يتم التواصل معك لتأكيد الحساب فى خلال 48 ساعة',status:201,data:{'user':user},token,role:user.role,
+            isConfirmed:user.isConfirmed,isBlocked:user.isBlocked})
     }else{
         await User.updateOne({ _id: user._id }, { $set: { isConfirmed: true } });
-        res.status(201).json({message:'تم انشاء حساب بنجاح',user,token,role:user.role})
+        res.status(201).json({message:'تم انشاء حساب بنجاح',status:201,data:{'user':user},token,role:user.role,
+        isConfirmed:user.isConfirmed,isBlocked:user.isBlocked})
     }
 })
 
@@ -57,7 +59,8 @@ const signin=catchError(async(req,res,next)=>{
         return next(new AppError('كلمة المرور غير صحيحة',400))
     jwt.sign({userId:user._id,role:user.role},secretKey,async(err,token)=>{
         if(err)return next(new AppError('حدث خطأ ما',500))
-            res.status(200).json({message:'تم تسجيل الدخول بنجاح',token:token,role:user.role})
+            res.status(200).json({message:'تم تسجيل الدخول بنجاح',status:200,data:{'user':user},token,role:user.role,
+                isConfirmed:user.isConfirmed,isBlocked:user.isBlocked})
     })
     
 })
