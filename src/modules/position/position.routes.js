@@ -8,7 +8,7 @@ const positionRouter=express.Router()
 
 positionRouter.route('/')
 .post(protectedRoutes,allowedTo('admin'),validate(addPositionVal),addPosition)
-.get(protectedRoutes,allowedTo('user','admin','client'),getPositions)
+.get(getPositions)
 
 positionRouter.route('/:id')
 .delete(protectedRoutes,allowedTo('admin'),validate(deletePositionVal),deletePosition)

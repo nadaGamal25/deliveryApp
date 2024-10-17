@@ -25,14 +25,15 @@ const signupVal = Joi.object({
     confirmPassword: Joi.string().valid(Joi.ref('password')).messages({
         'any.only': 'يجب أن تتطابق كلمة المرور مع تأكيد كلمة المرور'
     }),
-    position: Joi.string().min(2).max(100).required().messages({
-        'string.min': 'يجب أن تحتوي الوظيفة على 2 حرف على الأقل',
-        'string.max': 'يجب ألا تزيد الوظيفة عن 100 حرف',
-        'any.required': 'الوظيفة مطلوبة'
+    
+    position: Joi.string().hex().length(24).required().messages({
+        'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
+        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
+        'any.required': 'المنطقة مطلوبة'
     }),
-    village: Joi.string().min(2).max(100).messages({
-        'string.min': 'يجب أن يحتوي اسم القرية على 2 حرف على الأقل',
-        'string.max': 'يجب ألا يزيد اسم القرية عن 100 حرف'
+    village: Joi.string().hex().length(24).messages({
+        'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
+        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
     }),
     address: Joi.string().min(3).max(200).required().messages({
         'string.min': 'يجب أن يحتوي العنوان على 3 أحرف على الأقل',
@@ -80,7 +81,8 @@ const signupVal = Joi.object({
     }),
     categoryId: Joi.string().hex().length(24).messages({
         'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
-        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا'
+        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
+        'any.required': 'الفئة مطلوبة'
     }),
     profileImg: Joi.string().messages({
         'string.base': 'يجب أن تكون الصورة نصًا'

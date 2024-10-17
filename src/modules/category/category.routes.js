@@ -9,11 +9,11 @@ const categoryRouter=express.Router()
 
 categoryRouter.route('/')
 .post(protectedRoutes,allowedTo('admin'),uploadSingleFile('img','category'),validate(addCategoryVal),addCategory)
-.get(protectedRoutes,allowedTo('user','admin','client'),getCategories)
+.get(getCategories)
 
 categoryRouter.route('/:id')
 .delete(protectedRoutes,allowedTo('admin'),validate(deleteCategoryVal),deleteCategory)
 
-categoryRouter.get('drivers/:id',protectedRoutes,allowedTo('admin','user','client'),validate(getDriversByCategoryVal),getDriversByCategory)
+categoryRouter.get('drivers/:id',validate(getDriversByCategoryVal),getDriversByCategory)
 
 export default categoryRouter

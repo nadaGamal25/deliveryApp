@@ -41,8 +41,7 @@ const signup=catchError(async(req,res)=>{
             isConfirmed:user.isConfirmed,isBlocked:user.isBlocked})
     }else{
         await User.updateOne({ _id: user._id }, { $set: { isConfirmed: true } });
-        res.status(201).json({message:'تم انشاء حساب بنجاح',status:201,data:{'user':user},token,role:user.role,
-        isConfirmed:user.isConfirmed,isBlocked:user.isBlocked})
+        res.status(201).json({message:'تم انشاء حساب بنجاح',status:201,data:{'user':user,token}})
     }
 })
 
@@ -59,8 +58,7 @@ const signin=catchError(async(req,res,next)=>{
         return next(new AppError('كلمة المرور غير صحيحة',400))
     jwt.sign({userId:user._id,role:user.role},secretKey,async(err,token)=>{
         if(err)return next(new AppError('حدث خطأ ما',500))
-            res.status(200).json({message:'تم تسجيل الدخول بنجاح',status:200,data:{'user':user},token,role:user.role,
-                isConfirmed:user.isConfirmed,isBlocked:user.isBlocked})
+            res.status(200).json({message:'تم تسجيل الدخول بنجاح',status:200,data:{'user':user,token}})
     })
     
 })
@@ -89,7 +87,7 @@ const protectedRoutes=catchError(async(req,res,next)=>{
 
     })
     let user=await User.findById(userPayload.userId)
-    if(!user) return next(new AppError('المستخدم غير موجود',404))
+    if(!user) return next(new AppError('المستخدم غير صالح',404))
 
     if(user.passwordChangedAt){
         let time=parseInt(user.passwordChangedAt.getTime() /1000)
@@ -154,7 +152,8 @@ const deleteUser = catchError(async (req, res, next) => {
 
 //Get user account data 
 const getAccountData=catchError(async(req,res)=>{
-    let user = await User.findById(req.user._id).populate('cacategoryId','name - img');
+    let user = await User.findById(req.user._id).populate('cacategoryId','name - img').
+    populate('position','name -id').populate('village','name -id');
     if (!user) {
         return next(new AppError('المستخدم غير موجود', 404));
     }

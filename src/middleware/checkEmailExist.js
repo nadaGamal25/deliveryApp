@@ -1,4 +1,5 @@
 import { User } from "../../database/models/user.model.js";
+import { AppError } from "../utils/appError.js";
 
 
 export const checkEmailExist = async (req, res, next) => {

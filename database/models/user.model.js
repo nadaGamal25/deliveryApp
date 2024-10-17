@@ -27,13 +27,14 @@ const userSchema = new Schema({
     //   type: String,
     //   required: true
     // },
-    position:{
-      type:String,
-      required:true
-    },
+    position: {
+      type:mongoose.Types.ObjectId,
+      ref:'Position',
+  },
     village:{
-      type:String,
-    },
+      type:mongoose.Types.ObjectId,
+      ref:'Village',
+  },
     address:{
       type:String,
       required:true

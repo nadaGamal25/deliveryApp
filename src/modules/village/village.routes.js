@@ -8,7 +8,7 @@ const villageRouter=express.Router()
 
 villageRouter.route('/')
 .post(protectedRoutes,allowedTo('admin'),validate(addVillageVal),addVillage)
-.get(protectedRoutes,allowedTo('user','admin','client'),getVillage)
+.get(getVillage)
 
 villageRouter.route('/:id')
 .delete(protectedRoutes,allowedTo('admin'),validate(deleteVillageVal),deleteVillage)
