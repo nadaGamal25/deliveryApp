@@ -16,6 +16,7 @@ const addOrder=catchError(async(req,res,next)=>{
                 req.body.orderImgs.push(cloudinaryResult.secure_url);
             } catch (error) {
                 console.error('Error uploading to Cloudinary', error);
+                return next(new AppError('حدث خطأ فى تحميل الصور', 500));
             }
         }
     }
@@ -25,7 +26,7 @@ const addOrder=catchError(async(req,res,next)=>{
         { _id: req.user._id },
         { $inc: { numberOfOrders: 1 } }  // Increment numberOfOrders by 1
     );
-    res.status(200).json({message:"تمت الاضافة بنجاح",order})
+    res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{order}})
 })
 
 
@@ -42,7 +43,7 @@ const cancelOrder = catchError(async (req, res, next) => {
             { _id: req.user._id },
             { $inc: { numberOfOrders: -1 } } 
         );
-        res.status(200).json({ message: "تم الالغاء بنجاح" });
+        res.status(200).json({ message: "تم الالغاء بنجاح" , status:200,data:[]});
     } else {
         return next(new AppError("لا يمكن الغاء الطلب لان السائق ف الطريق اليك", 404));
     }
@@ -55,7 +56,7 @@ const getOrderById=catchError(async(req,res,next)=>{
     if (!order) {
         return next(new AppError('هذا الطلب غير موجود', 404));
     }else{
-        res.status(200).json({message:'success',order})   
+        res.status(200).json({message:'success', status:200,data:{order}})   
     }
 })
 
@@ -69,7 +70,7 @@ const getOrderByStatus = catchError(async (req, res, next) => {
     if (orders.length === 0) {
         return next(new AppError('لا توجد طلبات بهذه الحالة', 404));
     } else {
-        res.status(200).json({ message: 'success', orders });
+        res.status(200).json({ message: 'success',  status:200,data:{orders} });
     }
 });
 
@@ -79,7 +80,7 @@ const getOrdersForClient=catchError(async(req,res,next)=>{
     if (!orders) {
         return next(new AppError('هذا الطلب غير موجود', 404));
     }else{
-        res.status(200).json({message:'success',orders})   
+        res.status(200).json({message:'success', status:200,data:{orders}})   
     }
 })
 // get orders  for driver
@@ -88,7 +89,7 @@ const getOrdersForDriver=catchError(async(req,res,next)=>{
     if (!orders) {
         return next(new AppError('هذا الطلب غير موجود', 404));
     }else{
-        res.status(200).json({message:'success',orders})   
+        res.status(200).json({message:'success', status:200,data:{orders}})   
     }
 })
 
@@ -101,7 +102,7 @@ const rateOrder = catchError(async (req, res, next) => {
     } else{
         order.rate = req.body.orderRate;
         await order.save();  
-        res.status(200).json({ message: "تم " ,order});
+        res.status(200).json({ message: "تم " , status:200,data:{order}});
     } 
 });
 
@@ -118,7 +119,7 @@ const recieveOrder = catchError(async (req, res, next) => {
             { _id: req.user._id },
             { $inc: { numberOfOrders: 1 } } 
         );
-        res.status(200).json({ message: "تم التأكيد بنجاح" });
+        res.status(200).json({ message: "تم التأكيد بنجاح", status:200,data:[] });
     } else {
         return next(new AppError("لا يمكن تاكيد الطلب الان فانت لم تستلمه اولا", 404));
     }

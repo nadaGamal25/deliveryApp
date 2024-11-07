@@ -44,8 +44,7 @@ const userSchema = new Schema({
     },
     role: {
       type: String,
-      enum:['admin','user','client'],
-      default: 'user',
+      enum:['admin','driver','client'],
       required: true,
     },
     numberOfOrders:{
@@ -93,6 +92,16 @@ const userSchema = new Schema({
   },{
     timestamps: true
   });
+
+userSchema.virtual('myReviews',{
+    ref:'Review',
+    localField:'_id',
+    foreignField:'driver'
+})  
+
+userSchema.pre(/^find/,function(){
+    this.populate('myReviews')
+})  
 
 userSchema.pre('save',function(){
   this.password=bcrypt.hashSync(this.password,8)

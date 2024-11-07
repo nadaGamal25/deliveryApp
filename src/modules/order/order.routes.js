@@ -11,11 +11,11 @@ orderRouter.route('/')
 
 orderRouter.get('/orders-by-status',protectedRoutes,allowedTo('client'),validate(getOrderByStatusVal),getOrderByStatus)
 orderRouter.get('/orders-client',protectedRoutes,allowedTo('client'),getOrdersForClient)
-orderRouter.get('/orders-driver',protectedRoutes,allowedTo('user'),getOrdersForDriver)
+orderRouter.get('/orders-driver',protectedRoutes,allowedTo('driver'),getOrdersForDriver)
 
 orderRouter.put('/cancel-order/:id',protectedRoutes,allowedTo('client','admin'),validate(cancelOrderVal),cancelOrder)
 orderRouter.get('/:id',protectedRoutes,allowedTo('client','admin'),validate(getOrderByIdVal),getOrderById)
 orderRouter.put('/rate-order/:id',protectedRoutes,allowedTo('client'),validate(rateOrderVal),rateOrder)
-orderRouter.put('/recieve-order/:id',protectedRoutes,allowedTo('user'),validate(recieveOrderVal),recieveOrder)
+orderRouter.put('/recieve-order/:id',protectedRoutes,allowedTo('driver'),validate(recieveOrderVal),recieveOrder)
 
 export default orderRouter

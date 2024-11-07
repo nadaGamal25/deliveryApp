@@ -10,7 +10,7 @@ const addVillage=catchError(async(req,res,next)=>{
   
     let village=new Village(req.body)
     await village.save()
-    res.status(200).json({message:"تمت الاضافة بنجاح",village})
+    res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{village}})
 })
 
 
@@ -21,7 +21,7 @@ const deleteVillage = catchError(async (req, res, next) => {
         return next(new AppError("القرية غير موجودة", 404));
     }
     await Village.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "تم الحذف بنجاح" });
+    res.status(200).json({ message: "تم الحذف بنجاح" , status:200,data:[] });
 });
 
 //get village
@@ -30,7 +30,7 @@ const getVillage=catchError(async(req,res)=>{
     if (!village) {
         return next(new AppError('لا يوجد قرى', 404));
     }
-    res.status(200).json({message:'success',village})   
+    res.status(200).json({message:'success', status:200,data:{village}})   
 })
 
 

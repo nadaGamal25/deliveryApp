@@ -18,7 +18,7 @@ const offerSchema = new Schema({
     ref:'Order',
     required:true
   },
-  userId: {
+  driverId: {
     type:mongoose.Types.ObjectId,
     ref:'User',
     required:true,

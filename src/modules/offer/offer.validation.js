@@ -5,7 +5,7 @@ const addOfferVal=Joi.object({
     price:Joi.number().min(1).required(),
     status:Joi.string(),
     orderId:Joi.string().hex().length(24).required(),
-    userId:Joi.string().hex().length(24).required(),
+    driverId:Joi.string().hex().length(24).required(),
 })
 
 const deleteOfferVal=Joi.object({

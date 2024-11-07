@@ -8,7 +8,7 @@ import { AppError } from "../../utils/appError.js"
 const addPosition=catchError(async(req,res,next)=>{
     let position=new Position(req.body)
     await position.save()
-    res.status(200).json({message:"تمت الاضافة بنجاح",position})
+    res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{position}})
 })
 
 
@@ -19,7 +19,7 @@ const deletePosition = catchError(async (req, res, next) => {
         return next(new AppError("المنطقة غير موجودة", 404));
     }
     await Position.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "تم الحذف بنجاح" });
+    res.status(200).json({ message: "تم الحذف بنجاح" , status:200,data:[] });
 });
 
 //get positions
@@ -28,7 +28,7 @@ const getPositions=catchError(async(req,res)=>{
     if (!positions) {
         return next(new AppError('لا يوجد مناطق', 404));
     }
-    res.status(200).json({message:'success',positions})   
+    res.status(200).json({message:'success', status:200,data:{positions}})   
 })
 
 

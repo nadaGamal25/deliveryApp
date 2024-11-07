@@ -15,7 +15,7 @@ const addCategory=catchError(async(req,res,next)=>{
     // if(req.file) req.body.img=req.file.path
     let category=new Category(req.body)
     await category.save()
-    res.status(200).json({message:"تمت الاضافة بنجاح",category})
+    res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{category}})
 })
 
 
@@ -26,7 +26,7 @@ const deleteCategory = catchError(async (req, res, next) => {
         return next(new AppError("الفئة غير موجودة", 404));
     }
     await Category.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "تم الحذف بنجاح" });
+    res.status(200).json({ message: "تم الحذف بنجاح", status:200,data:[] });
 });
 
 //get categories
@@ -35,7 +35,7 @@ const getCategories=catchError(async(req,res)=>{
     if (!categories) {
         return next(new AppError('لا يوجد فئات', 404));
     }
-    res.status(200).json({message:'success',categories})   
+    res.status(200).json({message:'success', status:200,data:{categories}})   
 })
 
 //get druvers by categgory id
@@ -44,7 +44,7 @@ const getDriversByCategory=catchError(async(req,res)=>{
     if (!drivers) {
         return next(new AppError('لا يوجد سائقين', 404));
     }
-    res.status(200).json({message:'success',drivers})   
+    res.status(200).json({message:'success', status:200,data:{drivers}})   
 })
 
 

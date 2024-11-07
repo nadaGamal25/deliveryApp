@@ -9,45 +9,45 @@ import { AppError } from "../../utils/appError.js"
 const addOffer=catchError(async(req,res,next)=>{
   let offer=new Offer(req.body)
     await offer.save()
-    res.status(200).json({message:"تمت اضافة عرضك بنجاح",offer})
+    res.status(200).json({message:"تمت اضافة عرضك بنجاح", status:200,data:{offer}})
 })
 
 
-// delete offer 
+// delete offer
 const deleteOffer = catchError(async (req, res, next) => {
     let offer = await Offer.findById(req.params.id);
     if (!offer) {
         return next(new AppError("العرض غير موجودة", 404));
     }
     await Offer.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "تم الحذف بنجاح" });
+    res.status(200).json({ message: "تم الحذف بنجاح" , status:200,data:[] });
 });
 
 //get offers by order id
 const getOffersByOrderId=catchError(async(req,res)=>{
-    let offers = await Offer.find({orderId:req.params.id}).populate('userId')
+    let offers = await Offer.find({orderId:req.params.id}).populate('driverId')
     if (!offers) {
         return next(new AppError('لا يوجد عروض', 404));
     }
-    res.status(200).json({message:'success',offers})   
+    res.status(200).json({message:'success', status:200,data:{offers}})   
 })
 
 //get offers by user id for admin
 const getOffersByUserId=catchError(async(req,res)=>{
-    let offers = await Offer.find({userId:req.params.id});
+    let offers = await Offer.find({driverId:req.params.id});
     if (!offers) {
         return next(new AppError('لا يوجد عروض', 404));
     }
-    res.status(200).json({message:'success',offers})   
+    res.status(200).json({message:'success', status:200,data:{offers}})   
 })
 
 //get offers for user
 const getOffersForUser=catchError(async(req,res)=>{
-    let offers = await Offer.find({userId:req.user._id}).populate('orderId')
+    let offers = await Offer.find({driverId:req.user._id}).populate('orderId')
     if (!offers) {
         return next(new AppError('لا يوجد عروض', 404));
     }
-    res.status(200).json({message:'success',offers})   
+    res.status(200).json({message:'success', status:200,data:{offers}})   
 })
 
 //change offer status
@@ -62,7 +62,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
     if (req.body.status === 'ignored') {
         offer.status = 'ignored';
         await offer.save();  // Save the offer instance
-        res.status(200).json({ message: "تم تجاهل هذا العرض" });
+        res.status(200).json({ message: "تم تجاهل هذا العرض", status:200,data:[] });
 
     } else if (req.body.status === 'accepted') {
         offer.status = 'accepted';
@@ -70,17 +70,17 @@ const changeOfferStatus = catchError(async (req, res, next) => {
 
         // Increment the number of connects for the user
         await User.findByIdAndUpdate(
-            { _id: offer.userId },
+            { _id: offer.driverId },
             { $inc: { numberOfConnect: 1 } }
         );
 
         // Update the related order with status and driverId
         await Order.findByIdAndUpdate(
             { _id: offer.orderId },
-            { $set: { status: 'picked', driverId: offer.userId } }
+            { $set: { status: 'picked', driverId: offer.driverId } }
         );
 
-        res.status(200).json({ message: "تم قبول هذا العرض" });
+        res.status(200).json({ message: "تم قبول هذا العرض", status:200,data:[] });
     } else {
         return next(new AppError("حدث خطأ ما", 404));
     }
@@ -100,12 +100,12 @@ const changeOfferStatus = catchError(async (req, res, next) => {
 //         await Offer.save();  
 
 //         await User.findByIdAndUpdate(
-//             { _id: offer.userId },
+//             { _id: offer.driverId },
 //             { $inc: { numberOfConnect: 1 } } 
 //         );
 //         await Order.findByIdAndUpdate(
 //             { _id: offer.orderId },
-//              { $set: { status: 'picked' , driverId: offer.userId} } 
+//              { $set: { status: 'picked' , driverId: offer.driverId} } 
 //         );
 //         res.status(200).json({ message: "تم قبول هذا العرض" });
 //     } else {

@@ -15,6 +15,7 @@ import orderRouter from './src/modules/order/order.routes.js'
 import offerRouter from './src/modules/offer/offer.routes.js'
 import positionRouter from './src/modules/position/position.routes.js'
 import villageRouter from './src/modules/village/village.routes.js'
+import reviewRouter from './src/modules/review/review.routes.js'
 dotenv.config();
 const port = process.env.PORT || 3000;
 // const port=3000
@@ -32,6 +33,7 @@ app.use('/api/position',positionRouter)
 app.use('/api/village',villageRouter)  
 app.use('/api/order',orderRouter)  
 app.use('/api/offer',offerRouter)  
+app.use('/api/review',reviewRouter)  
 
 
 

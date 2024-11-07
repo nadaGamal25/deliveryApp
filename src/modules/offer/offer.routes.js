@@ -7,12 +7,12 @@ import { addOfferVal, changeOfferStatusVal, deleteOfferVal, getOffersByOrderIdVa
 const offerRouter=express.Router()
 
 offerRouter.route('/')
-.post(protectedRoutes,allowedTo('user'),validate(addOfferVal),addOffer)
-.get(protectedRoutes,allowedTo('user'),getOffersForUser)
+.post(protectedRoutes,allowedTo('driver'),validate(addOfferVal),addOffer)
+.get(protectedRoutes,allowedTo('driver'),getOffersForUser)
 
-offerRouter.delete('/delete-offer/:id',protectedRoutes,allowedTo('user','admin'),validate(deleteOfferVal),deleteOffer)
-offerRouter.get('/by-orderid/:id',protectedRoutes,allowedTo('user','admin'),validate(getOffersByOrderIdVal),getOffersByOrderId)
-offerRouter.get('/by-userid/:id',protectedRoutes,allowedTo('user','admin'),validate(getOffersByUserIdVal),getOffersByUserId)
+offerRouter.delete('/delete-offer/:id',protectedRoutes,allowedTo('driver','admin'),validate(deleteOfferVal),deleteOffer)
+offerRouter.get('/by-orderid/:id',protectedRoutes,allowedTo('driver','admin'),validate(getOffersByOrderIdVal),getOffersByOrderId)
+offerRouter.get('/by-userid/:id',protectedRoutes,allowedTo('driver','admin'),validate(getOffersByUserIdVal),getOffersByUserId)
 offerRouter.put('/change-status/:id',protectedRoutes,allowedTo('client'),validate(changeOfferStatusVal),changeOfferStatus)
 
 export default offerRouter

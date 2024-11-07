@@ -11,8 +11,8 @@ import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
 dotenv.config();
 const secretKey = process.env.SECRET_KEY;
 
-//Sign Up  
-const signup=catchError(async(req,res)=>{
+//Sign Up   
+const signup=catchError(async(req,res,next)=>{
     if (req.files && req.files.vehiclesImgs) {
         req.body.vehiclesImgs = [];
         
@@ -22,6 +22,7 @@ const signup=catchError(async(req,res)=>{
                 req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
             } catch (error) {
                 console.error('Error uploading to Cloudinary', error);
+                return next(new AppError('خطأ فى تحميل الصور', 400));
             }
         }
     }
@@ -37,8 +38,7 @@ const signup=catchError(async(req,res)=>{
     await user.save()
     let token = jwt.sign({userId:user._id, role:user.role},secretKey)
     if(user.role =='user'){
-        res.status(201).json({message:'سوف يتم التواصل معك لتأكيد الحساب فى خلال 48 ساعة',status:201,data:{'user':user},token,role:user.role,
-            isConfirmed:user.isConfirmed,isBlocked:user.isBlocked})
+        res.status(201).json({message:'سوف يتم التواصل معك لتأكيد الحساب فى خلال 48 ساعة',status:201,data:{'user':user, token}})
     }else{
         await User.updateOne({ _id: user._id }, { $set: { isConfirmed: true } });
         res.status(201).json({message:'تم انشاء حساب بنجاح',status:201,data:{'user':user,token}})
@@ -63,6 +63,13 @@ const signin=catchError(async(req,res,next)=>{
     
 })
 
+//sign out
+const signout=catchError(async(req,res,next)=>{
+    res.clearCookie('token')
+    res.status(200).json({message:'تم تسجيل الخروج بنجاح',status:200,data:[]})
+})
+
+
 //change password
 const changePassword=catchError(async(req,res,next)=>{
     let user = await User.findById(req.user._id)
@@ -70,7 +77,7 @@ const changePassword=catchError(async(req,res,next)=>{
     if(user && bcrypt.compareSync(req.body.oldPassword,user.password)){
         let token = jwt.sign({userId:user._id, role:user.role},secretKey)
         await User.findByIdAndUpdate(req.user._id, {password:req.body.newPassword,passwordChangedAt:Date.now()}, { new: true })
-        res.status(200).json({message:'تم تغيير كلمة المرور بنجاح',token:token})
+        res.status(200).json({message:'تم تغيير كلمة المرور بنجاح',status:200,data:{token}})
     }
     next(new AppError('كلمة المرور غير صالحة',400))
 })
@@ -120,6 +127,7 @@ const updateAccount = catchError(async (req, res, next) => {
                 req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
             } catch (error) {
                 console.error('Error uploading to Cloudinary', error);
+                return next(new AppError('خطأ ف تحميل الصور', 500));
                 // You can also handle this error and send a response accordingly
             }
         }
@@ -138,7 +146,7 @@ const updateAccount = catchError(async (req, res, next) => {
     
     user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
 
-    res.status(200).json({ message: 'تم تعديل البيانات بنجاح', user });
+    res.status(200).json({ message: 'تم تعديل البيانات بنجاح', status:200,data:{user} });
 });
 
 //delete account.
@@ -147,7 +155,7 @@ const deleteUser = catchError(async (req, res, next) => {
     if (!user) {
         return next(new AppError('المستخدم غير موجود', 404));
     }
-    res.status(200).json({ message: 'تم حذف الحساب بنجاح'});
+    res.status(200).json({ message: 'تم حذف الحساب بنجاح', status:200,data:[]});
 });
 
 //Get user account data 
@@ -157,7 +165,7 @@ const getAccountData=catchError(async(req,res)=>{
     if (!user) {
         return next(new AppError('المستخدم غير موجود', 404));
     }
-    res.status(200).json({message:'success',user})   
+    res.status(200).json({message:'success', status:200,data:{user}})   
 })
 
 const generateOTP = () => {
@@ -178,7 +186,7 @@ const forgetPassword = catchError(async (req, res, next) => {
     const mail=user.email
     sendEmail(mail,otp);
 
-    res.status(200).json({ message: 'تم ارسال الكود..قم بتفقد بريدك الالكترونى' });
+    res.status(200).json({ message: 'تم ارسال الكود..قم بتفقد بريدك الالكترونى',status:200,data:[]});
 });
 
 //Update password 
@@ -196,7 +204,7 @@ const updatePassword = catchError(async (req, res, next) => {
         return next(new AppError('الكود غير صالح او تم انتهاء صلاحيته', 400));
     }
           
-    res.status(200).json({ message: 'تم تغيير كلمة المرور بنجاح' });
+    res.status(200).json({ message: 'تم تغيير كلمة المرور بنجاح', status:200,data:[] });
 });
 
 
@@ -217,7 +225,7 @@ const regenerateOtp = catchError(async (req, res,next) => {
 
     sendEmail(user.email, otpCode);
 
-    res.status(200).json({ message: 'تم ارسال الكود مرة اخرى..تفقد بريدك الالكترونى' });
+    res.status(200).json({ message: 'تم ارسال الكود مرة اخرى..تفقد بريدك الالكترونى', status:200,data:[] });
 }
 )
 
@@ -229,11 +237,11 @@ const addConnect = catchError(async (req, res, next) => {
         return next(new AppError("هذا المستخدم غير موجود", 404));
     } else{
         await User.updateOne({ _id:req.params.id},  { $inc: { numberOfConnect: 1 } } );
-        res.status(200).json({ message: "تم " ,user});
+        res.status(200).json({ message: "تم " , status:200,data:{user}});
     } 
 });
 
 export{
     signup,signin,updateAccount,deleteUser,getAccountData,changePassword,protectedRoutes,allowedTo,
-    forgetPassword,updatePassword,regenerateOtp,addConnect
+    forgetPassword,updatePassword,regenerateOtp,addConnect,signout
 }

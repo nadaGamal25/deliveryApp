@@ -8,7 +8,7 @@ const confirmUser=catchError(async(req,res,next)=>{
     let user = await User.findById(req.params.id)
     if(user){
         await User.findByIdAndUpdate(req.params.id, {isConfirmed:true}, { new: true })
-        res.status(200).json({message:'تم تأكيد الحساب بنجاح',user})
+        res.status(200).json({message:'تم تأكيد الحساب بنجاح', status:200,data:{user}})
     }else{
         return next(new AppError(' المستخدم غير موجود',400))
     }
@@ -20,7 +20,7 @@ const blockUser=catchError(async(req,res,next)=>{
     let user = await User.findById(req.params.id)
     if(user){
         await User.findByIdAndUpdate(req.params.id, {isBlocked:true}, { new: true })
-        res.status(200).json({message:'تم تأكيد الحساب بنجاح',user})
+        res.status(200).json({message:'تم تأكيد الحساب بنجاح', status:200,data:{user}})
     }else{
         return next(new AppError(' المستخدم غير موجود',400))
     }
