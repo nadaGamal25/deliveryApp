@@ -14,6 +14,10 @@ const userSchema = new Schema({
     required: true,
     unique: true
   },
+  dateOfBirth:{
+    type:Date,
+    required:true
+  },
     email: {
       type: String,
       required: true,

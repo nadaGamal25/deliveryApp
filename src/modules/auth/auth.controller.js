@@ -37,10 +37,10 @@ const signup=catchError(async(req,res,next)=>{
     let user =new User(req.body)
     await user.save()
     let token = jwt.sign({userId:user._id, role:user.role},secretKey)
-    if(user.role =='user'){
+    if(user.role =='driver'){
         res.status(201).json({message:'سوف يتم التواصل معك لتأكيد الحساب فى خلال 48 ساعة',status:201,data:{'user':user, token}})
     }else{
-        await User.updateOne({ _id: user._id }, { $set: { isConfirmed: true } });
+        await User.updateOne({ _id: user._id }, { $set: { isConfirmed: true } }, { new: true });
         res.status(201).json({message:'تم انشاء حساب بنجاح',status:201,data:{'user':user,token}})
     }
 })
@@ -159,14 +159,18 @@ const deleteUser = catchError(async (req, res, next) => {
 });
 
 //Get user account data 
-const getAccountData=catchError(async(req,res)=>{
-    let user = await User.findById(req.user._id).populate('cacategoryId','name - img').
-    populate('position','name -id').populate('village','name -id');
+const getAccountData = catchError(async (req, res, next) => {
+    let user = await User.findById(req.user._id)
+        .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
+        .populate({ path: 'position', select: 'name', strictPopulate: false })
+        .populate({ path: 'village', select: 'name ', strictPopulate: false });
+
     if (!user) {
         return next(new AppError('المستخدم غير موجود', 404));
     }
-    res.status(200).json({message:'success', status:200,data:{user}})   
-})
+    res.status(200).json({ message: 'success', status: 200, data: { user } });
+});
+
 
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-character OTP
@@ -175,7 +179,7 @@ const generateOTP = () => {
 const forgetPassword = catchError(async (req, res, next) => {
     let user = await User.findOne({ email: req.body.email });
     if (!user) {
-        return next(new AppError('المستخدم غير موجود', 404));
+        return next(new AppError('الايميل غير صحيح', 404));
     }
 
     const otp = generateOTP();
@@ -189,23 +193,59 @@ const forgetPassword = catchError(async (req, res, next) => {
     res.status(200).json({ message: 'تم ارسال الكود..قم بتفقد بريدك الالكترونى',status:200,data:[]});
 });
 
-//Update password 
-const updatePassword = catchError(async (req, res, next) => {
-    const { otp, newPassword } = req.body;
+// send otp to Update password 
+const confirmOTP = catchError(async (req, res, next) => {
+    const { otp } = req.body;
 
     let user = await User.findOne({
         resetPasswordOTP: otp,
         resetPasswordExpires: { $gt: Date.now() } // Ensure OTP is not expired
     });
-    if (user) {
-        await User.findByIdAndUpdate(user._id, {password:req.body.newPassword,
-            newPassword:undefined,resetPasswordExpires:undefined,passwordChangedAt:Date.now()}, { new: true })
-    }else{
-        return next(new AppError('الكود غير صالح او تم انتهاء صلاحيته', 400));
+
+    if (!user) {
+        return next(new AppError('الكود غير صالح أو تم انتهاء صلاحيته', 400));
     }
-          
-    res.status(200).json({ message: 'تم تغيير كلمة المرور بنجاح', status:200,data:[] });
+
+    res.status(200).json({ message: 'تم تأكيد الكود بنجاح', status: 200, data: { userId: user._id } });
 });
+
+
+//Update password 
+const setNewPassword = catchError(async (req, res, next) => {
+    const { userId, newPassword } = req.body;
+
+    let user = await User.findById(userId);
+
+    if (!user) {
+        return next(new AppError('المستخدم غير موجود', 404));
+    }
+
+    // Update the password and other related fields
+    user.password = newPassword;
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordExpires = undefined;
+    user.passwordChangedAt = Date.now();
+    await user.save();
+
+    res.status(200).json({ message: 'تم تغيير كلمة المرور بنجاح', status: 200, data: [] });
+});
+
+// const updatePassword = catchError(async (req, res, next) => {
+//     const { otp, newPassword } = req.body;
+
+//     let user = await User.findOne({
+//         resetPasswordOTP: otp,
+//         resetPasswordExpires: { $gt: Date.now() } // Ensure OTP is not expired
+//     });
+//     if (user) {
+//         await User.findByIdAndUpdate(user._id, {password:req.body.newPassword,
+//             newPassword:undefined,resetPasswordExpires:undefined,passwordChangedAt:Date.now()}, { new: true })
+//     }else{
+//         return next(new AppError('الكود غير صالح او تم انتهاء صلاحيته', 400));
+//     }
+          
+//     res.status(200).json({ message: 'تم تغيير كلمة المرور بنجاح', status:200,data:[] });
+// }); 
 
 
 const regenerateOtp = catchError(async (req, res,next) => {
@@ -243,5 +283,5 @@ const addConnect = catchError(async (req, res, next) => {
 
 export{
     signup,signin,updateAccount,deleteUser,getAccountData,changePassword,protectedRoutes,allowedTo,
-    forgetPassword,updatePassword,regenerateOtp,addConnect,signout
+    forgetPassword,regenerateOtp,addConnect,signout,confirmOTP,setNewPassword
 }

@@ -87,6 +87,10 @@ const signupVal = Joi.object({
     profileImg: Joi.string().messages({
         'string.base': 'يجب أن تكون الصورة نصًا'
     }),
+    dateOfBirth:Joi.date().required().messages({
+        'date.base': 'تاريخ الميلاد مطلوب',
+        'any.required': 'تاريخ الميلاد مطلوب'
+    })
 });
 
 // Custom function to format Joi errors
@@ -171,6 +175,7 @@ const updateUserVal=Joi.object({
     vehiclesImgs: Joi.array().items().min(0),
     categoryId:Joi.string().hex().length(24),
     profileImg:Joi.string(),
+    dateOfBirth:Joi.date()
 
 })
 
@@ -184,9 +189,11 @@ const changePasswordVal=Joi.object({
 const forgetPassVal=Joi.object({
     email:Joi.string().email().required(),
 })
-
+const confirmOtpVal=Joi.object({
+    otp:Joi.string().required(),  
+})
 const updatePassVal=Joi.object({
-    otp:Joi.string().required(),
+    userId:Joi.string().hex().length(24).required,
     newPassword :Joi.string().pattern(/^[A-Z][A-Za-z0-9#@$]{8,20}$/).required(),
     confirmPassword:Joi.string().valid(Joi.ref('newPassword')),
 })
@@ -199,5 +206,6 @@ const addConnectVal=Joi.object({
     id:Joi.string().hex().length(24).required,
 })
 export{
-    signupVal,signinVal,updateUserVal,changePasswordVal,forgetPassVal,updatePassVal,regenerateOtpVal,addConnectVal
+    signupVal,signinVal,updateUserVal,changePasswordVal,forgetPassVal,updatePassVal,
+    regenerateOtpVal,addConnectVal,confirmOtpVal
 }
