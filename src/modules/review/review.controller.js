@@ -1,6 +1,7 @@
 import { catchError } from "../../middleware/catchError.js"
 import {AppError} from "../../utils/appError.js"
 import { Review } from "../../../database/models/review.model.js"
+import { User } from "../../../database/models/user.model.js"
 
 const addReview=catchError(async(req,res,next)=>{
     req.body.client=req.user._id
@@ -10,7 +11,7 @@ const addReview=catchError(async(req,res,next)=>{
     await review.save()
     res.status(200).json({message:"تمت اضافة التقييم",status:200,data:{review}})
 })
-
+ 
 const updateReview=catchError(async(req,res,next)=>{
     req.body.client=req.user._id
     let review=await Review.findOneAndUpdate({_id:req.params.id,client:req.user._id},req.body,{new:true})
@@ -19,22 +20,40 @@ const updateReview=catchError(async(req,res,next)=>{
 })
 
 const deleteReview=catchError(async(req,res,next)=>{
-    let review=await model.findOneAndDelete({_id:req.params.id})
+    let review=await Review.findOneAndDelete({_id:req.params.id})
     review || next(new AppError("لا يوجد تقييم",404))
     !review || res.status(200).json({message:"تم حذف تقييمك",status:200,data:[]})
 })
 
 const allReviews=catchError(async(req,res,next)=>{
-    let review=await model.find()
+    let review=await Review.find().populate('client').populate('driver')
     res.status(200).json({message:"success",status:200,data:{review}})
 })
 
-const getReview=catchError(async(req,res,next)=>{
-    let review=await model.findById(req.params.id)
+const getReviewDriver=catchError(async(req,res,next)=>{
+    let review=await Review.findOne({driver:req.params.id})
     review || next(new AppError("لا يوجد تقييم",404))
     !review || res.status(200).json({message:"success",status:200,data:{review}})
 })
 
+const getReviewClient = catchError(async (req, res, next) => {
+    let review = await Review.findOne({ client: req.params.id }).populate({
+        path: 'driver',
+        select: 'name' 
+    });
+
+    if (!review) {
+        return next(new AppError("لا يوجد تقييم", 404));
+    }
+
+    // Remove the `client` field from the review before sending the response
+    review = review.toObject();
+    delete review.client;
+
+    res.status(200).json({ message: "success", status: 200, data: { review } });
+});
+
+
 export{
-    addReview,allReviews,getReview,updateReview,deleteReview
+    addReview,allReviews,getReviewDriver,updateReview,deleteReview,getReviewClient
 }

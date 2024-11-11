@@ -161,7 +161,7 @@ const deleteUser = catchError(async (req, res, next) => {
 
 //Get user account data 
 const getAccountData = catchError(async (req, res, next) => {
-    let user = await User.findById(req.user._id).populate({
+    let user = await User.findById(req.params.id).populate({
         path: 'myReviews',
         select: 'comment rate client', 
       }).populate({ path: 'categoryId', select: 'name', strictPopulate: false })

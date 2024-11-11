@@ -17,6 +17,8 @@ import positionRouter from './src/modules/position/position.routes.js'
 import villageRouter from './src/modules/village/village.routes.js'
 import reviewRouter from './src/modules/review/review.routes.js'
 import mongoose from 'mongoose'
+import driverRouter from './src/modules/driver/driver.routes.js'
+import favRouter from './src/modules/fav/fav.routes.js'
 // mongoose.set('debug', true);
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -36,6 +38,8 @@ app.use('/api/village',villageRouter)
 app.use('/api/order',orderRouter)  
 app.use('/api/offer',offerRouter)  
 app.use('/api/review',reviewRouter)  
+app.use('/api/driver',driverRouter)  
+app.use('/api/fav',favRouter)  
 
 
 

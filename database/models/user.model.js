@@ -80,7 +80,14 @@ const userSchema = new Schema({
   },
   rateAvg:{
     type:Number,
-  },
+    min:0,
+    max:5,
+    default:0
+},
+  rateCount:{
+    type:Number,
+    default:0
+},
   startTime: {
     type: String,
   },
