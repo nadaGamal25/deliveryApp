@@ -10,10 +10,10 @@ const reviewSchema = new Schema({
       min: 0,
       max: 5,
     },
-    driver:{
-      type:mongoose.Types.ObjectId,
-      ref:'User',
-      required:true
+    driver: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
     client:{
         type:mongoose.Types.ObjectId,

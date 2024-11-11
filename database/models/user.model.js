@@ -97,16 +97,22 @@ const userSchema = new Schema({
     timestamps: true
   });
 
-userSchema.virtual('myReviews',{
-    ref:'Review',
-    localField:'_id',
-    foreignField:'driver'
-})  
+  userSchema.virtual('myReviews', {
+    ref: 'Review',
+    localField: '_id',
+    foreignField: 'driver',
+    justOne: false, // Ensure this is false to get an array of reviews
+  });
+  userSchema.set('toJSON', { virtuals: true });
+userSchema.set('toObject', { virtuals: true });
 
-userSchema.pre(/^find/,function(){
-    this.populate('myReviews')
-})  
-
+   
+  userSchema.pre(/^find/, function(next) {
+    this.populate('myReviews');
+    next();
+  });
+  
+  
 userSchema.pre('save',function(){
   this.password=bcrypt.hashSync(this.password,8)
 })

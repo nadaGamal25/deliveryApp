@@ -8,6 +8,7 @@ import { sendEmail } from "../../email/email.js";
 import {deleteImageFile} from "../../utils/deleteOldImage.js"
 import moment from 'moment-timezone';
 import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
+import { Review } from "../../../database/models/review.model.js";
 dotenv.config();
 const secretKey = process.env.SECRET_KEY;
 
@@ -160,10 +161,12 @@ const deleteUser = catchError(async (req, res, next) => {
 
 //Get user account data 
 const getAccountData = catchError(async (req, res, next) => {
-    let user = await User.findById(req.user._id)
-        .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
+    let user = await User.findById(req.user._id).populate({
+        path: 'myReviews',
+        select: 'comment rate client', 
+      }).populate({ path: 'categoryId', select: 'name', strictPopulate: false })
         .populate({ path: 'position', select: 'name', strictPopulate: false })
-        .populate({ path: 'village', select: 'name ', strictPopulate: false });
+        .populate({ path: 'village', select: 'name ', strictPopulate: false })
 
     if (!user) {
         return next(new AppError('المستخدم غير موجود', 404));
