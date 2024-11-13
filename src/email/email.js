@@ -1,16 +1,18 @@
 import nodemailer from 'nodemailer'
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const sendEmail=(email,otpCode)=>{
     const transporter=nodemailer.createTransport({
         service:'gmail',
         auth: {
-            user:'gnada1221@gmail.com',
-            pass:'adznraiylhtylrwq'
+            user:process.env.EMAIL_USER, 
+            pass:process.env.EMAIL_PASSWORD
         },
     })
 
     const mailOptions = {
-        from: '"deliveryApp" <gnada1221@gmail.com>',
+        from: 'Forira',
         to: email,
         subject: 'Password Reset Code',
         text: `Your OTP code is: ${otpCode}. It will expire in 10 minutes.`

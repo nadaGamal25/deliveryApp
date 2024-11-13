@@ -19,6 +19,11 @@ import reviewRouter from './src/modules/review/review.routes.js'
 import mongoose from 'mongoose'
 import driverRouter from './src/modules/driver/driver.routes.js'
 import favRouter from './src/modules/fav/fav.routes.js'
+import reviewAppRouter from './src/modules/reviewApp/reviewApp.routes.js'
+import contactusRouter from './src/modules/contactus/contactus.routes.js'
+import suggestRouter from './src/modules/suggest/suggest.routes.js'
+import aboutRouter from './src/modules/about/about.routes.js'
+import socialRouter from './src/modules/social/social.routes.js'
 // mongoose.set('debug', true);
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -40,6 +45,11 @@ app.use('/api/offer',offerRouter)
 app.use('/api/review',reviewRouter)  
 app.use('/api/driver',driverRouter)  
 app.use('/api/fav',favRouter)  
+app.use('/api/review-app',reviewAppRouter)  
+app.use('/api/contactus',contactusRouter)  
+app.use('/api/suggest',suggestRouter)
+app.use('/api/about',aboutRouter)
+app.use('/api/social',socialRouter)
 
 
 

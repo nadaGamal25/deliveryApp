@@ -1,3 +1,7 @@
+function timeToMinutes(time) {
+    const [hours, minutes] = time.split(':').map(num => parseInt(num, 10));
+    return (hours * 60) + minutes;
+}
 
 export class ApiFeatures{
     constructor(mongooseQuery,searchQuery){
@@ -56,14 +60,14 @@ export class ApiFeatures{
             }
             return this
     }
-
+  
     search(){
         if(this.searchQuery.search){
             this.mongooseQuery.find(
                 {
                     $or: [
-                        {title: {$regex: this.searchQuery.search, $options: 'i'}},
-                        {name : {$regex: this.searchQuery.search, $options: 'i'}},
+                        {position: {$regex: this.searchQuery.search, $options: 'i'}},
+                        // {name : {$regex: this.searchQuery.search, $options: 'i'}},
                     ]
                 }
             )
@@ -71,6 +75,10 @@ export class ApiFeatures{
         }
         return this
     }
+    
+    
+    
+    
 }
 // export class ApiFeatures {
 //     constructor(mongooseQuery, searchQuery) {
