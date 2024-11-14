@@ -8,7 +8,7 @@ const schema = new Schema({
       type: String,
     },
   pages:{
-      type:[String]
+      type:[Object]
     }
    
  

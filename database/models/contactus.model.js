@@ -8,8 +8,9 @@ const schema = new Schema({
   phone: {
     type: String,
     required: true,
+    unique:false
   },
-    comment: {
+  comment: {
       type: String,
     }, 
     

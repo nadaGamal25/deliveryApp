@@ -1,17 +1,17 @@
 import Joi from "joi";
 
 const addTextVal = Joi.object({
-    text: Joi.string().min(1).required().messages({
-        "string.base": "يجب إدخال تعليق صحيح",
-        "string.min": "يجب أن يكون التعليق حرفاً واحداً على الأقل",
+    about: Joi.string().min(1).required().messages({
+        "string.base": "يجب إدخال بيانات صحيح",
+        "string.min": "يجب أن يكون البيانات حرفاً واحداً على الأقل",
     }),
  
 });
 
 const updateTextVal = Joi.object({
-    text: Joi.string().min(1).required().messages({
-        "string.base": "يجب إدخال تعليق صحيح",
-        "string.min": "يجب أن يكون التعليق حرفاً واحداً على الأقل",
+    about: Joi.string().min(1).required().messages({
+        "string.base": "يجب إدخال بيانات صحيح",
+        "string.min": "يجب أن يكون البيانات حرفاً واحداً على الأقل",
     }),
     id: Joi.string().hex().length(24).required().messages({
         "string.base": "يجب أن يكون معرف المراجعة صالحاً",

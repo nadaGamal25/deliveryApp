@@ -1,8 +1,9 @@
 import { Schema, model } from "mongoose";
 
 const schema = new Schema({
-    text: {
-      type: String,
+    about: {
+      type: String, // Supports storing HTML content
+      required: true,
     }, 
    
    

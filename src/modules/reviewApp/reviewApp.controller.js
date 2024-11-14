@@ -25,7 +25,7 @@ const deleteReview=catchError(async(req,res,next)=>{
 })
 
 const allReviews=catchError(async(req,res,next)=>{
-    let review=await ReviewApp.find().populate('user','name phone')
+    let review=await ReviewApp.find().populate('user','name phone profileImg')
     res.status(200).json({message:"success",status:200,data:{review}})
 })
 
