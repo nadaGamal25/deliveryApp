@@ -1,9 +1,10 @@
 import express from 'express'
-import { getDriversRate, getDriversSearch } from './driver.controller.js'
+import { getDrivers, getDriversRate, getFavDrivers } from './driver.controller.js'
 
 const driverRouter=express.Router()
 
 driverRouter.get('/rate',getDriversRate)
-driverRouter.get('/search',getDriversSearch)
+driverRouter.get('/',getDrivers)
+driverRouter.get('/fav',getFavDrivers)
 
 export default driverRouter

@@ -30,7 +30,23 @@ const getFavDriver=catchError(async(req,res,next)=>{
 })
 
 const getFavClient = catchError(async (req, res, next) => {
-    let fav = await FavDriver.find({ client: req.params.id }).populate('driver')
+    let fav = await FavDriver.find({ client: req.params.id })
+    .populate({
+        path: 'driver',
+        select: 'name age profileImg categoryId rateAvg position',
+        populate: [
+            {
+                path: 'categoryId', // Populates the `categoryId` field within `driver`
+                select: 'name', // Selects only the `name` field from the `Category` model
+                strictPopulate: false
+            },
+            {
+                path: 'position', // Populates the `position` field within `driver`
+                select: 'name', // Selects only the `name` field from the `Position` model
+                strictPopulate: false
+            }
+        ]
+    })
 
     if (!fav) {
         return next(new AppError("لا يوجد تقييم", 404));

@@ -8,28 +8,22 @@ export const validate=(schema)=>{
             ...req.query
         };
         
-        if (req.file && req.file.fieldname === 'profileImg') {
-            dataToValidate.profileImg = req.file;
+        if (req.files) {
+          if (req.files && req.files.profileImg) {
+            dataToValidate.profileImg = req.files.profileImg[0];
         }
-        if (req.files && req.files.vehiclesImgs) {
-         
-            if (req.files.vehiclesImgs) {
-                dataToValidate.vehiclesImgs = req.files.vehiclesImgs;
-            }
-        }
+          if (req.files.vehiclesImgs) {
+              dataToValidate.vehiclesImgs = req.files.vehiclesImgs;
+          }
+      }
+       
         if (req.files && req.files.orderImgs) {
          
             if (req.files.orderImgs) {
                 dataToValidate.orderImgs = req.files.orderImgs;
             }
         }
-        // const {error}=schema.validate(dataToValidate,{abortEarly:false});
-        // if(!error){
-        //     next()
-        // }else{
-        //     let errMsgs=error.details.map(err=>err.message)
-        //     next(new AppError(errMsgs,401))
-        // }
+       
         const { error } = schema.validate(dataToValidate, { abortEarly: false });
 
         if (!error) {

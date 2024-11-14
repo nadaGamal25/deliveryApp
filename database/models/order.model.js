@@ -9,11 +9,39 @@ const orderSchema = new Schema({
     type: String,
     required: true,
   },
+  clientPosition: {
+    type: String,
+    required: true,
+  }, 
+  recieverPosition: {
+    type: String,
+    required: true,
+  },
+  clientName: {
+    type: String,
+    required: true,
+  }, 
+  recieverName: {
+    type: String,
+    required: true,
+  },
+  clientPhone: {
+    type: String,
+    required: true,
+  }, 
+  recieverPhone: {
+    type: String,
+    required: true,
+  },
     goDate: {
       type: Date,
       required: true,
     },
     nums: {
+      type: Number,
+      required: true,
+    },
+    price: {
       type: Number,
       required: true,
     },

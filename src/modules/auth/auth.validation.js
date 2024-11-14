@@ -1,6 +1,10 @@
 import Joi from 'joi'
 
 const signupVal = Joi.object({
+    profileImg: Joi.object().required().messages({
+        'object.base': 'يجب أن تكون الصورة صالحة'
+    }),
+    
     name: Joi.string().min(3).max(100).required().messages({
         'string.base': 'يجب أن يكون الاسم نصًا',
         'string.empty': 'الاسم مطلوب',
@@ -84,12 +88,14 @@ const signupVal = Joi.object({
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'الفئة مطلوبة'
     }),
-    profileImg: Joi.string().messages({
-        'string.base': 'يجب أن تكون الصورة صالحة'
-    }),
+   
     dateOfBirth:Joi.date().required().messages({
         'date.base': 'تاريخ الميلاد مطلوب',
         'any.required': 'تاريخ الميلاد مطلوب'
+    }),
+    positionLocation:Joi.string().messages({
+        'string.base': 'الموقع  يجب أن يكون نصًا'
+
     })
 });
 
@@ -232,6 +238,10 @@ const updateUserVal=Joi.object({
     dateOfBirth:Joi.date().messages({
         'date.base': 'تاريخ الميلاد مطلوب',
         'any.required': 'تاريخ الميلاد مطلوب'
+    }),
+    positionLocation:Joi.string().messages({
+        'string.base': 'الموقع  يجب أن يكون نصًا'
+
     })
 
 })

@@ -27,14 +27,20 @@ const signup=catchError(async(req,res,next)=>{
             }
         }
     }
-    if (req.file && req.file.profileImg) {
-        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'category', req.file.originalname);
-        req.body.profileImg = cloudinaryResult.secure_url; // Store Cloudinary URL in req.body
+  
+    if (req.files && req.files.profileImg && req.files.profileImg[0]) {
+        try {
+            const cloudinaryResult = await uploadToCloudinary(req.files.profileImg[0].buffer, 'user', req.files.profileImg[0].originalname);
+            req.body.profileImg = cloudinaryResult.secure_url; // Ensure this line sets a string in `req.body.profileImg`
+        } catch (error) {
+            return next(new AppError('خطأ فى تحميل الصورة', 400));
+        }
     }
+    
     // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 
     // if(req.files.vehiclesImgs) req.body.vehiclesImgs=req.files.vehiclesImgs.map(img=>img.filename)
-    
+
     let user =new User(req.body)
     await user.save()
     let token = jwt.sign({userId:user._id, role:user.role},secretKey)
@@ -133,8 +139,8 @@ const updateAccount = catchError(async (req, res, next) => {
             }
         }
     }
-    if (req.file && req.file.profileImg) {
-        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'category', req.file.originalname);
+    if (req.files && req.files.profileImg[0]) {
+        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'user', req.file.originalname);
         req.body.profileImg = cloudinaryResult.secure_url; // Store Cloudinary URL in req.body
     }
     // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL

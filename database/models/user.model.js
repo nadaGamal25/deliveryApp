@@ -18,6 +18,9 @@ const userSchema = new Schema({
     type:Date,
     required:true
   },
+  age:{
+    type:Number,
+  },
     email: {
       type: String,
       required: true,
@@ -27,10 +30,6 @@ const userSchema = new Schema({
       type: String,
       required: true
     },
-    // confirmPassword: {
-    //   type: String,
-    //   required: true
-    // },
     position: {
       type:mongoose.Types.ObjectId,
       ref:'Position',
@@ -44,6 +43,9 @@ const userSchema = new Schema({
       required:true
     },
     urlLocation:{
+      type:String,
+    },
+    positionLocation:{
       type:String,
     },
     role: {
@@ -77,6 +79,10 @@ const userSchema = new Schema({
   isBlocked:{
     type: Boolean,
     default: false,
+  },
+  isValid:{
+    type: Boolean,
+    default: true,
   },
   rateAvg:{
     type:Number,
@@ -114,15 +120,33 @@ const userSchema = new Schema({
 userSchema.set('toObject', { virtuals: true });
 
    
-  userSchema.pre(/^find/, function(next) {
-    this.populate('myReviews');
+  // userSchema.pre(/^find/, function(next) {
+  //   this.populate('myReviews');
+  //   next();
+  // });
+  
+  
+  userSchema.pre('save', function (next) {
+    // Hash the password
+    this.password = bcrypt.hashSync(this.password, 8);
+  
+    // Calculate the age
+    if (this.dateOfBirth) {
+      const currentDate = new Date();
+      const birthDate = new Date(this.dateOfBirth);
+      let age = currentDate.getFullYear() - birthDate.getFullYear();
+      const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+  
+      // Adjust age if the current month is before the birth month or if it's the birth month but the current day is before the birth day
+      if (monthDifference < 0 || (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())) {
+        age--;
+      }
+  
+      this.age = age;
+    }
+  
     next();
   });
-  
-  
-userSchema.pre('save',function(){
-  this.password=bcrypt.hashSync(this.password,8)
-})
 
 userSchema.pre('findOneAndUpdate',function(){
   if (this._update.password)  this._update.password=bcrypt.hashSync(this._update.password,8)

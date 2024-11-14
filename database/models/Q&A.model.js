@@ -1,22 +1,19 @@
 import mongoose, { Schema, model } from "mongoose";
 
 const schema = new Schema({
-  name: {
+  question: {
     type: String,
     required: true,
   }, 
-  phone: {
+  answer: {
     type: String,
     required: true,
   },
-    comment: {
-      type: String,
-    }, 
-    
+  
  
   },{
     timestamps: true
   });
 
 
-export const Contactus = model('Contactus', schema);
+export const QandA = model('QandA', schema);
