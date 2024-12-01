@@ -3,7 +3,9 @@ import { User } from "../../../database/models/user.model.js";
 import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
 import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/appError.js"
-
+import QRCode from 'qrcode';
+import { v4 as uuidv4 } from 'uuid'; // To ensure uniqueness
+import crypto from 'crypto'; // For generating a random string
 
 //add order
 const addOrder=catchError(async(req,res,next)=>{
@@ -20,11 +22,23 @@ const addOrder=catchError(async(req,res,next)=>{
             }
         }
     }
+     // Generate a unique identifier for the order
+    //  const uniqueId = uuidv4();
+     // Generate the QR code for the order
+    //  const qrCodeData = await QRCode.toDataURL(uniqueId);
+    //  // Add the generated QR code and unique ID to the order body
+    //  req.body.qrCode = qrCodeData;
+
+ // Generate a unique string for the QR code
+ const qrCodeString = crypto.randomBytes(5).toString('hex'); // Generates a 10-character unique string
+
+ // Add the generated QR code string to the order body
+ req.body.qrCode = qrCodeString;
     let order=new Order(req.body)
     await order.save()
     await User.findByIdAndUpdate(
         { _id: req.user._id },
-        { $inc: { numberOfOrders: 1 } }  // Increment numberOfOrders by 1
+        { $inc: { numberOfOrders: 1 } },  // Increment numberOfOrders by 1
     );
     res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{order}})
 })
@@ -36,7 +50,7 @@ const cancelOrder = catchError(async (req, res, next) => {
     
     if (!order) {
         return next(new AppError("هذا الطلب غير موجود", 404));
-    } else if (order.status === 'pending') {
+    } else if (order.status === 'waiting') {
         order.status = 'canceled';
         await order.save();  
         await User.findByIdAndUpdate(
@@ -52,7 +66,10 @@ const cancelOrder = catchError(async (req, res, next) => {
 
 // get order by id
 const getOrderById=catchError(async(req,res,next)=>{
-    let order = await Order.findById(req.params.id);
+    let order = await Order.findById(req.params.id)
+    .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
+    .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+
     if (!order) {
         return next(new AppError('هذا الطلب غير موجود', 404));
     }else{
@@ -65,7 +82,9 @@ const getOrderByStatus = catchError(async (req, res, next) => {
     let orders = await Order.find({
         status: req.query.status,
         clientId: req.user._id
-    });
+    }).populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
+    .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+
 
     if (orders.length === 0) {
         return next(new AppError('لا توجد طلبات بهذه الحالة', 404));
@@ -76,7 +95,10 @@ const getOrderByStatus = catchError(async (req, res, next) => {
 
 // get orders  for client
 const getOrdersForClient=catchError(async(req,res,next)=>{
-    let orders = await Order.find({clientId:req.user._id});
+    let orders = await Order.find({clientId:req.user._id})
+    .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
+    .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+
     if (!orders) {
         return next(new AppError('هذا الطلب غير موجود', 404));
     }else{
@@ -85,7 +107,10 @@ const getOrdersForClient=catchError(async(req,res,next)=>{
 })
 // get orders  for driver
 const getOrdersForDriver=catchError(async(req,res,next)=>{
-    let orders = await Order.find({driverId:req.user._id});
+    let orders = await Order.find({driverId:req.user._id})
+    .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
+    .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+
     if (!orders) {
         return next(new AppError('هذا الطلب غير موجود', 404));
     }else{
@@ -106,18 +131,20 @@ const rateOrder = catchError(async (req, res, next) => {
     } 
 });
 
-// change order status to recieved 
-const recieveOrder = catchError(async (req, res, next) => {
-    let order = await Order.findById(req.params.id);
+// change order status to ended 
+const endOrder = catchError(async (req, res, next) => {
+    let order = await Order.findOne({_id:req.params.id ,qrCode:req.params.qrcode});
     
     if (!order) {
         return next(new AppError("هذا الطلب غير موجود", 404));
-    } else if (order.status === 'picked') {
-        order.status = 'recieved';
+    } else if (order.status === 'current') {
+        order.status = 'ended';
         await order.save();  
         await User.findByIdAndUpdate(
             { _id: req.user._id },
-            { $inc: { numberOfOrders: 1 } } 
+            { $inc: { numberOfOrders: 1 } } ,
+            { $set: { available: true} }
+
         );
         res.status(200).json({ message: "تم التأكيد بنجاح", status:200,data:[] });
     } else {
@@ -128,5 +155,5 @@ const recieveOrder = catchError(async (req, res, next) => {
 
 export{
     addOrder,cancelOrder,getOrderById,getOrderByStatus,getOrdersForClient,getOrdersForDriver
-    ,rateOrder,recieveOrder
+    ,rateOrder,endOrder
 }

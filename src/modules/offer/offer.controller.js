@@ -77,7 +77,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         // Update the related order with status and driverId
         await Order.findByIdAndUpdate(
             { _id: offer.orderId },
-            { $set: { status: 'picked', driverId: offer.driverId } }
+            { $set: { status: 'current', driverId: offer.driverId } }
         );
 
         res.status(200).json({ message: "تم قبول هذا العرض", status:200,data:[] });
@@ -105,7 +105,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
 //         );
 //         await Order.findByIdAndUpdate(
 //             { _id: offer.orderId },
-//              { $set: { status: 'picked' , driverId: offer.driverId} } 
+//              { $set: { status: 'current' , driverId: offer.driverId} } 
 //         );
 //         res.status(200).json({ message: "تم قبول هذا العرض" });
 //     } else {

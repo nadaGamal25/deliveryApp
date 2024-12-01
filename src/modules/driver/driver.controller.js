@@ -257,9 +257,18 @@ const getFavDrivers = catchError(async (req, res, next) => {
     res.status(200).json({ message: 'success', status: 200, data: { fav } });
 });
 
+//start order  driver not available
+const startOrder = catchError(async (req, res, next) => {
+    let user = await User.findByIdAndUpdate(
+            { _id: req.user._id },
+            { $set: { available: false} },{new:true}
 
+        );
+        res.status(200).json({ message: "تم بدء الرحلة", status:200,data:{user} });
+    
+});
 
 
 export{
-    getDriversRate,getDrivers,getFavDrivers
+    getDriversRate,getDrivers,getFavDrivers,startOrder
 }

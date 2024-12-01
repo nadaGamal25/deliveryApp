@@ -8,8 +8,8 @@ const schema = new Schema({
       type: String,
     },
   pages:{
-      type:[Object]
-    }
+      type:Object
+    } 
    
  
   },{

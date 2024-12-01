@@ -7,7 +7,7 @@ const addSocial=catchError(async(req,res,next)=>{
     await social.save()
     res.status(200).json({message:"تمت الاضافة ",status:200,data:{social}})
 })
- 
+  
 const updateSocial=catchError(async(req,res,next)=>{
     let social=await Social.findOneAndUpdate({_id:req.params.id},req.body,{new:true})
     social || next(new AppError("لا يوجد ",404))
@@ -22,7 +22,7 @@ const deleteSocial=catchError(async(req,res,next)=>{
 
 const getSocial=catchError(async(req,res,next)=>{
     let social=await Social.find()
-    res.status(200).json({message:"success",status:200,data:{social}})
+    res.status(200).json({message:"success",status:200,data:{social:social[0]}})
 })
 
 

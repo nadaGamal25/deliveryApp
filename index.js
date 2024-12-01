@@ -25,6 +25,7 @@ import suggestRouter from './src/modules/suggest/suggest.routes.js'
 import aboutRouter from './src/modules/about/about.routes.js'
 import socialRouter from './src/modules/social/social.routes.js'
 import questionRouter from './src/modules/Q&A/Q&A.routes.js'
+import staticsRouter from './src/modules/statics/statics.routes.js'
 // mongoose.set('debug', true);
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -53,6 +54,7 @@ app.use('/api/suggest',suggestRouter)
 app.use('/api/about',aboutRouter)
 app.use('/api/social',socialRouter)
 app.use('/api/question',questionRouter)
+app.use('/api/statics',staticsRouter)
 
 
 

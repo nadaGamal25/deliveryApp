@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 const signupVal = Joi.object({
-    profileImg: Joi.object().required().messages({
+    profileImg: Joi.object().messages({
         'object.base': 'يجب أن تكون الصورة صالحة'
     }),
     
@@ -95,6 +95,22 @@ const signupVal = Joi.object({
     }),
     positionLocation:Joi.string().messages({
         'string.base': 'الموقع  يجب أن يكون نصًا'
+
+    }),
+    description:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
+
+    }),
+    vevehicleNumber:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
+
+    }),
+    vehicleColor:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
+
+    }),
+    vehicleType:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
 
     })
 });
@@ -242,7 +258,28 @@ const updateUserVal=Joi.object({
     positionLocation:Joi.string().messages({
         'string.base': 'الموقع  يجب أن يكون نصًا'
 
-    })
+    }),
+    description:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
+
+    }),
+    vehicleNumber:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
+
+    }),
+    vehicleColor:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
+
+    }),
+    vehicleType:Joi.string().messages({
+        'string.base': '  يجب أن يكون نصًا'
+
+    }),
+    id:Joi.string().hex().length(24).messages({
+        'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
+        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
+        'any.required': ' مطلوبة'
+    }),
 
 })
 

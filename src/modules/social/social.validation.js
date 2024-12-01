@@ -10,7 +10,7 @@ const addSocialVal = Joi.object({
         'string.empty': 'البريد الإلكتروني مطلوب',
         'any.required': 'البريد الإلكتروني مطلوب'
     }),
-    pages:Joi.array().items().min(0).messages({
+    pages:Joi.object().min(0).messages({
         'string.empty': 'الصفحات مطلوبة',
         'any.required': 'الصفحات مطلوبة'
     })
@@ -26,7 +26,7 @@ const updateSocialVal = Joi.object({
         'string.empty': 'البريد الإلكتروني مطلوب',
         'any.required': 'البريد الإلكتروني مطلوب'
     }),
-    pages:Joi.array().items().min(0).messages({
+    pages:Joi.object().min(0).messages({
         'string.empty': 'الصفحات مطلوبة',
         'any.required': 'الصفحات مطلوبة'
     }),

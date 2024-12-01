@@ -84,6 +84,10 @@ const userSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  available:{
+    type: Boolean,
+    default: true,
+  },
   rateAvg:{
     type:Number,
     min:0,
@@ -105,7 +109,20 @@ const userSchema = new Schema({
   },
     passwordChangedAt:Date,  
     resetPasswordOTP: String,
-    resetPasswordExpires: Date
+    resetPasswordExpires: Date,
+    description:{
+      type:String,
+    },
+    vehicleColor:{
+      type:String,
+    },
+    vehicleNumber:{
+      type:String,
+      },
+    vehicleType:{
+      type:String,
+    },
+
   },{
     timestamps: true
   });

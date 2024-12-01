@@ -1,17 +1,16 @@
 import express from 'express'
 import { validate } from '../../middleware/validate.js'
 import { allowedTo, protectedRoutes } from '../auth/auth.controller.js'
-import { addQuestion, allQuestions, deleteQuestion, updateQuestion } from './Q&A.controller.js'
-import { addQuestionVal, deleteQuestionVal, updateQuestionVal } from './Q&A.validation.js'
+import { getMostOrderedAreasClient, getMostOrderedAreasDriver, getMostOrderedClient, getMostOrderedDriver, getMostTimesClient, getMostTimesDriver, getNumsOfOrder } from './statics.controller.js'
 
-const questionRouter=express.Router()
+const staticsRouter=express.Router()
 
-questionRouter.route('/')
-.post(protectedRoutes,allowedTo('admin'),validate(addQuestionVal) ,addQuestion)
-.get(allQuestions)
+staticsRouter.get('/nums-orders',protectedRoutes,allowedTo('client','driver'),getNumsOfOrder)
+staticsRouter.get('/areas-orders-client',protectedRoutes,allowedTo('client'),getMostOrderedAreasClient)
+staticsRouter.get('/most-drivers',protectedRoutes,allowedTo('client'),getMostOrderedDriver)
+staticsRouter.get('/most-times-client',protectedRoutes,allowedTo('client'),getMostTimesClient)
+staticsRouter.get('/areas-orders-driver',protectedRoutes,allowedTo('driver'),getMostOrderedAreasDriver)
+staticsRouter.get('/most-clients',protectedRoutes,allowedTo('driver'),getMostOrderedClient)
+staticsRouter.get('/most-times-driver',protectedRoutes,allowedTo('driver'),getMostTimesDriver)
 
-questionRouter.route('/:id')
-.put(protectedRoutes,allowedTo('admin'),validate(updateQuestionVal),updateQuestion)
-.delete(protectedRoutes,allowedTo('admin'),validate(deleteQuestionVal),deleteQuestion)
-
-export default questionRouter
+export default staticsRouter

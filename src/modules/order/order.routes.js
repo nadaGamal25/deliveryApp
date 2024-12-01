@@ -2,7 +2,7 @@ import express from 'express'
 import { uploadMixFiles } from '../../fileUpload/fileUpload.js'
 import { validate } from '../../middleware/validate.js'
 import { allowedTo, protectedRoutes } from '../auth/auth.controller.js'
-import { addOrder, cancelOrder, getOrderById, getOrderByStatus, getOrdersForClient, getOrdersForDriver, rateOrder, recieveOrder } from '../order/order.controller.js'
+import { addOrder, cancelOrder, endOrder, getOrderById, getOrderByStatus, getOrdersForClient, getOrdersForDriver, rateOrder} from '../order/order.controller.js'
 import { addOrderVal, cancelOrderVal, getOrderByIdVal, getOrderByStatusVal, rateOrderVal, recieveOrderVal } from '../order/order.validation.js'
 const orderRouter=express.Router()
 
@@ -16,6 +16,6 @@ orderRouter.get('/orders-driver',protectedRoutes,allowedTo('driver'),getOrdersFo
 orderRouter.put('/cancel-order/:id',protectedRoutes,allowedTo('client','admin'),validate(cancelOrderVal),cancelOrder)
 orderRouter.get('/:id',protectedRoutes,allowedTo('client','admin'),validate(getOrderByIdVal),getOrderById)
 orderRouter.put('/rate-order/:id',protectedRoutes,allowedTo('client'),validate(rateOrderVal),rateOrder)
-orderRouter.put('/recieve-order/:id',protectedRoutes,allowedTo('driver'),validate(recieveOrderVal),recieveOrder)
+orderRouter.put('/recieve-order/:id',protectedRoutes,allowedTo('driver'),validate(recieveOrderVal),endOrder)
 
 export default orderRouter

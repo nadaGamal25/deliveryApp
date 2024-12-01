@@ -1,17 +1,18 @@
 import mongoose, { Schema, model } from "mongoose"
 
 const offerSchema = new Schema({
-  description: {
-    type: String,
-    required: true,
-  }, 
+ 
   price: {
     type: Number,
     required: true,
   },
+  time: {
+    type: String,
+    required: true,
+  }, 
     status:{
       type:String,
-      default:'pending'
+      default:'waiting'
     },
   orderId: {
     type:mongoose.Types.ObjectId,

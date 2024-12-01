@@ -10,11 +10,13 @@ const orderSchema = new Schema({
     required: true,
   },
   clientPosition: {
-    type: String,
+    type:mongoose.Types.ObjectId,
+    ref:'Position',
     required: true,
-  }, 
+  },  
   recieverPosition: {
-    type: String,
+    type:mongoose.Types.ObjectId,
+    ref:'Position',
     required: true,
   },
   clientName: {
@@ -23,7 +25,6 @@ const orderSchema = new Schema({
   }, 
   recieverName: {
     type: String,
-    required: true,
   },
   clientPhone: {
     type: String,
@@ -31,7 +32,6 @@ const orderSchema = new Schema({
   }, 
   recieverPhone: {
     type: String,
-    required: true,
   },
     goDate: {
       type: Date,
@@ -53,12 +53,15 @@ const orderSchema = new Schema({
       type:String,
       required:true
     },
+    waitingTime:{
+      type:String,
+    },
     notes:{
       type:String,
     },
     status:{
       type:String,
-      default:'pending'
+      default:'waiting'
     },
     rate:{
       type:Number,
@@ -79,6 +82,9 @@ const orderSchema = new Schema({
     ref:'User',
     required:true,
   },
+  qrCode:{
+    type:String,
+  }
 
 
   },{

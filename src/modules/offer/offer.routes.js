@@ -3,11 +3,12 @@ import { validate } from '../../middleware/validate.js'
 import { allowedTo, protectedRoutes } from '../auth/auth.controller.js'
 import { addOffer, changeOfferStatus, deleteOffer, getOffersByOrderId, getOffersByUserId, getOffersForUser } from './offer.controller.js'
 import { addOfferVal, changeOfferStatusVal, deleteOfferVal, getOffersByOrderIdVal, getOffersByUserIdVal } from './offer.validation.js'
+import { checkUserValid } from '../../middleware/checkUserValid.js'
 
 const offerRouter=express.Router()
 
 offerRouter.route('/')
-.post(protectedRoutes,allowedTo('driver'),validate(addOfferVal),addOffer)
+.post(protectedRoutes,allowedTo('driver'),checkUserValid,validate(addOfferVal),addOffer)
 .get(protectedRoutes,allowedTo('driver'),getOffersForUser)
 
 offerRouter.delete('/delete-offer/:id',protectedRoutes,allowedTo('driver','admin'),validate(deleteOfferVal),deleteOffer)
