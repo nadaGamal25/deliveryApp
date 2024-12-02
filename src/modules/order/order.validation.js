@@ -1,15 +1,15 @@
 import Joi from 'joi'
 const addOrderVal = Joi.object({
     clientAddress: Joi.string()
-        .min(5)
+        .min(0)
         .required()
         .messages({
             'string.base': 'يجب أن يكون العنوان صحيحاً.',
-            'string.min': 'يجب أن يكون العنوان 5 أحرف على الأقل.',
+            'string.min': 'يجب أن يكون العنوان 1 أحرف على الأقل.',
             'any.required': 'العنوان مطلوب.',
         }),
     recieverAddress: Joi.string()
-        .min(1)
+        .min(0)
         .required()
         .messages({
             'string.base': 'يجب أن يكون عنوان المستلم صحيحاً.',

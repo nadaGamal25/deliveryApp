@@ -231,7 +231,7 @@ const getFavDrivers = catchError(async (req, res, next) => {
         .populate({
             path: 'driver',
             match: driverFilter, // Apply filters here
-            select: 'name age profileImg categoryId rateAvg position startTime endTime',
+            // select: 'name age profileImg categoryId rateAvg position startTime endTime',
             populate: [
                 {
                     path: 'categoryId', // Populates the `categoryId` field within `driver`

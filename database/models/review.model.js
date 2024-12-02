@@ -29,7 +29,7 @@ const reviewSchema = new Schema({
 
 
 reviewSchema.pre(/^find/,function(){
-  this.populate('client','name')
+  this.populate('client','name profileImg')
 })  
   
 

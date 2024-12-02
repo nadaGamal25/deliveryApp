@@ -16,6 +16,6 @@ orderRouter.get('/orders-driver',protectedRoutes,allowedTo('driver'),getOrdersFo
 orderRouter.put('/cancel-order/:id',protectedRoutes,allowedTo('client','admin'),validate(cancelOrderVal),cancelOrder)
 orderRouter.get('/:id',protectedRoutes,allowedTo('client','admin'),validate(getOrderByIdVal),getOrderById)
 orderRouter.put('/rate-order/:id',protectedRoutes,allowedTo('client'),validate(rateOrderVal),rateOrder)
-orderRouter.put('/recieve-order/:id',protectedRoutes,allowedTo('driver'),validate(recieveOrderVal),endOrder)
+orderRouter.put('/recieve-order/:id',protectedRoutes,allowedTo('client'),validate(recieveOrderVal),endOrder)
 
 export default orderRouter

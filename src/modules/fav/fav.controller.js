@@ -33,9 +33,9 @@ const getFavClient = catchError(async (req, res, next) => {
     let fav = await FavDriver.find({ client: req.params.id })
     .populate({
         path: 'driver',
-        select: 'name age profileImg categoryId rateAvg position',
+        // select: 'name age profileImg categoryId rateAvg position',
         populate: [
-            {
+            { 
                 path: 'categoryId', // Populates the `categoryId` field within `driver`
                 select: 'name', // Selects only the `name` field from the `Category` model
                 strictPopulate: false
