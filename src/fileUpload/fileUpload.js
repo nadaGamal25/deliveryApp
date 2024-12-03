@@ -30,7 +30,7 @@ const fileUpload = (folderName) => {
 
     const upload = multer({
         storage,
-        fileFilter,
+        // fileFilter,
         limits: {
             fileSize: 1024 * 1024 * 5, // 5 MB limit
         }
