@@ -24,39 +24,53 @@ const allFav=catchError(async(req,res,next)=>{
 })
 
 const getFavDriver=catchError(async(req,res,next)=>{
-    let fav=await FavDriver.find({driver:req.params.id}).populate('client','name')
-    fav || next(new AppError("لا يوجد تقييم",404))
-    !fav || res.status(200).json({message:"success",status:200,data:{fav}})
+    let users=await usersDriver.find({driver:req.params.id}).populate('client','name profileImg')
+    users || next(new AppError("لا يوجد تقييم",404))
+    !users || res.status(200).json({message:"success",status:200,data:{users}})
 })
 
 const getFavClient = catchError(async (req, res, next) => {
-    let fav = await FavDriver.find({ client: req.params.id })
-    .populate({
-        path: 'driver',
-        // select: 'name age profileImg categoryId rateAvg position',
-        populate: [
-            { 
-                path: 'categoryId', // Populates the `categoryId` field within `driver`
-                select: 'name', // Selects only the `name` field from the `Category` model
-                strictPopulate: false
-            },
-            {
-                path: 'position', // Populates the `position` field within `driver`
-                select: 'name', // Selects only the `name` field from the `Position` model
-                strictPopulate: false
-            }
-        ]
-    })
+    let users = await FavDriver.find({ client: req.params.id })
+        .populate({
+            path: 'driver',
+            populate: [
+                { 
+                    path: 'categoryId',
+                    select: 'name',
+                    strictPopulate: false
+                },
+                {
+                    path: 'position',
+                    select: 'name',
+                    strictPopulate: false
+                }
+            ]
+        });
 
-    if (!fav) {
+    if (!users || users.length === 0) {
         return next(new AppError("لا يوجد تقييم", 404));
     }
 
-    // Remove the `client` field from the fav before sending the response
-    // fav = fav.toObject();
-    // delete fav.client;
+    // Transform the data into the desired format
+    const transformedUsers = users.map(user => {
+        if (!user.driver) return null; // Skip if driver is missing
+        const driver = user.driver.toObject(); // Convert Mongoose document to plain object
+        return {
+            _id: user._id,
+            driverId: driver._id,
+            ...driver, // Spread all properties of the driver
+            client: user.client,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            __v: user.__v
+        };
+    }).filter(Boolean); // Remove null values
 
-    res.status(200).json({ message: "success", status: 200, data: { fav } });
+    res.status(200).json({
+        message: "success",
+        status: 200,
+        data: { users: transformedUsers }
+    });
 });
 
 
