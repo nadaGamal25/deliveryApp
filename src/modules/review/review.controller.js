@@ -31,13 +31,13 @@ const allReviews=catchError(async(req,res,next)=>{
 })
 
 const getReviewDriver=catchError(async(req,res,next)=>{
-    let review=await Review.findOne({driver:req.params.id})
+    let review=await Review.find({driver:req.params.id})
     review || next(new AppError("لا يوجد تقييم",404))
     !review || res.status(200).json({message:"success",status:200,data:{review}})
 })
 
 const getReviewClient = catchError(async (req, res, next) => {
-    let review = await Review.findOne({ client: req.params.id }).populate({
+    let review = await Review.find({ client: req.params.id }).populate({
         path: 'driver',
         select: 'name' 
     });

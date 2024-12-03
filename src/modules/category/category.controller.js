@@ -40,11 +40,19 @@ const getCategories=catchError(async(req,res)=>{
 
 //get druvers by categgory id
 const getDriversByCategory=catchError(async(req,res)=>{
-    let drivers = await User.find({categoryId:req.params.id});
-    if (!drivers) {
+    let users = await User.find({categoryId:req.params.id})
+    .populate({
+        path: 'myReviews',
+        select: 'comment rate client',
+    })
+    .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
+    .populate({ path: 'position', select: 'name', strictPopulate: false })
+    .populate({ path: 'village', select: 'name', strictPopulate: false });
+
+    if (!users) {
         return next(new AppError('لا يوجد سائقين', 404));
     }
-    res.status(200).json({message:'success', status:200,data:{drivers}})   
+    res.status(200).json({message:'success', status:200,data:{users}})   
 })
 
 
