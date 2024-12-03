@@ -37,6 +37,10 @@ const userSchema = new Schema({
     village:{
       type:mongoose.Types.ObjectId,
       ref:'Village',
+      default: null,
+    set: function (value) {
+      return value === '' ? null : value;
+    },
   },
     address:{
       type:String,
@@ -68,6 +72,10 @@ const userSchema = new Schema({
     categoryId: {
       type:mongoose.Types.ObjectId,
       ref:'Category',
+      default: null,
+    set: function (value) {
+      return value === '' ? null : value;
+    },
   },
   vehiclesImgs:{
     type:[String]

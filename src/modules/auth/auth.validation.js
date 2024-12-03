@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 const signupVal = Joi.object({
-    profileImg: Joi.object().messages({
+    profileImg: Joi.string().allow("").messages({
         'object.base': 'يجب أن تكون الصورة صالحة'
     }),
     
@@ -35,7 +35,7 @@ const signupVal = Joi.object({
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'المنطقة مطلوبة'
     }),
-    village: Joi.string().hex().length(24).messages({
+    village: Joi.string().allow("").messages({
         'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
     }),
@@ -83,7 +83,7 @@ const signupVal = Joi.object({
     vehiclesImgs: Joi.array().items().min(0).messages({
         'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
-    categoryId: Joi.string().hex().length(24).messages({
+    categoryId: Joi.string().messages({
         'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'الفئة مطلوبة'
@@ -195,7 +195,7 @@ const updateUserVal=Joi.object({
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'المنطقة مطلوبة'
     }),
-    village: Joi.string().hex().length(24).messages({
+    village: Joi.string().messages({
         'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
     }),
