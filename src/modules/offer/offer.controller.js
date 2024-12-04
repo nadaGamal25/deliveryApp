@@ -24,34 +24,33 @@ const deleteOffer = catchError(async (req, res, next) => {
 });
 
 //get offers by order id
-const getOffersByOrderId=catchError(async(req,res)=>{
-    let offers = await Offer.find({orderId:req.params.id})
-    .populate({
-        path: 'driverId',
-        populate: [
-            {
-                path: 'categoryId', // Populates the `categoryId` field within `driver`
-                select: 'name',
-                strictPopulate: false
-            },
-            {
-                path: 'village', 
-                select: 'name',
-                strictPopulate: false
-            },
-            {
-                path: 'position', // Populates the `position` field within `driver`
-                select: 'name',
-                strictPopulate: false
-            },
-           
-        ]
-    })
-    if (!offers) {
+const getOffersByOrderId = catchError(async (req, res, next) => {
+    // Find offers based on the provided orderId
+    let offers = await Offer.find({ orderId: req.params.id });
+
+    // Check if there are any offers
+    if (!offers || offers.length === 0) {
         return next(new AppError('لا يوجد عروض', 404));
     }
-    res.status(200).json({message:'success', status:200,data:{offers}})   
-})
+
+    // Conditionally populate `driverId` if it exists
+    const populatedOffers = await Offer.populate(offers, {
+        path: 'driverId',
+        populate: [
+            { path: 'categoryId', select: 'name', strictPopulate: false },
+            // { path: 'village', select: 'name', strictPopulate: false },
+            { path: 'position', select: 'name', strictPopulate: false }
+        ]
+    });
+
+    // Return the offers with populated driverId fields if applicable
+    res.status(200).json({
+        message: 'success',
+        status: 200,
+        data: { offers: populatedOffers }
+    });
+});
+
 
 //get offers by user id for admin
 const getOffersByUserId=catchError(async(req,res)=>{

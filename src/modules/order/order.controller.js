@@ -79,19 +79,57 @@ const getOrderById=catchError(async(req,res,next)=>{
 
 // get order by status for client
 const getOrderByStatus = catchError(async (req, res, next) => {
-    let orders = await Order.find({
-        status: req.query.status,
-        clientId: req.user._id
-    }).populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
-    .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+    try {
+        // Build the query to find orders by status and clientId
+        let query = {
+            status: req.query.status,
+            clientId: req.user._id
+        };
 
+        // Base population for positions
+        let populateArray = [
+            { path: 'clientPosition', select: 'name', strictPopulate: false },
+            { path: 'recieverPosition', select: 'name', strictPopulate: false }
+        ];
 
-    if (orders.length === 0) {
-        res.status(200).json({ message: 'لا توجد طلبات بهذه الحالة',  status:200,data:{orders:[]} });
-    } else {
-        res.status(200).json({ message: 'success',  status:200,data:{orders} });
+        // Add population for driverId only if the status is "current" or "ended"
+        if (['current', 'ended'].includes(req.query.status)) {
+            populateArray.push({
+                path: 'driverId',
+                populate: [
+                    { path: 'categoryId', select: 'name', strictPopulate: false },
+                    // { path: 'village', select: 'name', strictPopulate: false },
+                    { path: 'position', select: 'name', strictPopulate: false }
+                ]
+            });
+        }
+
+        // Fetch orders and apply population
+        let orders = await Order.find(query).populate(populateArray);
+
+        if (orders.length === 0) {
+            return res.status(200).json({
+                message: 'لا توجد طلبات بهذه الحالة',
+                status: 200,
+                data: { orders: [] }
+            });
+        }
+
+        return res.status(200).json({
+            message: 'success',
+            status: 200,
+            data: { orders }
+        });
+    } catch (error) {
+        console.error("Error in getOrderByStatus:", error);
+        return res.status(500).json({
+            message: error.message || 'Something went wrong',
+            status: 500,
+            data: []
+        });
     }
 });
+
 
 // get orders  for client
 const getOrdersForClient=catchError(async(req,res,next)=>{
