@@ -34,12 +34,12 @@ const userSchema = new Schema({
       type:mongoose.Types.ObjectId,
       ref:'Position',
   },
-    village:{
-      type:mongoose.Types.ObjectId,
-      ref:'Village',
-      default: null,
+  village: {
+    type: mongoose.Schema.Types.Mixed, // Allows both ObjectId and String
+    default: "",
     set: function (value) {
-      return value === '' ? null : value;
+      // If it's a valid ObjectId, keep it; otherwise, set it to an empty string
+      return mongoose.isValidObjectId(value) ? value : "";
     },
   },
     address:{
@@ -72,10 +72,7 @@ const userSchema = new Schema({
     categoryId: {
       type:mongoose.Types.ObjectId,
       ref:'Category',
-      default: null,
-    set: function (value) {
-      return value === '' ? null : value;
-    },
+  
   },
   vehiclesImgs:{
     type:[String]

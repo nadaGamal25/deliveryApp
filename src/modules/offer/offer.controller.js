@@ -25,7 +25,27 @@ const deleteOffer = catchError(async (req, res, next) => {
 
 //get offers by order id
 const getOffersByOrderId=catchError(async(req,res)=>{
-    let offers = await Offer.find({orderId:req.params.id}).populate('driverId')
+    let offers = await Offer.find({orderId:req.params.id})
+    .populate({
+        path: 'driverId',
+        populate: [
+            {
+                path: 'categoryId', // Populates the `categoryId` field within `driver`
+                select: 'name',
+                strictPopulate: false
+            },
+            {
+                path: 'position', // Populates the `position` field within `driver`
+                select: 'name',
+                strictPopulate: false
+            },
+            {
+                path: 'village', 
+                select: 'name',
+                strictPopulate: false
+            },
+        ]
+    })
     if (!offers) {
         return next(new AppError('لا يوجد عروض', 404));
     }

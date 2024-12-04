@@ -12,7 +12,7 @@ offerRouter.route('/')
 .get(protectedRoutes,allowedTo('driver'),getOffersForUser)
 
 offerRouter.delete('/delete-offer/:id',protectedRoutes,allowedTo('driver','admin'),validate(deleteOfferVal),deleteOffer)
-offerRouter.get('/by-orderid/:id',protectedRoutes,allowedTo('driver','admin'),validate(getOffersByOrderIdVal),getOffersByOrderId)
+offerRouter.get('/by-orderid/:id',protectedRoutes,allowedTo('client','driver','admin'),validate(getOffersByOrderIdVal),getOffersByOrderId)
 offerRouter.get('/by-userid/:id',protectedRoutes,allowedTo('driver','admin'),validate(getOffersByUserIdVal),getOffersByUserId)
 offerRouter.put('/change-status/:id',protectedRoutes,allowedTo('client'),validate(changeOfferStatusVal),changeOfferStatus)
 
