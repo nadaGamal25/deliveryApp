@@ -35,21 +35,26 @@ const userSchema = new Schema({
       ref:'Position',
   },
   village: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Village",
+    type: mongoose.Schema.Types.Mixed, // Use Mixed type to handle both ObjectId and String
     default: "",
+    set: function (value) {
+      if (value === "") {
+        return ""; // Return empty string if the value is empty
+      }
+      if (mongoose.isValidObjectId(value)) {
+        return new mongoose.Types.ObjectId(value); // Convert to ObjectId if it's valid
+      }
+      return value; // Return as-is if it's not an empty string or valid ObjectId
+    },
     validate: {
       validator: function (value) {
-        // Allow an empty string or a valid ObjectId
+        // Validate if value is either an empty string or a valid ObjectId
         return value === "" || mongoose.isValidObjectId(value);
       },
       message: "Village must be a valid ObjectId or an empty string.",
     },
-    set: function (value) {
-      // Return empty string if input is empty, otherwise ObjectId
-      if (value === "") return ""; // Keep as an empty string
-      if (mongoose.isValidObjectId(value)) return new mongoose.Types.ObjectId(value);
-      return ""; // Default to empty string if invalid
+    refPath: function () {
+      return mongoose.isValidObjectId(this.village) ? "Village" : undefined; // Apply ref conditionally
     },
   },
     address:{
