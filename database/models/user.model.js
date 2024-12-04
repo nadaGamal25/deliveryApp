@@ -35,28 +35,32 @@ const userSchema = new Schema({
       ref:'Position',
   },
   village: {
-    type: mongoose.Schema.Types.Mixed, // Use Mixed type to handle both ObjectId and String
-    default: "",
-    set: function (value) {
-      if (value === "") {
-        return ""; // Return empty string if the value is empty
-      }
-      if (mongoose.isValidObjectId(value)) {
-        return new mongoose.Types.ObjectId(value); // Convert to ObjectId if it's valid
-      }
-      return value; // Return as-is if it's not an empty string or valid ObjectId
-    },
-    validate: {
-      validator: function (value) {
-        // Validate if value is either an empty string or a valid ObjectId
-        return value === "" || mongoose.isValidObjectId(value);
-      },
-      message: "Village must be a valid ObjectId or an empty string.",
-    },
-    refPath: function () {
-      return mongoose.isValidObjectId(this.village) ? "Village" : undefined; // Apply ref conditionally
-    },
+    type: mongoose.Schema.Types.ObjectId, // ObjectId to reference the Village model
+    ref: 'Village',  // Reference the Village model
+    required: false, // Make it optional if it's not always populated
+    default:"675068dd3f3723057f53b24e", // Set default value if empty
   },
+  
+  // village: {
+  //   type: mongoose.Schema.Types.Mixed,
+  //   default: "",
+  //   set: function (value) {
+  //     if (value === "") {
+  //       return ""; // Return empty string if the value is empty
+  //     }
+  //     if (mongoose.isValidObjectId(value)) {
+  //       return new mongoose.Types.ObjectId(value); // Convert to ObjectId if it's valid
+  //     }
+  //     return value; // Return as-is if it's not an empty string or valid ObjectId
+  //   },
+  //   validate: {
+  //     validator: function (value) {
+  //       // Validate if value is either an empty string or a valid ObjectId
+  //       return value === "" || mongoose.isValidObjectId(value);
+  //     },
+  //     message: "Village must be a valid ObjectId or an empty string.",
+  //   },
+  // },  
     address:{
       type:String,
       required:true

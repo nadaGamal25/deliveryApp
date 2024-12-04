@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 const addVillageVal=Joi.object({
-    name:Joi.string().min(1).max(50).required(),
+    name:Joi.string().min(0).max(50).required(),
 })
 
 

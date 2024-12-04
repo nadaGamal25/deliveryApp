@@ -6,6 +6,7 @@ import { AppError } from "../../utils/appError.js"
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid'; // To ensure uniqueness
 import crypto from 'crypto'; // For generating a random string
+import mongoose from "mongoose";
 
 //add order
 const addOrder=catchError(async(req,res,next)=>{
@@ -99,7 +100,12 @@ const getOrderByStatus = catchError(async (req, res, next) => {
                 populate: [
                     { path: 'categoryId', select: 'name', strictPopulate: false },
                     // { path: 'village', select: 'name', strictPopulate: false },
-                    { path: 'position', select: 'name', strictPopulate: false }
+                    { path: 'position', select: 'name', strictPopulate: false },
+                    {
+                        path: 'village',
+                        select: 'name',
+                        strictPopulate: false,
+                      },
                 ]
             });
         }
