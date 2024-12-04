@@ -155,8 +155,12 @@ const getOrdersForDriver=catchError(async(req,res,next)=>{
     .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
     .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
 
-    if (!orders) {
-        return next(new AppError('هذا الطلب غير موجود', 404));
+    if (orders.length === 0) {
+        return res.status(200).json({
+            message: 'لا توجد طلبات ',
+            status: 200,
+            data: { orders: [] }
+        });
     }else{
         res.status(200).json({message:'success', status:200,data:{orders}})   
     }

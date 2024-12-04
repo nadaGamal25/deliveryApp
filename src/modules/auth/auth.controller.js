@@ -121,40 +121,71 @@ const allowedTo=(...roles)=>{
     })
 } 
 
-
-
-//update account.
 const updateAccount = catchError(async (req, res, next) => {
-    if (req.files && req.files.vehiclesImgs) {
-        req.body.vehiclesImgs = [];
-        
-        for (let img of req.files.vehiclesImgs) {
-            try {
+    try {
+        console.log('Before processing:', req.body, req.files);
+
+        // Process files
+        if (req.files && req.files.vehiclesImgs) {
+            req.body.vehiclesImgs = [];
+            for (let img of req.files.vehiclesImgs) {
                 const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
                 req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
-            } catch (error) {
-                console.error('Error uploading to Cloudinary', error);
-                return next(new AppError('خطأ ف تحميل الصور', 500));
-                // You can also handle this error and send a response accordingly
             }
         }
-    }
-    if (req.files && req.files.profileImg[0]) {
-        const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'user', req.file.originalname);
-        req.body.profileImg = cloudinaryResult.secure_url; // Store Cloudinary URL in req.body
-    }
-    // if (req.files.vehiclesImgs) req.body.vehiclesImgs = req.files.vehiclesImgs.map(img => img.path); // Get the Cloudinary image URL
 
-    // if(req.files.vehiclesImgs) req.body.vehiclesImgs=req.files.vehiclesImgs.map(img=>img.filename)
-    let user = await User.findById(req.user._id);
-    if (!user) {
-        return next(new AppError('المستخدم غير موجود', 404));
-    }
-    
-    user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+        if (req.files && req.files.profileImg && req.files.profileImg[0]) {
+            const cloudinaryResult = await uploadToCloudinary(req.files.profileImg[0].buffer, 'user', req.files.profileImg[0].originalname);
+            req.body.profileImg = cloudinaryResult.secure_url;
+        }
 
-    res.status(200).json({ message: 'تم تعديل البيانات بنجاح', status:200,data:{user} });
+        console.log('After processing files:', req.body);
+
+        // Validate user
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return next(new AppError('المستخدم غير موجود', 404));
+        }
+
+        // Update user
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+        res.status(200).json({ message: 'تم تعديل البيانات بنجاح', status: 200, data: { updatedUser } });
+    } catch (error) {
+        console.error('Error in updateAccount:', error);
+        return next(new AppError(error.message || 'خطأ غير معروف', 500));
+    }
 });
+
+
+// //update account.
+// const updateAccount = catchError(async (req, res, next) => {
+//     if (req.files && req.files.vehiclesImgs) {
+//         req.body.vehiclesImgs = [];
+        
+//         for (let img of req.files.vehiclesImgs) {
+//             try {
+//                 const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+//                 req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
+//             } catch (error) {
+//                 console.error('Error uploading to Cloudinary', error);
+//                 return next(new AppError('خطأ ف تحميل الصور', 500));
+//             }
+//         }
+//     }
+//     if (req.files && req.files.profileImg[0]) {
+//         const cloudinaryResult = await uploadToCloudinary(req.file.buffer, 'user', req.file.originalname);
+//         req.body.profileImg = cloudinaryResult.secure_url; // Store Cloudinary URL in req.body
+//     }
+
+//     let user = await User.findById(req.user._id);
+//     if (!user) {
+//         return next(new AppError('المستخدم غير موجود', 404));
+//     }
+    
+//     user = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+
+//     res.status(200).json({ message: 'تم تعديل البيانات بنجاح', status:200,data:{user} });
+// });
 
 //delete account.
 const deleteUser = catchError(async (req, res, next) => {

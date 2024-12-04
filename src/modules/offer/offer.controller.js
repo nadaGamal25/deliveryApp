@@ -43,20 +43,32 @@ const getOffersByOrderId = catchError(async (req, res, next) => {
         ]
     });
 
-    // Return the offers with populated driverId fields if applicable
-    res.status(200).json({
-        message: 'success',
-        status: 200,
-        data: { offers: populatedOffers }
-    });
+    if (offers.length === 0) {
+        return res.status(200).json({
+            message: 'لا توجد عروض',
+            status: 200,
+            data: { offers: [] }
+        });
+    }else{
+        res.status(200).json({
+            message: 'success',
+            status: 200,
+            data: { offers: populatedOffers }
+        });
+    }
+    
 });
 
 
 //get offers by user id for admin
 const getOffersByUserId=catchError(async(req,res)=>{
     let offers = await Offer.find({driverId:req.params.id});
-    if (!offers) {
-        return next(new AppError('لا يوجد عروض', 404));
+    if (offers.length === 0) {
+        return res.status(200).json({
+            message: 'لا توجد عروض',
+            status: 200,
+            data: { offers: [] }
+        });
     }
     res.status(200).json({message:'success', status:200,data:{offers}})   
 })
@@ -64,8 +76,12 @@ const getOffersByUserId=catchError(async(req,res)=>{
 //get offers for user
 const getOffersForUser=catchError(async(req,res)=>{
     let offers = await Offer.find({driverId:req.user._id}).populate('orderId')
-    if (!offers) {
-        return next(new AppError('لا يوجد عروض', 404));
+    if (offers.length === 0) {
+        return res.status(200).json({
+            message: 'لا توجد عروض',
+            status: 200,
+            data: { offers: [] }
+        });
     }
     res.status(200).json({message:'success', status:200,data:{offers}})   
 })
