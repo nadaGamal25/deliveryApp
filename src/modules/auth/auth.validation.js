@@ -248,9 +248,10 @@ const updateUserVal=Joi.object({
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'الفئة مطلوبة'
     }),
-    profileImg: Joi.string().allow("").messages({
-        'string.base': 'يجب أن تكون الصورة صالحة'
+    profileImg: Joi.allow("").messages({
+        'object.base': 'يجب أن تكون الصورة صالحة'
     }),
+   
     dateOfBirth:Joi.date().messages({
         'date.base': 'تاريخ الميلاد مطلوب',
         'any.required': 'تاريخ الميلاد مطلوب'
