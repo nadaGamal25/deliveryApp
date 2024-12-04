@@ -35,15 +35,16 @@ const getOffersByOrderId=catchError(async(req,res)=>{
                 strictPopulate: false
             },
             {
-                path: 'position', // Populates the `position` field within `driver`
-                select: 'name',
-                strictPopulate: false
-            },
-            {
                 path: 'village', 
                 select: 'name',
                 strictPopulate: false
             },
+            {
+                path: 'position', // Populates the `position` field within `driver`
+                select: 'name',
+                strictPopulate: false
+            },
+           
         ]
     })
     if (!offers) {

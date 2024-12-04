@@ -35,11 +35,22 @@ const userSchema = new Schema({
       ref:'Position',
   },
   village: {
-    type: mongoose.Schema.Types.Mixed, // Allows both ObjectId and String
+    type: mongoose.Schema.Types.Mixed,
     default: "",
+    validate: {
+      validator: function (value) {
+        // Allow empty string or valid ObjectId string
+        return (
+          value === "" || mongoose.isValidObjectId(value) || value instanceof mongoose.Types.ObjectId
+        );
+      },
+      message: "Village must be a valid ObjectId or an empty string.",
+    },
     set: function (value) {
-      // If it's a valid ObjectId, keep it; otherwise, set it to an empty string
-      return mongoose.isValidObjectId(value) ? value : "";
+      // Convert valid ObjectId string to ObjectId, else store as empty string
+      if (value === "") return value;
+      if (mongoose.isValidObjectId(value)) return new mongoose.Types.ObjectId(value);
+      return "";
     },
   },
     address:{
@@ -167,6 +178,13 @@ userSchema.set('toObject', { virtuals: true });
       this.age = age;
     }
   
+    next();
+  });
+
+  userSchema.pre("save", function (next) {
+    if (typeof this.village === "string" && mongoose.isValidObjectId(this.village)) {
+      this.village = new mongoose.Types.ObjectId(this.village);
+    }
     next();
   });
 

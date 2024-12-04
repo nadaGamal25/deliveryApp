@@ -87,7 +87,7 @@ const getOrderByStatus = catchError(async (req, res, next) => {
 
 
     if (orders.length === 0) {
-        return next(new AppError('لا توجد طلبات بهذه الحالة', 200));
+        res.status(200).json({ message: 'لا توجد طلبات بهذه الحالة',  status:200,data:{orders:[]} });
     } else {
         res.status(200).json({ message: 'success',  status:200,data:{orders} });
     }
