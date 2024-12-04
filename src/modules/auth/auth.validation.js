@@ -240,7 +240,7 @@ const updateUserVal=Joi.object({
         'string.min': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)',
         'string.max': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)'
     }),
-    vehiclesImgs: Joi.array().items().min(0).messages({
+    vehiclesImgs: Joi.array().items().min(0).allow("").messages({
         'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
     categoryId: Joi.string().hex().length(24).messages({
@@ -248,7 +248,7 @@ const updateUserVal=Joi.object({
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'الفئة مطلوبة'
     }),
-    profileImg: Joi.string().messages({
+    profileImg: Joi.string().allow("").messages({
         'string.base': 'يجب أن تكون الصورة صالحة'
     }),
     dateOfBirth:Joi.date().messages({
