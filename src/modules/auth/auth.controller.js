@@ -123,7 +123,7 @@ const allowedTo=(...roles)=>{
 
 const updateAccount = catchError(async (req, res, next) => {
     try {
-        console.log('Before processing:', req.body, req.files);
+        // console.log('Before processing:', req.body, req.files);
 
         // Process files
         if (req.files && req.files.vehiclesImgs) {

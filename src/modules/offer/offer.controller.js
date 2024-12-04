@@ -28,11 +28,6 @@ const getOffersByOrderId = catchError(async (req, res, next) => {
     // Find offers based on the provided orderId
     let offers = await Offer.find({ orderId: req.params.id });
 
-    // Check if there are any offers
-    if (!offers || offers.length === 0) {
-        return next(new AppError('لا يوجد عروض', 404));
-    }
-
     // Conditionally populate `driverId` if it exists
     const populatedOffers = await Offer.populate(offers, {
         path: 'driverId',
