@@ -35,22 +35,21 @@ const userSchema = new Schema({
       ref:'Position',
   },
   village: {
-    type: mongoose.Schema.Types.Mixed,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Village",
     default: "",
     validate: {
       validator: function (value) {
-        // Allow empty string or valid ObjectId string
-        return (
-          value === "" || mongoose.isValidObjectId(value) || value instanceof mongoose.Types.ObjectId
-        );
+        // Allow an empty string or a valid ObjectId
+        return value === "" || mongoose.isValidObjectId(value);
       },
       message: "Village must be a valid ObjectId or an empty string.",
     },
     set: function (value) {
-      // Convert valid ObjectId string to ObjectId, else store as empty string
-      if (value === "") return value;
+      // Return empty string if input is empty, otherwise ObjectId
+      if (value === "") return ""; // Keep as an empty string
       if (mongoose.isValidObjectId(value)) return new mongoose.Types.ObjectId(value);
-      return "";
+      return ""; // Default to empty string if invalid
     },
   },
     address:{
@@ -181,12 +180,12 @@ userSchema.set('toObject', { virtuals: true });
     next();
   });
 
-  userSchema.pre("save", function (next) {
-    if (typeof this.village === "string" && mongoose.isValidObjectId(this.village)) {
-      this.village = new mongoose.Types.ObjectId(this.village);
-    }
-    next();
-  });
+  // userSchema.pre("save", function (next) {
+  //   if (typeof this.village === "string" && mongoose.isValidObjectId(this.village)) {
+  //     this.village = new mongoose.Types.ObjectId(this.village);
+  //   }
+  //   next();
+  // });
 
 userSchema.pre('findOneAndUpdate',function(){
   if (this._update.password)  this._update.password=bcrypt.hashSync(this._update.password,8)
