@@ -67,9 +67,13 @@ const userSchema = new Schema({
     },
     urlLocation:{
       type:String,
+      default:""
+
     },
     positionLocation:{
       type:String,
+      default:""
+
     },
     role: {
       type: String,
@@ -124,27 +128,38 @@ const userSchema = new Schema({
 },
   startTime: {
     type: String,
+    default: '00:00',
   },
   endTime: {
     type: String,
+    default: '23:59',
   },
   profileImg:{
     type:String,
+    default:""
+
   },
     passwordChangedAt:Date,  
     resetPasswordOTP: String,
     resetPasswordExpires: Date,
     description:{
       type:String,
+      default:""
     },
     vehicleColor:{
       type:String,
+      default:""
+
     },
     vehicleNumber:{
       type:String,
+      default:""
+
       },
     vehicleType:{
       type:String,
+      default:""
+
     },
 
   },{
