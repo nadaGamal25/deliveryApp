@@ -82,6 +82,7 @@ const orderSchema = new Schema({
   driverId: {
     type:mongoose.Types.ObjectId,
     ref:'User',
+    default:null,
   },
   clientId: {
     type:mongoose.Types.ObjectId,
