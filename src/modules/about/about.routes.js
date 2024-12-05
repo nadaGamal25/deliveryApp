@@ -8,9 +8,9 @@ const aboutRouter=express.Router()
 
 aboutRouter.route('/')
 .post(protectedRoutes,allowedTo('admin'),addAbout)
+.get(getAbout)
 
 aboutRouter.post('/add2',protectedRoutes,allowedTo('admin'),addAbout2)
-.get(getAbout)
 
 aboutRouter.route('/:id')
 .put(protectedRoutes,allowedTo('admin'),updateAbout)
