@@ -4,11 +4,13 @@ import { User } from "./user.model.js";
 const reviewSchema = new Schema({
     comment: {
       type: String,
+      default:""
     }, 
     rate: {
       type: Number,
       min: 0,
       max: 5,
+      default: 0
     },
     driver: {
       type: mongoose.Types.ObjectId,

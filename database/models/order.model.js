@@ -25,6 +25,7 @@ const orderSchema = new Schema({
   }, 
   recieverName: {
     type: String,
+    default:""
   },
   clientPhone: {
     type: String,
@@ -32,6 +33,7 @@ const orderSchema = new Schema({
   }, 
   recieverPhone: {
     type: String,
+    default:""
   },
     goDate: {
       type: Date,
@@ -55,9 +57,11 @@ const orderSchema = new Schema({
     },
     waitingTime:{
       type:String,
+      default:""
     },
     notes:{
       type:String,
+      default:""
     },
     status:{
       type:String,
@@ -65,6 +69,7 @@ const orderSchema = new Schema({
     },
     rate:{
       type:Number,
+      default:0
     },
     isTips:{
       type:Boolean,
@@ -72,6 +77,7 @@ const orderSchema = new Schema({
     },
     orderImgs:{
       type:[String],
+      default:[]
     },
   driverId: {
     type:mongoose.Types.ObjectId,
@@ -84,6 +90,7 @@ const orderSchema = new Schema({
   },
   qrCode:{
     type:String,
+    default:""
   }
 
 

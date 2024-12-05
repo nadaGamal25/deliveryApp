@@ -20,6 +20,7 @@ const userSchema = new Schema({
   },
   age:{
     type:Number,
+    default:0
   },
     email: {
       type: String,
@@ -98,7 +99,8 @@ const userSchema = new Schema({
   
   },
   vehiclesImgs:{
-    type:[String]
+    type:[String],
+    default:[]
   },
   isConfirmed:{
     type: Boolean,

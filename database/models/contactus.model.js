@@ -4,14 +4,18 @@ const schema = new Schema({
   name: {
     type: String,
     required: true,
+    default:""
   }, 
   phone: {
     type: String,
     required: true,
-    unique:false
+    unique:false,
+    default:""
   },
   comment: {
       type: String,
+      default:""
+
     }, 
     
  
