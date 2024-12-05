@@ -2,7 +2,9 @@ import { About } from "../../../database/models/aboutus.model.js"
 import { catchError } from "../../middleware/catchError.js"
 import {AppError} from "../../utils/appError.js"
 
-const addAbout = catchError(async (req, res, next) => {
+
+//work in postman
+const addAbout2 = catchError(async (req, res, next) => {
     // Log the request body to debug
     // console.log('Received body:', req.body);
 
@@ -23,8 +25,26 @@ const addAbout = catchError(async (req, res, next) => {
         res.status(500).json({ message: 'Internal Server Error', status: 500, data: [] });
     }
 });
-
+// work in front
+const addAbout = catchError(async (req, res, next) => {
  
+    // Check if the "about" field is a valid string
+    if (!req.body || typeof req.body !== 'object' || !req.body.about || typeof req.body.about !== 'string') {
+      return res.status(400).json({ message: '"about" content is required and must be a string', status: 400, data: [] });
+    }
+  
+    const aboutContent = req.body.about; // Assuming raw HTML content is passed
+    let about = new About({ about: aboutContent });
+  
+    try {
+      await about.save();
+      res.status(200).json({ message: "تمت اضافة النص", status: 200, data: { about } });
+    } catch (error) {
+      console.error('Error saving About content:', error);
+      res.status(500).json({ message: 'Internal Server Error', status: 500, data: [] });
+    }
+  });
+  
 const updateAbout=catchError(async(req,res,next)=>{
     let about=await About.findOneAndUpdate({_id:req.params.id},req.body,{new:true})
     about || next(new AppError("لا يوجد نص",404))
@@ -44,5 +64,5 @@ const getAbout=catchError(async(req,res,next)=>{
 
 
 export{
-    addAbout,updateAbout,deleteAbout,getAbout
+    addAbout,updateAbout,deleteAbout,getAbout,addAbout2
 }
