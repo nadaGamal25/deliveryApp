@@ -14,8 +14,13 @@ const confirmUser = catchError(async (req, res, next) => {
     if (user) {
         // Update the user and reassign the variable to the updated object
         user = await User.findByIdAndUpdate(req.params.id, { isConfirmed: req.body.value }, { new: true });
-        res.status(200).json({ message: 'تم تأكيد الحساب بنجاح', status: 200, data: { user } });
-    } else {
+        if(req.body.value === true){
+            res.status(200).json({ message: 'تم تأكيد الحساب بنجاح', status: 200, data: { user } });
+        }
+        else{
+            res.status(200).json({ message: 'تم الغاء توثيق الحساب بنجاح', status: 200, data: { user } });
+        }
+        } else {
         return next(new AppError('المستخدم غير موجود', 400));
     }
 });
@@ -26,7 +31,11 @@ const blockUser=catchError(async(req,res,next)=>{
     let user = await User.findById(req.params.id)
     if(user){
         user= await User.findByIdAndUpdate(req.params.id, {isBlocked:req.body.value}, { new: true })
-        res.status(200).json({message:'تم تأكيد الحساب بنجاح', status:200,data:{user}})
+        if(req.body.value === true){
+        res.status(200).json({message:'تم حظر الحساب بنجاح', status:200,data:{user}})
+        }else{
+            res.status(200).json({message:'تم الغاء حظر الحساب بنجاح', status:200,data:{user}})
+        }
     }else{
         return next(new AppError(' المستخدم غير موجود',400))
     }
@@ -38,7 +47,11 @@ const invalidUser=catchError(async(req,res,next)=>{
     let user = await User.findById(req.params.id)
     if(user){
         user= await User.findByIdAndUpdate(req.params.id, {isValid:req.body.value}, { new: true })
+        if(req.body.value === false){
         res.status(200).json({message:'تم تعطيل المستخدم بنجاح', status:200,data:{user}})
+        }else{
+            res.status(200).json({message:'تم تفعيل المستخدم بنجاح', status:200,data:{user}})
+        }
     }else{
         return next(new AppError(' المستخدم غير موجود',400))
     }
