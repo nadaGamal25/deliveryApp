@@ -56,19 +56,61 @@ const signup=catchError(async(req,res,next)=>{
 
 
 //sign in  
-const signin=catchError(async(req,res,next)=>{
-    let user = await User.findOne({phone: req.body.phone})
-    if(!user) return next(new AppError('لا يوجد حساب برقم الهاتف الذى ادخلته',400))
-        if(user.isConfirmed ===false) return next(new AppError('يجب تأكيد حسابك من خلال المسؤل أولا لتتمكن من تسجيل الدخول',400))
-        if(user.isBlocked ===true) return next(new AppError('تم حظر هذا الحساب',400))
-        if(!user || !bcrypt.compareSync(req.body.password,user.password))
-        return next(new AppError('كلمة المرور غير صحيحة',400))
-    jwt.sign({userId:user._id,role:user.role},secretKey,async(err,token)=>{
-        if(err)return next(new AppError('حدث خطأ ما',500))
-            res.status(200).json({message:'تم تسجيل الدخول بنجاح',status:200,data:{'user':user,token}})
-    })
+// const signin=catchError(async(req,res,next)=>{
+//     let user = await User.findOne({phone: req.body.phone})
+//     if(!user) return next(new AppError('لا يوجد حساب برقم الهاتف الذى ادخلته',400))
+//         if(user.isConfirmed ===false) return next(new AppError('يجب تأكيد حسابك من خلال المسؤل أولا لتتمكن من تسجيل الدخول',400))
+//         if(user.isBlocked ===true) return next(new AppError('تم حظر هذا الحساب',400))
+//         if(!user || !bcrypt.compareSync(req.body.password,user.password))
+//         return next(new AppError('كلمة المرور غير صحيحة',400))
+//     jwt.sign({userId:user._id,role:user.role},secretKey,async(err,token)=>{
+//         if(err)return next(new AppError('حدث خطأ ما',500))
+//             res.status(200).json({message:'تم تسجيل الدخول بنجاح',status:200,data:{'user':user,token}})
+//     })
     
-})
+// })
+const signin = catchError(async (req, res, next) => {
+    const { phone, password, fcmToken } = req.body;
+
+    // Find user by phone
+    let user = await User.findOne({ phone });
+    if (!user) return next(new AppError('لا يوجد حساب برقم الهاتف الذى ادخلته', 400));
+
+    // Check if the account is confirmed
+    if (user.isConfirmed === false)
+        return next(new AppError('يجب تأكيد حسابك من خلال المسؤل أولا لتتمكن من تسجيل الدخول', 400));
+
+    // Check if the account is blocked
+    if (user.isBlocked === true)
+        return next(new AppError('تم حظر هذا الحساب', 400));
+
+    // Check password validity
+    if (!bcrypt.compareSync(password, user.password))
+        return next(new AppError('كلمة المرور غير صحيحة', 400));
+
+    // Generate JWT token
+    jwt.sign({ userId: user._id, role: user.role }, secretKey, async (err, token) => {
+        if (err) return next(new AppError('حدث خطأ ما', 500));
+
+        try {
+            // Update the user's FCM token if provided
+            if (fcmToken) {
+                await User.findByIdAndUpdate(user._id, { fcmToken });
+            }
+
+            // Respond with success message and data
+            res.status(200).json({
+                message: 'تم تسجيل الدخول بنجاح',
+                status: 200,
+                data: { user, token },
+            });
+        } catch (error) {
+            console.error('Error updating FCM token:', error);
+            return next(new AppError('فشل تحديث رمز FCM', 500));
+        }
+    });
+});
+
 
 //sign out
 const signout=catchError(async(req,res,next)=>{

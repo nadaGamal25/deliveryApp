@@ -32,7 +32,13 @@ const allReviews=catchError(async(req,res,next)=>{
 
 const getReviewDriver=catchError(async(req,res,next)=>{
     let review=await Review.find({driver:req.params.id})
-    review || next(new AppError("لا يوجد تقييم",404))
+    if (review.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين ',
+            status: 200,
+            data: { review: [] }
+        });
+    }
     !review || res.status(200).json({message:"success",status:200,data:{review}})
 })
 
@@ -42,8 +48,12 @@ const getReviewClient = catchError(async (req, res, next) => {
         select: 'name' 
     });
 
-    if (!review) {
-        return next(new AppError("لا يوجد تقييم", 404));
+    if (review.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين ',
+            status: 200,
+            data: { review: [] }
+        });
     }
 
     // Remove the `client` field from the review before sending the response

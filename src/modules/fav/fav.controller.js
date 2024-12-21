@@ -24,8 +24,14 @@ const allFav=catchError(async(req,res,next)=>{
 })
 
 const getFavDriver=catchError(async(req,res,next)=>{
-    let users=await usersDriver.find({driver:req.params.id}).populate('client','name profileImg')
-    users || next(new AppError("لا يوجد تقييم",404))
+    let users=await FavDriver.find({driver:req.params.id}).populate('client','name profileImg')
+    if (users.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين ',
+            status: 200,
+            data: { users: [] }
+        });
+    }
     !users || res.status(200).json({message:"success",status:200,data:{users}})
 })
 
@@ -47,9 +53,13 @@ const getFavClient = catchError(async (req, res, next) => {
             ]
         });
 
-    if (!users || users.length === 0) {
-        return next(new AppError("لا يوجد تقييم", 404));
-    }
+        if (users.length === 0) {
+            return res.status(200).json({
+                message: 'لا يوجد سائقين ',
+                status: 200,
+                data: { users: [] }
+            });
+        }
 
     // Transform the data into the desired format
     const transformedUsers = users.map(user => {

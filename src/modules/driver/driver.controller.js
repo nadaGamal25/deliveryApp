@@ -106,9 +106,13 @@ const getDrivers = catchError(async (req, res, next) => {
         .populate({ path: 'position', select: 'name', strictPopulate: false })
         .populate({ path: 'village', select: 'name', strictPopulate: false });
 
-    if (!users || users.length === 0) {
-        return next(new AppError('لم يتم العثور على المستخدمين', 404));
-    }
+        if (users.length === 0) {
+            return res.status(200).json({
+                message: 'لا يوجد سائقين ',
+                status: 200,
+                data: { users: [] }
+            });
+        }
 
     res.status(200).json({ message: 'success', status: 200, data: { users } });
 });
@@ -182,9 +186,13 @@ const getDriversRate = catchError(async (req, res, next) => {
         .populate({ path: 'position', select: 'name', strictPopulate: false })
         .populate({ path: 'village', select: 'name', strictPopulate: false });
 
-    if (!users || users.length === 0) {
-        return next(new AppError('لم يتم العثور على المستخدمين', 404));
-    }
+        if (users.length === 0) {
+            return res.status(200).json({
+                message: 'لا يوجد سائقين ',
+                status: 200,
+                data: { users: [] }
+            });
+        }
 
     res.status(200).json({ message: 'success', status: 200, data: { users } });
 });
@@ -227,7 +235,7 @@ const getFavDrivers = catchError(async (req, res, next) => {
     }
 
     // Query the favorite drivers and apply the filters to the populated `driver` field
-    let fav = await FavDriver.find()
+    let users = await FavDriver.find()
         .populate({
             path: 'driver',
             match: driverFilter, // Apply filters here
@@ -247,14 +255,18 @@ const getFavDrivers = catchError(async (req, res, next) => {
         })
         .populate({ path: 'client', select: 'name', strictPopulate: false });
 
-    // Filter out any `fav` where the `driver` field is null after applying `match`
-    fav = fav.filter(f => f.driver !== null);
+    // Filter out any `users` where the `driver` field is null after applying `match`
+    users = users.filter(f => f.driver !== null);
 
-    if (!fav || fav.length === 0) {
-        return next(new AppError('لم يتم العثور على السائقين المفضلين', 404));
+    if (users.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين ',
+            status: 200,
+            data: { users: [] }
+        });
     }
 
-    res.status(200).json({ message: 'success', status: 200, data: { fav } });
+    res.status(200).json({ message: 'success', status: 200, data: { users } });
 });
 
 //start order  driver not available

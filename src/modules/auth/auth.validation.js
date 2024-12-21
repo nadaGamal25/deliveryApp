@@ -129,6 +129,11 @@ const signinVal = Joi.object({
     confirmPassword: Joi.string().valid(Joi.ref('password')).messages({
         'any.only': 'يجب أن تتطابق كلمة المرور مع تأكيد كلمة المرور'
     }),
+    fcmToken:Joi.string().allow("").
+    messages({
+        'string.empty': 'يجب أن يكون الرمز مطلوب',
+    })
+
 });
 
 // const signupVal=Joi.object({

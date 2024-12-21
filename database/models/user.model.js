@@ -163,7 +163,11 @@ const userSchema = new Schema({
       default:""
 
     },
-
+    fcmToken: {
+      type:String,
+      default:""
+    }, // Firebase Cloud Messaging Token
+ 
   },{
     timestamps: true
   });
