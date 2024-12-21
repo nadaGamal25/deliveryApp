@@ -141,6 +141,16 @@ const userSchema = new Schema({
     default:""
 
   },
+  idCardImg:{
+    type:String,
+    default:""
+
+  },
+  licenseImg:{ 
+    type:String,
+    default:""
+
+  },
     passwordChangedAt:Date,  
     resetPasswordOTP: String,
     resetPasswordExpires: Date,
