@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 const signupVal = Joi.object({
-    profileImg: Joi.string().allow("").messages({
+    profileImg: Joi.allow("").messages({
         'object.base': 'يجب أن تكون الصورة صالحة'
     }),
     
