@@ -183,7 +183,7 @@ const recieveOrderVal = Joi.object({
             'string.length': 'يجب أن يكون المعرف 24 حرفاً.',
             'any.required': 'المعرف مطلوب.',
         }),
-    qrcode:Joi.string()
+    qrCode:Joi.string()
     .required()
     .messages({
         'string.base': 'يجب أن يكون الباركود نصاً صحيحا',

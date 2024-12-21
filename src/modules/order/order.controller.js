@@ -189,7 +189,7 @@ const rateOrder = catchError(async (req, res, next) => {
 
 // change order status to ended 
 const endOrder = catchError(async (req, res, next) => {
-    let order = await Order.findOne({_id:req.params.id ,qrCode:req.params.qrcode});
+    let order = await Order.findOne({_id:req.params.id ,qrCode:req.body.qrCode});
     
     if (!order) {
         return next(new AppError("هذا الطلب غير موجود", 404));
