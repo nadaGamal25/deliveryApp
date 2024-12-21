@@ -256,6 +256,12 @@ const updateUserVal=Joi.object({
     profileImg: Joi.allow("").messages({
         'object.base': 'يجب أن تكون الصورة صالحة'
     }),
+    idCardImg: Joi.allow("").messages({
+        'object.base': 'يجب أن تكون الصورة صالحة'
+    }),
+    licenseImg: Joi.allow("").messages({
+        'object.base': 'يجب أن تكون الصورة صالحة'
+    }),
    
     dateOfBirth:Joi.date().messages({
         'date.base': 'تاريخ الميلاد مطلوب',

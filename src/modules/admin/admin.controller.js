@@ -107,6 +107,14 @@ const updateUser = catchError(async (req, res, next) => {
             const cloudinaryResult = await uploadToCloudinary(req.files.profileImg[0].buffer, 'user', req.files.profileImg[0].originalname);
             req.body.profileImg = cloudinaryResult.secure_url;
         }
+        if (req.files && req.files.idCardImg && req.files.idCardImg[0]) {
+            const cloudinaryResult = await uploadToCloudinary(req.files.idCardImg[0].buffer, 'user', req.files.idCardImg[0].originalname);
+            req.body.idCardImg = cloudinaryResult.secure_url;
+        }
+        if (req.files && req.files.licenseImg && req.files.licenseImg[0]) {
+            const cloudinaryResult = await uploadToCloudinary(req.files.licenseImg[0].buffer, 'user', req.files.licenseImg[0].originalname);
+            req.body.licenseImg = cloudinaryResult.secure_url;
+        }
 
         // Find the user
         let user = await User.findById(req.params.id);

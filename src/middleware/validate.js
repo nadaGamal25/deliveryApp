@@ -12,6 +12,12 @@ export const validate=(schema)=>{
           if (req.files && req.files.profileImg) {
             dataToValidate.profileImg = req.files.profileImg[0];
         }
+        if (req.files && req.files.idCardImg) {
+          dataToValidate.idCardImg = req.files.idCardImg[0];
+      }
+      if (req.files && req.files.licenseImg) {
+        dataToValidate.licenseImg = req.files.licenseImg[0];
+    }
           if (req.files.vehiclesImgs) {
               dataToValidate.vehiclesImgs = req.files.vehiclesImgs;
           }
