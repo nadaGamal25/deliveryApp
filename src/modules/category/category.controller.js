@@ -49,8 +49,12 @@ const getDriversByCategory=catchError(async(req,res)=>{
     .populate({ path: 'position', select: 'name', strictPopulate: false })
     .populate({ path: 'village', select: 'name', strictPopulate: false });
 
-    if (!users) {
-        return next(new AppError('لا يوجد سائقين', 404));
+    if (users.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين ',
+            status: 200,
+            data: { users: [] }
+        });
     }
     res.status(200).json({message:'success', status:200,data:{users}})   
 })
