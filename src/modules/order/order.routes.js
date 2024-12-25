@@ -9,7 +9,7 @@ const orderRouter=express.Router()
 orderRouter.route('/')
 .post(protectedRoutes,allowedTo('client'),uploadMixFiles([{name:'orderImgs',maxCount:10}],'order'),validate(addOrderVal),addOrder)
 
-orderRouter.get('/orders-by-status',protectedRoutes,allowedTo('client'),validate(getOrderByStatusVal),getOrderByStatus)
+orderRouter.get('/orders-by-status',protectedRoutes,allowedTo('client','driver'),validate(getOrderByStatusVal),getOrderByStatus)
 orderRouter.get('/orders-client',protectedRoutes,allowedTo('client'),getOrdersForClient)
 orderRouter.get('/orders-driver',protectedRoutes,allowedTo('driver'),getOrdersForDriver)
 
