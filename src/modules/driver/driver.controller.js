@@ -249,8 +249,18 @@ const startOrder = catchError(async (req, res, next) => {
         res.status(200).json({ message: "تم بدء الرحلة", status:200,data:{user} });
     
 });
+const changeOnline = catchError(async (req, res, next) => {
+    let user = await User.findByIdAndUpdate(
+            { _id: req.user._id },
+            { $set: { online:req.body.online} },{new:true}
+
+        );
+   
+        res.status(200).json({ message: "تم تغيير الحالة", status:200,data:{user} });
+    
+});
 
 
 export{
-    getDriversRate,getDrivers,getFavDrivers,startOrder
+    getDriversRate,getDrivers,getFavDrivers,startOrder,changeOnline
 }
