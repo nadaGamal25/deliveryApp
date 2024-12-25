@@ -183,7 +183,7 @@ const rateOrder = catchError(async (req, res, next) => {
     } else{
         order.rate = req.body.orderRate;
         await order.save();  
-        res.status(200).json({ message: "تم " , status:200,data:{order}});
+        res.status(200).json({ message: "تم تقييم الاوردر بنجاح " , status:200,data:{order}});
     } 
 });
 
