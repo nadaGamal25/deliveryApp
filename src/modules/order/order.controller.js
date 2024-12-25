@@ -140,6 +140,47 @@ const getOrderByStatus = catchError(async (req, res, next) => {
     }
 });
 
+// get waiting orderrs for driver 
+const getWaitingOrders = catchError(async (req, res, next) => {
+    try {
+        // Build the query to find orders by status and clientId
+        let query = {
+            status: 'waiting',
+        };
+        if (req.query.deliveryType) {
+            query.deliveryType = req.query.deliveryType;
+        }
+        // Base population for positions
+        let populateArray = [
+            { path: 'clientPosition', select: 'name', strictPopulate: false },
+            { path: 'recieverPosition', select: 'name', strictPopulate: false }
+        ];
+
+        // Fetch orders and apply population
+        let orders = await Order.find(query).populate(populateArray);
+
+        if (orders.length === 0) {
+            return res.status(200).json({
+                message: 'لا توجد طلبات بهذه الحالة',
+                status: 200,
+                data: { orders: [] }
+            });
+        }
+
+        return res.status(200).json({
+            message: 'success',
+            status: 200,
+            data: { orders }
+        });
+    } catch (error) {
+        console.error("Error in getOrderByStatus:", error);
+        return res.status(500).json({
+            message: error.message || 'Something went wrong',
+            status: 500,
+            data: []
+        });
+    }
+});
 
 // get orders  for client
 const getOrdersForClient=catchError(async(req,res,next)=>{
@@ -158,10 +199,17 @@ const getOrdersForClient=catchError(async(req,res,next)=>{
     }
 })
 // get orders  for driver
-const getOrdersForDriver=catchError(async(req,res,next)=>{
-    let orders = await Order.find({driverId:req.user._id})
-    .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
-    .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+const getOrdersForDriver = catchError(async (req, res, next) => {
+    // Construct the query dynamically
+    const query = { driverId: req.user._id };
+    if (req.query.status) {
+        query.status = req.query.status;
+    }
+
+    // Find orders based on the query
+    const orders = await Order.find(query)
+        .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
+        .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false });
 
     if (orders.length === 0) {
         return res.status(200).json({
@@ -169,10 +217,15 @@ const getOrdersForDriver=catchError(async(req,res,next)=>{
             status: 200,
             data: { orders: [] }
         });
-    }else{
-        res.status(200).json({message:'success', status:200,data:{orders}})   
     }
-})
+
+    res.status(200).json({
+        message: 'success',
+        status: 200,
+        data: { orders }
+    });
+});
+
 
 // rate order 
 const rateOrder = catchError(async (req, res, next) => {
@@ -211,5 +264,5 @@ const endOrder = catchError(async (req, res, next) => {
 
 export{
     addOrder,cancelOrder,getOrderById,getOrderByStatus,getOrdersForClient,getOrdersForDriver
-    ,rateOrder,endOrder
+    ,rateOrder,endOrder,getWaitingOrders
 }

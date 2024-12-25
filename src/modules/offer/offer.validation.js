@@ -73,6 +73,7 @@ const getOffersByUserIdVal = Joi.object({
             'string.length': 'يجب أن يكون معرف المستخدم 24 حرفاً.',
             'any.required': 'معرف المستخدم مطلوب.',
         }),
+    status:Joi.string()    
 });
 
 const changeOfferStatusVal = Joi.object({

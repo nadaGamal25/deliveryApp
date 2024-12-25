@@ -92,7 +92,13 @@ const orderSchema = new Schema({
   qrCode:{
     type:String,
     default:""
+  },
+  deliveryType:{
+    type:String,
+    default:"",
+    enum:['persons','things'],
   }
+
 
 
   },{

@@ -128,14 +128,14 @@ const userSchema = new Schema({
     type:Number,
     default:0
 },
-  startTime: {
-    type: String,
-    default: '00:00',
-  },
-  endTime: {
-    type: String,
-    default: '23:59',
-  },
+  // startTime: {
+  //   type: String,
+  //   default: '00:00',
+  // },
+  // endTime: {
+  //   type: String,
+  //   default: '23:59',
+  // },
   profileImg:{
     type:String,
     default:""
@@ -177,7 +177,10 @@ const userSchema = new Schema({
       type:String,
       default:""
     }, // Firebase Cloud Messaging Token
- 
+    online:{
+      type:Boolean,
+      default:true
+    }
   },{
     timestamps: true
   });

@@ -59,8 +59,16 @@ const getOffersByOrderId = catchError(async (req, res, next) => {
 
 
 //get offers by user id for admin
-const getOffersByUserId=catchError(async(req,res)=>{
-    let offers = await Offer.find({driverId:req.params.id});
+const getOffersByUserId = catchError(async (req, res) => {
+    // Construct the query dynamically
+    const query = { driverId: req.params.id };
+    if (req.query.status) {
+        query.status = req.query.status;
+    }
+
+    // Find offers based on the query
+    const offers = await Offer.find(query);
+
     if (offers.length === 0) {
         return res.status(200).json({
             message: 'لا توجد عروض',
@@ -68,8 +76,14 @@ const getOffersByUserId=catchError(async(req,res)=>{
             data: { offers: [] }
         });
     }
-    res.status(200).json({message:'success', status:200,data:{offers}})   
-})
+
+    res.status(200).json({
+        message: 'success',
+        status: 200,
+        data: { offers }
+    });
+}); 
+
 
 //get offers for user
 const getOffersForUser=catchError(async(req,res)=>{
@@ -165,7 +179,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         // Update the related order with status and driverId
         await Order.findByIdAndUpdate(
             { _id: offer.orderId },
-            { $set: { status: 'current', driverId: offer.driverId } }
+            { $set: { driverId: offer.driverId } }
         );
 
         // Update other offers with status 'waiting' in the same order to 'ignored'

@@ -72,14 +72,16 @@ const signupVal = Joi.object({
     isBlocked: Joi.boolean().messages({
         'boolean.base': 'يجب أن يكون الحظر صحيح أو خطأ'
     }),
-    startTime: Joi.string().min(5).max(5).messages({
-        'string.min': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)',
-        'string.max': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)'
-    }),
-    endTime: Joi.string().min(5).max(5).messages({
-        'string.min': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)',
-        'string.max': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)'
-    }),
+    // startTime: Joi.string().min(5).max(5).messages({
+    //     'string.min': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)',
+    //     'string.max': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)'
+    // }),
+    // endTime: Joi.string().min(5).max(5).messages({
+    //     'string.min': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)',
+    //     'string.max': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)'
+    // }),
+    online:Joi.boolean().messages({
+        'boolean.base': 'يجب أن يكون الحضور على الإنترنت صحيح أو خطأ'   }),
     vehiclesImgs: Joi.array().items().min(0).messages({
         'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
@@ -237,14 +239,16 @@ const updateUserVal=Joi.object({
     isBlocked: Joi.boolean().messages({
         'boolean.base': 'يجب أن يكون الحظر صحيح أو خطأ'
     }),
-    startTime: Joi.string().min(5).max(5).messages({
-        'string.min': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)',
-        'string.max': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)'
-    }),
-    endTime: Joi.string().min(5).max(5).messages({
-        'string.min': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)',
-        'string.max': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)'
-    }),
+    // startTime: Joi.string().min(5).max(5).messages({
+    //     'string.min': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)',
+    //     'string.max': 'يجب أن يكون وقت البدء بتنسيق 5 أحرف (HH:mm)'
+    // }),
+    // endTime: Joi.string().min(5).max(5).messages({
+    //     'string.min': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)',
+    //     'string.max': 'يجب أن يكون وقت الانتهاء بتنسيق 5 أحرف (HH:mm)'
+    // }),
+    online:Joi.boolean().messages({
+        'boolean.base': 'يجب أن يكون الحضور على الإنترنت صحيح أو خطأ'   }),
     vehiclesImgs: Joi.array().items().min(0).allow("").messages({
         'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
