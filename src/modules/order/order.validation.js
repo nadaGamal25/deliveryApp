@@ -116,8 +116,8 @@ const addOrderVal = Joi.object({
         .messages({
             'array.base': 'يجب أن يكون الصور مصفوفة.',
         }),
-    deliveryType:Joi.boolean().messages({
-        'boolean.base': 'يجب أن يكون نوع التوصيل قيمة صحيحة.',
+    deliveryType:Joi.string().messages({
+        'string.base': 'يجب أن يكون نوع التوصيل قيمة صحيحة.',
 
     })  ,
 
