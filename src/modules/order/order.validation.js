@@ -116,6 +116,11 @@ const addOrderVal = Joi.object({
         .messages({
             'array.base': 'يجب أن يكون الصور مصفوفة.',
         }),
+    deliveryType:Joi.boolean().messages({
+        'boolean.base': 'يجب أن يكون نوع التوصيل قيمة صحيحة.',
+
+    })  ,
+
 });
 
 const cancelOrderVal = Joi.object({
