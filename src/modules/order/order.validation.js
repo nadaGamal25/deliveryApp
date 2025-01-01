@@ -10,14 +10,14 @@ const addOrderVal = Joi.object({
         }),
     recieverAddress: Joi.string()
         .min(0)
-        .required()
+        
         .messages({
             'string.base': 'يجب أن يكون عنوان المستلم صحيحاً.',
             'string.min': 'يجب أن يكون عنوان المستلم حرفاً واحداً على الأقل.',
             'any.required': 'عنوان المستلم مطلوب.',
         }),
     clientName: Joi.string()
-        .required()
+        
         .messages({
             'string.base': 'يجب أن يكون اسم العميل صحيحاً.',
             'any.required': 'اسم العميل مطلوب.',
@@ -27,7 +27,7 @@ const addOrderVal = Joi.object({
             'string.base': 'يجب أن يكون اسم المستلم صحيحاً.',
         }),
     clientPhone: Joi.string()
-        .required()
+        
         .messages({
             'string.base': 'يجب أن يكون رقم العميل صحيحاً.',
             'any.required': 'رقم العميل مطلوب.',
@@ -37,32 +37,32 @@ const addOrderVal = Joi.object({
             'string.base': 'يجب أن يكون رقم المستلم صحيحاً.',
         }),
     goDate: Joi.date()
-        .required()
+        
         .messages({
             'date.base': 'يجب أن يكون التاريخ صالحاً.',
             'any.required': 'التاريخ مطلوب.',
         }),
     nums: Joi.number()
-        .required()
+        
         .messages({
             'number.base': 'يجب أن يكون العدد رقماً صحيحاً.',
             'any.required': 'العدد مطلوب.',
         }),
     price: Joi.number()
-        .required()
+        
         .messages({
             'number.base': 'يجب أن يكون السعر رقماً صحيحاً.',
             'any.required': 'السعر مطلوب.',
         }),
     type: Joi.string()
-        .required()
+        
         .messages({
             'string.base': 'يجب أن يكون النوع صحيحاً.',
             'any.required': 'النوع مطلوب.',
         }),
     goTime: Joi.string()
         .min(1)
-        .required()
+        
         .messages({
             'string.base': 'يجب أن يكون وقت الانطلاق صحيحاً.',
             'string.min': 'يجب أن يكون وقت الانطلاق حرفاً واحداً على الأقل.',
@@ -77,7 +77,7 @@ const addOrderVal = Joi.object({
             'string.base': 'يجب أن تكون الملاحظات نصاً صحيحاً.',
         }),
     isTips: Joi.boolean()
-        .required()
+        
         .messages({
             'boolean.base': 'يجب أن تكون النصيحة قيمة صحيحة.',
             'any.required': 'حقل النصيحة مطلوب.',
@@ -85,7 +85,7 @@ const addOrderVal = Joi.object({
     clientId: Joi.string()
         .hex()
         .length(24)
-        .required()
+        
         .messages({
             'string.hex': 'يجب أن يكون معرف العميل بتنسيق صحيح (سداسي عشري).',
             'string.length': 'يجب أن يكون معرف العميل 24 حرفاً.',
@@ -95,7 +95,7 @@ const addOrderVal = Joi.object({
     clientPosition: Joi.string()
         .hex()
         .length(24)
-        .required()
+        
         .messages({
             'string.hex': 'يجب أن يكون موقع العميل بتنسيق صحيح (سداسي عشري).',
             'string.length': 'يجب أن يكون موقع العميل 24 حرفاً.',
@@ -104,7 +104,7 @@ const addOrderVal = Joi.object({
     recieverPosition: Joi.string()
         .hex()
         .length(24)
-        .required()
+        
         .messages({
             'string.hex': 'يجب أن يكون موقع المستلم بتنسيق صحيح (سداسي عشري).',
             'string.length': 'يجب أن يكون موقع المستلم 24 حرفاً.',
@@ -120,6 +120,40 @@ const addOrderVal = Joi.object({
         'string.base': 'يجب أن يكون نوع التوصيل قيمة صحيحة.',
 
     })  ,
+    payType:Joi.string().messages({
+        'string.base': 'يجب أن يكون نوع التوصيل قيمة صحيحة.',
+
+    }),
+    shopping: Joi.array().items(
+        Joi.object({
+            store: Joi.string()
+                .messages({
+                    'string.base': 'يجب أن يكون اسم المتجر نصاً صحيحاً.',
+                    'any.required': 'اسم المتجر مطلوب.',
+                }),
+            products: Joi.array().items(
+                    Joi.object({
+                        name: Joi.string()
+                            .messages({
+                                'string.base': 'يجب أن يكون اسم المنتج نصاً صحيحاً.',
+                                'any.required': 'اسم المنتج مطلوب.',
+                            }),
+                        quantity: Joi.number()
+                            .messages({
+                                'number.base': 'يجب أن تكون الكمية رقماً صحيحاً.',
+                                'any.required': 'الكمية مطلوبة.',
+                            }),
+                    })
+                )
+                .messages({
+                    'array.base': 'يجب أن تكون المنتجات مصفوفة.',
+                    'any.required': 'المنتجات مطلوبة.',
+                }),
+        })
+    )
+    .messages({
+        'array.base': 'يجب أن يكون التسوق مصفوفة.',
+    }),
 
 });
 

@@ -7,17 +7,20 @@ const orderSchema = new Schema({
   }, 
   recieverAddress: {
     type: String,
-    required: true,
+    // required: true,
+    default:"",
   },
   clientPosition: {
     type:mongoose.Types.ObjectId,
     ref:'Position',
-    required: true,
+    // required: true,
+    default:null,
   },  
   recieverPosition: {
     type:mongoose.Types.ObjectId,
     ref:'Position',
-    required: true,
+    // required: true,
+    default:null,
   },
   clientName: {
     type: String,
@@ -37,23 +40,28 @@ const orderSchema = new Schema({
   },
     goDate: {
       type: Date,
-      required: true,
+      default: Date.now,
+      // required: true,
     },
     nums: {
       type: Number,
-      required: true,
+      default:0,
+      // required: true,
     },
     price: {
       type: Number,
-      required: true,
+      default:0,
+      // required: true,
     },
     type:{
       type:String,
-      required:true
+      default:"",
+      // required:true
     },
     goTime:{
       type:String,
-      required:true
+      default:"",
+      // required:true
     },
     waitingTime:{
       type:String,
@@ -73,7 +81,8 @@ const orderSchema = new Schema({
     },
     isTips:{
       type:Boolean,
-      required:true
+      default:false
+      // required:true
     },
     orderImgs:{
       type:[String],
@@ -96,12 +105,24 @@ const orderSchema = new Schema({
   deliveryType:{
     type:String,
     default:"",
-    enum:['persons','things'],
-  }
-
-
-
-  },{
+    enum:['persons','things','special'],
+  },
+  payType:{
+    type:String,
+    default:"cod",
+  },
+  shopping: [
+    {
+      store: { type: String ,default: ""}, // Store name
+      products: [
+        {
+          name: { type: String ,default: "" }, // Product name
+          quantity: { type: Number ,default: "" }, // Product quantity
+        },
+      ],
+    },
+  ],
+},{
     timestamps: true
   });
 
