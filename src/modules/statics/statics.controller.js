@@ -103,6 +103,7 @@ const getStaticsDriver = catchError(async (req, res, next) => {
 
     // *** 1. Number of Orders ***
     const numberOfOrders = user.numberOfOrders;
+    const numberOfConnect = user.numberOfConnect;
 
     // *** 2. Most Ordered Areas ***
     const areaCounts = orders.reduce((acc, order) => {
@@ -163,6 +164,7 @@ const getStaticsDriver = catchError(async (req, res, next) => {
             mostOrderedAreas,
             mostOrderedClients,
             mostOrderedTimes,
+            numberOfConnect
         },
     });
 });
