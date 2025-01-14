@@ -109,7 +109,7 @@ const orderSchema = new Schema({
   },
   payType:{
     type:String,
-    default:"cod",
+    default:"cash",
   },
   shopping: [
     {
