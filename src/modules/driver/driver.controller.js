@@ -41,7 +41,7 @@ import { AppError } from "../../utils/appError.js";
 // });
 
 const getDrivers = catchError(async (req, res, next) => {
-    const { position, age, rateAvg, category, online } = req.query;
+    const { position, minAge, maxAge, rateAvg, category, online } = req.query;
 
     // Helper function to convert time (hh:mm) to minutes for comparison
     // const timeToMinutes = (timeStr) => {
@@ -59,8 +59,14 @@ const getDrivers = catchError(async (req, res, next) => {
     if (position) {
         query['position'] = position; // Assumes `position` is an ID
     }
-    if (age) {
-        query['age'] = { $gte: parseInt(age, 10) }; // Filter for minimum age
+    if (minAge || maxAge) {
+        query['age'] = {};
+        if (minAge) {
+            query['age']['$gte'] = parseInt(minAge, 10); // Filter for minimum age
+        }
+        if (maxAge) {
+            query['age']['$lte'] = parseInt(maxAge, 10); // Filter for maximum age
+        }
     }
     if (rateAvg) {
         query['rateAvg'] = { $gte: parseFloat(rateAvg) }; // Filter for minimum average rating
@@ -124,7 +130,7 @@ const getDrivers = catchError(async (req, res, next) => {
 
 
 const getDriversRate = catchError(async (req, res, next) => {
-    const { position, age, rateAvg, category, online } = req.query;
+    const { position, minAge, maxAge, rateAvg, category, online } = req.query;
 
     // Build the query object dynamically
     let query = { rateAvg: { $ne: null } ,role:'driver'}; // Ensure only users with a valid `rateAvg` are included
@@ -132,8 +138,14 @@ const getDriversRate = catchError(async (req, res, next) => {
     if (position) {
         query['position'] = position; // Assumes `position` is an ID
     }
-    if (age) {
-        query['age'] = { $gte: parseInt(age, 10) }; // Filter for minimum age
+    if (minAge || maxAge) {
+        query['age'] = {};
+        if (minAge) {
+            query['age']['$gte'] = parseInt(minAge, 10); // Filter for minimum age
+        }
+        if (maxAge) {
+            query['age']['$lte'] = parseInt(maxAge, 10); // Filter for maximum age
+        }
     }
     if (rateAvg) {
         query['rateAvg'] = { $gte: parseFloat(rateAvg) }; // Filter for minimum average rating
@@ -169,7 +181,7 @@ const getDriversRate = catchError(async (req, res, next) => {
 
 const getFavDrivers = catchError(async (req, res, next) => {
     // Extract filters from the query parameters
-    const { position, age, rateAvg, category, online } = req.query;
+    const { position, minAge, maxAge, rateAvg, category, online } = req.query;
 
     // Build the filter object for drivers
     const driverFilter = { role: 'driver' }; // Ensure we're filtering only drivers
@@ -180,8 +192,14 @@ const getFavDrivers = catchError(async (req, res, next) => {
     }
 
     // Apply age filter if provided
-    if (age) {
-        driverFilter.age = { $gte: parseInt(age, 10) }; // Filter for minimum age
+    if (minAge || maxAge) {
+        query['age'] = {};
+        if (minAge) {
+            query['age']['$gte'] = parseInt(minAge, 10); // Filter for minimum age
+        }
+        if (maxAge) {
+            query['age']['$lte'] = parseInt(maxAge, 10); // Filter for maximum age
+        }
     }
 
     // Apply rateAvg filter if provided

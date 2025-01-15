@@ -182,6 +182,10 @@ const userSchema = new Schema({
     online:{
       type:Boolean,
       default:true
+    },
+    highlighted:{
+      type:Boolean,
+      default:false
     }
   },{
     timestamps: true
