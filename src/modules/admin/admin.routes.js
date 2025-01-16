@@ -1,5 +1,5 @@
 import express from 'express'
-import { blockUser, confirmUser, getClients, getOrders, getUsersOrderedOrders, invalidUser, updateUser, updateWallet } from './admin.controller.js'
+import { blockUser, confirmUser, deleteUser, getClients, getOrders, getUsersOrderedOrders, invalidUser, updateUser, updateWallet } from './admin.controller.js'
 import { allowedTo, protectedRoutes } from '../auth/auth.controller.js'
 import { validate } from '../../middleware/validate.js'
 import { blockUserVal, confirmUserVal, invalidUserVal } from './admin.validation.js'
@@ -18,6 +18,7 @@ adminRouter.put('/update-wallet/:id',protectedRoutes,allowedTo('admin'), updateW
 adminRouter.get('/get-clients',protectedRoutes,allowedTo('admin'), getClients)
 adminRouter.get('/get-orders',protectedRoutes,allowedTo('admin'), getOrders)
 adminRouter.get('/get-users-numberOfOrders',protectedRoutes,allowedTo('admin'), getUsersOrderedOrders)
+adminRouter.delete('/delete-user/:id',protectedRoutes,allowedTo('admin'), deleteUser)
 
 
 

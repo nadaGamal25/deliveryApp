@@ -204,7 +204,14 @@ const updateWallet = catchError(async (req, res, next) => {
     });
 });
 
+const deleteUser=catchError(async(req,res,next)=>{
+        let document=await User.findOneAndDelete({_id:req.params.id})
+        document || next(new AppError("المستخدم غير موجود",404))
+        !document || res.status(200).json({message:"تم الحذف بنجاح"})
+    })
+
 
 export{
-    confirmUser,blockUser,invalidUser,getClients,updateUser,getOrders,getUsersOrderedOrders,updateWallet
+    confirmUser,blockUser,invalidUser,getClients,updateUser,getOrders,getUsersOrderedOrders,updateWallet,
+    deleteUser
 }
