@@ -23,18 +23,23 @@ const addOrder=catchError(async(req,res,next)=>{
             }
         }
     }
-     // Generate a unique identifier for the order
-    //  const uniqueId = uuidv4();
-     // Generate the QR code for the order
-    //  const qrCodeData = await QRCode.toDataURL(uniqueId);
-    //  // Add the generated QR code and unique ID to the order body
-    //  req.body.qrCode = qrCodeData;
+     
 
  // Generate a unique string for the QR code
  const qrCodeString = crypto.randomBytes(5).toString('hex'); // Generates a 10-character unique string
-
- // Add the generated QR code string to the order body
  req.body.qrCode = qrCodeString;
+
+ // Generate QR code image
+ try {
+     const qrCodeDataURL = await QRCode.toDataURL(qrCodeString); // Generate QR code as a Data URL
+     const buffer = Buffer.from(qrCodeDataURL.split(",")[1], 'base64'); // Extract the base64 part
+     const qrCodeUploadResult = await uploadToCloudinary(buffer, 'order', `${qrCodeString}-qrcode.png`); // Upload to Cloudinary
+     req.body.qrCodeImg = qrCodeUploadResult.secure_url; // Store the QR code image URL in the body
+ } catch (error) {
+     console.error('Error generating QR code', error);
+     return next(new AppError('حدث خطأ فى إنشاء QR code', 500));
+ }
+ 
     let order=new Order(req.body)
     await order.save()
     await User.findByIdAndUpdate(
@@ -44,6 +49,12 @@ const addOrder=catchError(async(req,res,next)=>{
     res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{order}})
 })
 
+// Generate a unique identifier for the order
+    //  const uniqueId = uuidv4();
+     // Generate the QR code for the order
+    //  const qrCodeData = await QRCode.toDataURL(uniqueId);
+    //  // Add the generated QR code and unique ID to the order body
+    //  req.body.qrCode = qrCodeData;
 
 // cancel order 
 const cancelOrder = catchError(async (req, res, next) => {

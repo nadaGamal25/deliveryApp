@@ -102,6 +102,10 @@ const orderSchema = new Schema({
     type:String,
     default:""
   },
+  qrCodeImg:{
+    type:String,
+    default:""
+  },
   deliveryType:{
     type:String,
     default:"",
