@@ -42,6 +42,22 @@ const blockUser=catchError(async(req,res,next)=>{
     
 })
 
+//highlight user
+const highlightUser=catchError(async(req,res,next)=>{
+    let user = await User.findById(req.params.id)
+    if(user){
+        user= await User.findByIdAndUpdate(req.params.id, {isHighlighted:req.body.value}, { new: true })
+        if(req.body.value === true){
+        res.status(200).json({message:'تم تمييز الحساب بنجاح', status:200,data:{user}})
+        }else{
+            res.status(200).json({message:'تم الغاء تمييز الحساب بنجاح', status:200,data:{user}})
+        }
+    }else{
+        return next(new AppError(' المستخدم غير موجود',400))
+    }
+    
+})
+
 //make user invalid
 const invalidUser=catchError(async(req,res,next)=>{
     let user = await User.findById(req.params.id)
@@ -134,7 +150,7 @@ const updateUser = catchError(async (req, res, next) => {
         });
     } catch (error) {
         console.error('Error updating user:', error);
-        return next(new AppError('حدث خطأ أثناء تعديل البيانات', 500));
+        return next(new AppError(error, 500));
     }
 });
 

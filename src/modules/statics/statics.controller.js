@@ -91,6 +91,9 @@ const getStaticsDriver = catchError(async (req, res, next) => {
     if (!user) {
         return next(new AppError('السائق غير موجود', 404));
     }
+     // *** 1. Number of Orders ***
+     const numberOfOrders = user.numberOfOrders;
+     const numberOfConnect = user.numberOfConnect;
 
     // Fetch orders for the driver
     const orders = await Order.find({ driverId: req.user._id })
@@ -101,9 +104,7 @@ const getStaticsDriver = catchError(async (req, res, next) => {
         return next(new AppError('لا توجد طلبات لهذا السائق', 404));
     }
 
-    // *** 1. Number of Orders ***
-    const numberOfOrders = user.numberOfOrders;
-    const numberOfConnect = user.numberOfConnect;
+   
 
     // *** 2. Most Ordered Areas ***
     const areaCounts = orders.reduce((acc, order) => {

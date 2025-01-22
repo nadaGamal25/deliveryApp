@@ -183,7 +183,7 @@ const userSchema = new Schema({
       type:Boolean,
       default:true
     },
-    highlighted:{
+    isHighlighted:{
       type:Boolean,
       default:false
     }
