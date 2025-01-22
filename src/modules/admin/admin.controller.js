@@ -4,6 +4,7 @@ import { AppError } from "../../utils/appError.js"
 import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
 import dotenv from 'dotenv';
 import { Order } from "../../../database/models/order.model.js";
+import { ApiFeatures } from "../../utils/apiFeatures.js";
 dotenv.config();
 const secretKey = process.env.SECRET_KEY;
 
@@ -156,19 +157,79 @@ const updateUser = catchError(async (req, res, next) => {
 });
 
 //get orders
-const getOrders = catchError(async(req,res,next)=>{
-    let order = await Order.find()
-    .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
-    .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
-    .populate({ path: 'driverId', select: 'name -_id', strictPopulate: false})
-    .populate({ path: 'clientId', select: 'name -_id', strictPopulate: false})
+const getOrders = catchError(async (req, res, next) => {
+    const { page = 1, limit = 10, status, clientPositionId, recieverPositionId, clientName } = req.query;
 
-    if (!order) {
-        return next(new AppError('لا يوجد', 404));
-    }else{
-        res.status(200).json({message:'success', status:200,data:{order}})   
+    // Base query
+    let query = Order.find()
+        .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
+        .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+        .populate({ path: 'clientId', select: 'name', strictPopulate: false })
+        .populate({ path: 'driverId', select: 'name', strictPopulate: false });
+
+    // Filtering by status
+    if (status) {
+        query = query.find({ status });
     }
-})
+
+    // Filtering by clientPositionId and recieverPositionId
+    if (clientPositionId || recieverPositionId) {
+        const positionFilter = {};
+        if (clientPositionId) {
+            positionFilter.clientPosition = clientPositionId;
+        }
+        if (recieverPositionId) {
+            positionFilter.recieverPosition = recieverPositionId;
+        }
+        query = query.find(positionFilter);
+    }
+
+    // Filtering by client name (exact or partial match)
+    if (clientName) {
+        query = query.find({
+            clientName: { $regex: clientName, $options: 'i' }, 
+        });
+    }
+
+    // Pagination
+    const skip = (page - 1) * limit;
+    const total = await Order.countDocuments(query.getQuery());
+    const totalPages = Math.ceil(total / limit);
+
+    query = query.skip(skip).limit(limit);
+
+    // Execute the query
+    const orders = await query;
+
+    if (!orders || orders.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد طلبات مطابقة',
+            status: 200,
+            data: [],
+        });
+    }
+
+    res.status(200).json({
+        message: 'success',
+        status: 200,
+        data: {
+            page: +page,
+            totalPages,
+            total,
+            orders,
+        },
+    });
+});
+
+
+
+
+
+// let order = await Order.find()
+    // .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
+    // .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
+    // .populate({ path: 'driverId', select: 'name -_id', strictPopulate: false})
+    // .populate({ path: 'clientId', select: 'name -_id', strictPopulate: false})
 
 //get users with number of orders ordered
 const getUsersOrderedOrders = catchError(async (req, res, next) => {
@@ -230,5 +291,5 @@ const deleteUser=catchError(async(req,res,next)=>{
 
 export{
     confirmUser,blockUser,invalidUser,getClients,updateUser,getOrders,getUsersOrderedOrders,updateWallet,
-    deleteUser
+    deleteUser,highlightUser
 }

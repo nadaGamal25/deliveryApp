@@ -1,13 +1,17 @@
 import { catchError } from "../../middleware/catchError.js"
 import {AppError} from "../../utils/appError.js"
 import { FavDriver } from "../../../database/models/favDriver.js"
+import { User } from "../../../database/models/user.model.js"
 
 const addFav=catchError(async(req,res,next)=>{
     req.body.client=req.user._id
-    // let isExist=await FavDriver.findOne({client:req.user._id, driver:req.body.driver})
-    // if(isExist) return next(new AppError("لقد قمت بتقييم هذا السائق من قبل",409))
     let fav=new FavDriver(req.body)
     await fav.save()
+    await User.findByIdAndUpdate(
+        { _id: req.body.driver },
+        { $set: { isFav: true} }
+
+    );
     res.status(200).json({message:"تمت الاضافة للمفضلة",status:200,data:{fav}})
 })
 

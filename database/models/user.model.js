@@ -186,6 +186,10 @@ const userSchema = new Schema({
     isHighlighted:{
       type:Boolean,
       default:false
+    },
+    isFav:{
+      type:Boolean,
+      default:false
     }
   },{
     timestamps: true

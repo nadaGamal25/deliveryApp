@@ -6,6 +6,8 @@ import { ReviewApp } from "../../../database/models/reviewApp.model.js"
 
 const addReview=catchError(async(req,res,next)=>{
     req.body.user=req.user._id
+    let isExist=await ReviewApp.findOne({user:req.user._id})
+    if(isExist) return next(new AppError("لقد قمت بتقييم التطبيق من قبل",409))
     let review=new ReviewApp(req.body)
     await review.save()
     res.status(200).json({message:"تمت اضافة التقييم",status:200,data:{review}})

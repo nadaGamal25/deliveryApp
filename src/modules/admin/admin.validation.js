@@ -17,6 +17,11 @@ const invalidUserVal=Joi.object({
     value:Joi.boolean().required()
 
 })
+const highlightUserVal=Joi.object({
+    id:Joi.string().hex().length(24).required(),
+    value:Joi.boolean().required()
+
+})
 export{
-    confirmUserVal,blockUserVal,invalidUserVal
+    confirmUserVal,blockUserVal,invalidUserVal,highlightUserVal
 }
