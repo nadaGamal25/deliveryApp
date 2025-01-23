@@ -23,6 +23,7 @@ const highlightUserVal=Joi.object({
 
 })
 const updateOrderVal = Joi.object({
+    id:Joi.string().hex().length(24).required(),
     clientAddress: Joi.string()
         .min(0)
         .messages({
@@ -104,16 +105,14 @@ const updateOrderVal = Joi.object({
         }),
    
     clientPosition: Joi.string()
-        .hex()
-        .length(24)
+      
         
         .messages({
             'string.hex': 'يجب أن يكون موقع العميل بتنسيق صحيح (سداسي عشري).',
             'string.length': 'يجب أن يكون موقع العميل 24 حرفاً.',
         }),
     recieverPosition: Joi.string()
-        .hex()
-        .length(24)
+       
         
         .messages({
             'string.hex': 'يجب أن يكون موقع المستلم بتنسيق صحيح (سداسي عشري).',
