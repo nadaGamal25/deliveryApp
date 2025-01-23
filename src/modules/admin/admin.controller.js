@@ -158,7 +158,7 @@ const updateUser = catchError(async (req, res, next) => {
 
 //get orders
 const getOrders = catchError(async (req, res, next) => {
-    const { page = 1, limit = 10, status, clientPositionId, recieverPositionId, clientName } = req.query;
+    const { page = 1, limit = 10, status, clientPositionId, recieverPositionId, clientName ,deliveryType } = req.query;
 
     // Base query
     let query = Order.find()
@@ -170,6 +170,9 @@ const getOrders = catchError(async (req, res, next) => {
     // Filtering by status
     if (status) {
         query = query.find({ status });
+    }
+    if (deliveryType) {
+        query = query.find({ deliveryType });
     }
 
     // Filtering by clientPositionId and recieverPositionId
@@ -221,15 +224,44 @@ const getOrders = catchError(async (req, res, next) => {
     });
 });
 
+//update order.
+const updateOrder = catchError(async (req, res, next) => {
+    try {
+        if (req.files && req.files.orderImgs) {
+            req.body.orderImgs = [];
+            
+            for (let img of req.files.orderImgs) {
+                try {
+                    const cloudinaryResult = await uploadToCloudinary(img.buffer, 'order', img.originalname);
+                    req.body.orderImgs.push(cloudinaryResult.secure_url);
+                } catch (error) {
+                    console.error('Error uploading to Cloudinary', error);
+                    return next(new AppError('حدث خطأ فى تحميل الصور', 500));
+                }
+            }
+        }
+        // Find the order
+        let order = await Order.findById(req.params.id);
+        if (!order) {
+            return next(new AppError(' غير موجود', 404));
+        }
 
+        // Update order data
+        Object.assign(order, req.body); // Directly assign fields from req.body
+        await order.save(); // Save changes to the database
 
+        // Send response
+        res.status(200).json({
+            message: 'تم تعديل البيانات بنجاح',
+            status: 200,
+            data: { order },
+        });
+    } catch (error) {
+        console.error('Error updating order:', error);
+        return next(new AppError(error, 500));
+    }
+});
 
-
-// let order = await Order.find()
-    // .populate({ path: 'clientPosition', select: 'name', strictPopulate: false })
-    // .populate({ path: 'recieverPosition', select: 'name', strictPopulate: false })
-    // .populate({ path: 'driverId', select: 'name -_id', strictPopulate: false})
-    // .populate({ path: 'clientId', select: 'name -_id', strictPopulate: false})
 
 //get users with number of orders ordered
 const getUsersOrderedOrders = catchError(async (req, res, next) => {
@@ -291,5 +323,5 @@ const deleteUser=catchError(async(req,res,next)=>{
 
 export{
     confirmUser,blockUser,invalidUser,getClients,updateUser,getOrders,getUsersOrderedOrders,updateWallet,
-    deleteUser,highlightUser
+    deleteUser,highlightUser,updateOrder
 }
