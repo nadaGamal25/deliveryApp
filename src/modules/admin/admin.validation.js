@@ -104,14 +104,14 @@ const updateOrderVal = Joi.object({
             'string.length': 'يجب أن يكون معرف العميل 24 حرفاً.',
         }),
    
-    clientPosition: Joi.string()
+    clientPosition: Joi.string().allow('',null)
       
         
         .messages({
             'string.hex': 'يجب أن يكون موقع العميل بتنسيق صحيح (سداسي عشري).',
             'string.length': 'يجب أن يكون موقع العميل 24 حرفاً.',
         }),
-    recieverPosition: Joi.string()
+    recieverPosition: Joi.string().allow('',null)
        
         
         .messages({
