@@ -278,7 +278,144 @@ const changeOnline = catchError(async (req, res, next) => {
     
 });
 
+const getDriversForClient = catchError(async (req, res, next) => {
+    const { position, minAge, maxAge, rateAvg, category, online } = req.query;
+
+    const clientId = req.user._id; 
+
+    // Fetch client to get favorite drivers
+    const client = await User.findById(clientId).select("favorites");
+    if (!client) return res.status(200).json({
+        message: 'لا يوجد عميل ',
+        status: 200,
+        data: { users: [] }
+    });
+
+    let query = { rateAvg: { $ne: null } ,role:'driver'};
+
+    if (position) {
+        query['position'] = position; // Assumes `position` is an ID
+    }
+    if (minAge || maxAge) {
+        query['age'] = {};
+        if (minAge) {
+            query['age']['$gte'] = parseInt(minAge, 10); // Filter for minimum age
+        }
+        if (maxAge) {
+            query['age']['$lte'] = parseInt(maxAge, 10); // Filter for maximum age
+        }
+    }
+    if (rateAvg) {
+        query['rateAvg'] = { $gte: parseFloat(rateAvg) }; // Filter for minimum average rating
+    }
+    if (category) {
+        query['categoryId'] = category; // Assumes `categoryId` is an ID
+    }
+    if (online) {
+        query['online'] = online;
+        }
+
+    // Fetch drivers ordered by rating
+    const users = await User.find(query)
+    .sort({ rateAvg: -1 }) // Sort by `rateAvg` in descending order
+    .populate({
+        path: 'myReviews',
+        select: 'comment rate client',
+    })
+    .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
+    .populate({ path: 'position', select: 'name', strictPopulate: false })
+    .populate({ path: 'village', select: 'name', strictPopulate: false });
+// .find({ role: "driver" })
+//       .sort({ rateAvg: -1 }) // Order by highest rating
+//       .select("name rateAvg profileImg")
+//       .lean();
+
+    // Add `isFavorite` flag for each driver
+    const favoriteDrivers = new Set(client.favorites.map((id) => id.toString()));
+    users.forEach((driver) => {
+      driver.isFavorite = favoriteDrivers.has(driver._id.toString());
+    });
+
+    if (users.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين ',
+            status: 200,
+            data: { users: [] }
+        });
+    }
+    res.status(200).json({ message: 'success', status: 200, data: { users } });
+  
+});
+
+const changeFav = catchError(async (req, res, next) => {
+    const clientId = req.user._id;
+    const { driverId } = req.params;
+
+    // Ensure the driver exists
+    const driver = await User.findOne({ _id: driverId, role: "driver" });
+    if (!driver) return res.status(404).json({ message: "لا يوجد سائق" });
+
+    // Update the client's favorites list
+    const client = await User.findById(clientId);
+    if (!client) return res.status(404).json({ message: "لا يوجد عميل" });
+
+    const isFavorite = client.favorites.includes(driverId);
+
+    if (isFavorite) {
+      // Remove from favorites
+      client.favorites = client.favorites.filter(id => id.toString() !== driverId);
+    } else {
+      // Add to favorites
+      client.favorites.push(driverId);
+    }
+
+    await client.save();
+    res.status(200).json({ message: isFavorite ? "تم الحذف من المفضلة" : "تمت الاضافة للمفضلة" ,status:200,data:[]});
+});
+
+const getMyFav = catchError(async (req, res, next) => {
+    const clientId = req.user._id;
+    const client = await User.findById(clientId).populate({
+        path: "favorites",
+        // select: "name rateAvg profileImg",
+        
+        populate: [
+            {
+                path: 'categoryId', // Populates the `categoryId` field within `driver`
+                select: 'name',
+                strictPopulate: false
+            },
+            {
+                path: 'position', // Populates the `position` field within `driver`
+                select: 'name',
+                strictPopulate: false
+            },
+            {
+                path: 'myReviews',
+                select: 'comment rate client',
+            }
+        ]
+      });
+  
+      if (!client) return res.status(404).json({ message: "لا يوجد عميل" });
+
+      const users = client.favorites.map(driver => ({
+        ...driver.toObject(),
+        isFavorite: true, // Since we are fetching favorites, all should be true
+      }));
+
+      if (users.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين ',
+            status: 200,
+            data: { users: [] }
+        });
+    }
+  
+      res.status(200).json({message: 'success', status: 200, data: { users }}); // Return favorite drivers list
+    });
 
 export{
-    getDriversRate,getDrivers,getFavDrivers,startOrder,changeOnline
+    getDriversRate,getDrivers,getFavDrivers,startOrder,changeOnline,getDriversForClient,changeFav,
+    getMyFav
 }

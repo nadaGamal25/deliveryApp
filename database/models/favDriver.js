@@ -18,12 +18,9 @@ const favSchema = new Schema({
   });
 
 
-
-
 // favSchema.pre(/^find/,function(){
 //   this.populate('driver')
 // })  
   
-
 
 export const FavDriver = model('FavDriver', favSchema);

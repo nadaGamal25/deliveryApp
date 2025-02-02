@@ -187,10 +187,11 @@ const userSchema = new Schema({
       type:Boolean,
       default:false
     },
-    isFav:{
+    isFavorite:{
       type:Boolean,
       default:false
-    }
+    },
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
   },{
     timestamps: true
   });
