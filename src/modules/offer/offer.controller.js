@@ -11,7 +11,7 @@ const addOffer=catchError(async(req,res,next)=>{
         return next(new AppError('يجب دفع اشتراك التطبيق لتتمكن من تقديم عروض..تواصل مع الادمن', 400));
   let offer=new Offer(req.body)
     await offer.save()
-    res.status(200).json({message:"تمت اضافة عرضك بنجاح", status:200,data:{offer}})
+    res.status(200).json({message:"تمت اضافة عرضك بجاح فى انتظار موافقة العميل", status:200,data:{offer}})
 })
 
 
