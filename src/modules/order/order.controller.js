@@ -261,7 +261,7 @@ const endOrder = catchError(async (req, res, next) => {
         order.status = 'ended';
         await order.save();  
         await User.findByIdAndUpdate(
-            { _id: req.body.driverId },
+            { _id: order.driverId },
             { $inc: { numberOfOrders: 1 } } ,
             { $set: { available: true} }
 

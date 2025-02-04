@@ -227,6 +227,7 @@ const recieveOrderVal = Joi.object({
     .messages({
         'string.base': 'يجب أن يكون الباركود نصاً صحيحا',
         'any.required': 'الباركود مطلوب.',
+        'string.empty':'لا يمكن ان يكون الباركود فارغ'
         }),
 });
 
