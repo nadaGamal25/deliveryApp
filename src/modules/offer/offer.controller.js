@@ -34,14 +34,14 @@ const getOffersByOrderId = catchError(async (req, res, next) => {
     offers = offers.filter(offer => offer.status !== "deleted" && offer.status !== "ignored");
 
     // Populate driverId and its related fields for remaining offers
-    // const populatedOffers = await Offer.populate(offers, {
-    //     path: 'driverId',
-    //     populate: [
-    //         { path: 'categoryId', select: 'name', strictPopulate: false },
-    //         { path: 'village', select: 'name', strictPopulate: false },
-    //         { path: 'position', select: 'name', strictPopulate: false }
-    //     ]
-    // });
+    const populatedOffers = await Offer.populate(offers, {
+        path: 'driverId',
+        populate: [
+            { path: 'categoryId', select: 'name', strictPopulate: false },
+            { path: 'village', select: 'name', strictPopulate: false },
+            { path: 'position', select: 'name', strictPopulate: false }
+        ]
+    });
 
     // Return the response
     if (offers.length === 0) {
@@ -54,7 +54,7 @@ const getOffersByOrderId = catchError(async (req, res, next) => {
         res.status(200).json({
             message: 'success',
             status: 200,
-            data: { offers }
+            data: { offers: populatedOffers }
         });
     }
 });
