@@ -39,26 +39,59 @@ const getCategories=catchError(async(req,res)=>{
 })
 
 //get druvers by categgory id
-const getDriversByCategory=catchError(async(req,res)=>{
-    let users = await User.find({categoryId:req.params.id})
-    .populate({
-        path: 'myReviews',
-        select: 'comment rate client',
-    })
-    .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
-    .populate({ path: 'position', select: 'name', strictPopulate: false })
-    .populate({ path: 'village', select: 'name', strictPopulate: false });
+// const getDriversByCategory=catchError(async(req,res)=>{
+//     let users = await User.find({categoryId:req.params.id})
+//     .populate({
+//         path: 'myReviews',
+//         select: 'comment rate client',
+//     })
+//     .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
+//     .populate({ path: 'position', select: 'name', strictPopulate: false })
+//     .populate({ path: 'village', select: 'name', strictPopulate: false });
+
+//     if (users.length === 0) {
+//         return res.status(200).json({
+//             message: 'لا يوجد سائقين ',
+//             status: 200,
+//             data: { users: [] }
+//         });
+//     }
+//     res.status(200).json({message:'success', status:200,data:{users}})   
+// })
+
+const getDriversByCategory = catchError(async (req, res) => {
+    const clientId = req.user._id; // Ensure authentication middleware sets req.user
+
+    // Fetch the client to check their favorite drivers
+    const client = await User.findById(clientId).select("favorites");
+    if (!client) {
+        return res.status(404).json({ message: "Client not found", status: 404 });
+    }
+
+    // Fetch drivers in the specified category
+    let users = await User.find({ categoryId: req.params.id })
+        .populate({ path: "myReviews", select: "comment rate client" })
+        .populate({ path: "categoryId", select: "name", strictPopulate: false })
+        .populate({ path: "position", select: "name", strictPopulate: false })
+        .populate({ path: "village", select: "name", strictPopulate: false });
 
     if (users.length === 0) {
         return res.status(200).json({
-            message: 'لا يوجد سائقين ',
+            message: "لا يوجد سائقين",
             status: 200,
             data: { users: [] }
         });
     }
-    res.status(200).json({message:'success', status:200,data:{users}})   
-})
 
+    // Add `isFavorite` flag for each driver
+    const favoriteIds = client.favorites.map(id => id.toString());
+    users = users.map(driver => ({
+        ...driver.toObject(),
+        isFavorite: favoriteIds.includes(driver._id.toString()) // Check if driver is in client's favorites
+    }));
+
+    res.status(200).json({ message: "success", status: 200, data: { users } });
+});
 
 
 export{

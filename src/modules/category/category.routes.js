@@ -14,6 +14,6 @@ categoryRouter.route('/')
 categoryRouter.route('/:id')
 .delete(protectedRoutes,allowedTo('admin'),validate(deleteCategoryVal),deleteCategory)
 
-categoryRouter.get('/drivers/:id',validate(getDriversByCategoryVal),getDriversByCategory)
+categoryRouter.get('/drivers/:id',protectedRoutes,allowedTo('client'),validate(getDriversByCategoryVal),getDriversByCategory)
 
 export default categoryRouter
