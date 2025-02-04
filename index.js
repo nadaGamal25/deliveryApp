@@ -75,7 +75,7 @@ app.use('/api/statics',staticsRouter)
 
 //   try {
 //     // Get tokens of all drivers
-//     const drivers = await User.find({ role: 'driver', fcmToken: { $exists: true } }).select('fcmToken');
+//     const drivers = await find({ role: 'driver', fcmToken: { $exists: true } }).select('fcmToken');
 //     const tokens = drivers.map((driver) => driver.fcmToken);
 
 //     if (!tokens.length) {

@@ -346,7 +346,6 @@ const getDriversForClient = catchError(async (req, res, next) => {
     res.status(200).json({ message: 'success', status: 200, data: { users } });
   
 });
-
 const changeFav = catchError(async (req, res, next) => {
     const clientId = req.user._id;
     const { driverId } = req.params;
@@ -355,23 +354,25 @@ const changeFav = catchError(async (req, res, next) => {
     const driver = await User.findOne({ _id: driverId, role: "driver" });
     if (!driver) return res.status(404).json({ message: "لا يوجد سائق" });
 
-    // Update the client's favorites list
-    const client = await User.findById(clientId);
+    // Check if the driver is already in the client's favorites
+    const client = await User.findById(clientId).select("favorites");
     if (!client) return res.status(404).json({ message: "لا يوجد عميل" });
 
     const isFavorite = client.favorites.includes(driverId);
+    const updateOperation = isFavorite
+        ? { $pull: { favorites: driverId } }  // Remove from favorites
+        : { $addToSet: { favorites: driverId } }; // Add to favorites (prevents duplicates)
 
-    if (isFavorite) {
-      // Remove from favorites
-      client.favorites = client.favorites.filter(id => id.toString() !== driverId);
-    } else {
-      // Add to favorites
-      client.favorites.push(driverId);
-    }
+    // Update client's favorites in the database
+    await User.findByIdAndUpdate(clientId, updateOperation);
 
-    await client.save();
-    res.status(200).json({ message: isFavorite ? "تم الحذف من المفضلة" : "تمت الاضافة للمفضلة" ,status:200,data:[]});
+    res.status(200).json({
+        message: isFavorite ? "تم الحذف من المفضلة" : "تمت الإضافة للمفضلة",
+        status: 200,
+        data: []
+    });
 });
+
 
 const getMyFav = catchError(async (req, res, next) => {
     const clientId = req.user._id;

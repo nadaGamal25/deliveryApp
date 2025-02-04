@@ -56,6 +56,8 @@ const signup=catchError(async(req,res,next)=>{
 
 
 //sign in  
+
+
 // const signin=catchError(async(req,res,next)=>{
 //     let user = await User.findOne({phone: req.body.phone})
 //     if(!user) return next(new AppError('لا يوجد حساب برقم الهاتف الذى ادخلته',400))
@@ -85,8 +87,8 @@ const signin = catchError(async (req, res, next) => {
         return next(new AppError('تم حظر هذا الحساب', 400));
 
     // Check password validity
-    if (!bcrypt.compareSync(password, user.password))
-        return next(new AppError('كلمة المرور غير صحيحة', 400));
+    if(!user || !bcrypt.compareSync(req.body.password,user.password))
+       return next(new AppError('كلمة المرور غير صحيحة', 400));
 
     // Generate JWT token
     jwt.sign({ userId: user._id, role: user.role }, secretKey, async (err, token) => {
