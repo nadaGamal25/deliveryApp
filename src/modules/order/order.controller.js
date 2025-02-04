@@ -109,21 +109,21 @@ const getOrderByStatus = catchError(async (req, res, next) => {
         ];
 
         // Add population for driverId only if the status is "current" or "ended"
-        if (['current', 'ended'].includes(req.query.status)) {
-            populateArray.push({
-                path: 'driverId',
-                populate: [
-                    { path: 'categoryId', select: 'name', strictPopulate: false },
-                    // { path: 'village', select: 'name', strictPopulate: false },
-                    { path: 'position', select: 'name', strictPopulate: false },
-                    {
-                        path: 'village',
-                        select: 'name',
-                        strictPopulate: false,
-                      },
-                ]
-            });
-        }
+        // if (['current', 'ended'].includes(req.query.status)) {
+        //     populateArray.push({
+        //         path: 'driverId',
+        //         populate: [
+        //             { path: 'categoryId', select: 'name', strictPopulate: false },
+        //             // { path: 'village', select: 'name', strictPopulate: false },
+        //             { path: 'position', select: 'name', strictPopulate: false },
+        //             {
+        //                 path: 'village',
+        //                 select: 'name',
+        //                 strictPopulate: false,
+        //               },
+        //         ]
+        //     });
+        // }
 
         // Fetch orders and apply population
         let orders = await Order.find(query).populate(populateArray);
@@ -156,7 +156,7 @@ const getWaitingOrders = catchError(async (req, res, next) => {
     try {
         // Build the query to find orders by status and clientId
         let query = {
-            status: 'waiting',
+            status: 'waiting', driverId: null
         };
         if (req.query.deliveryType) {
             query.deliveryType = req.query.deliveryType;
@@ -261,7 +261,7 @@ const endOrder = catchError(async (req, res, next) => {
         order.status = 'ended';
         await order.save();  
         await User.findByIdAndUpdate(
-            { _id: req.user._id },
+            { _id: req.body.driverId },
             { $inc: { numberOfOrders: 1 } } ,
             { $set: { available: true} }
 
