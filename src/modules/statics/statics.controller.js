@@ -16,7 +16,7 @@ const getStaticsClient = catchError(async (req, res, next) => {
         .populate({ path: 'driverId', select: 'name', strictPopulate: false });
 
     if (!orders || orders.length === 0) {
-        return next(new AppError('لا توجد طلبات لهذا العميل', 404));
+        return next(new AppError('لا توجد طلبات لديك حاليا', 404));
     }
 
     // *** 1. Number of Orders ***
@@ -101,7 +101,7 @@ const getStaticsDriver = catchError(async (req, res, next) => {
         .populate({ path: 'clientId', select: 'name', strictPopulate: false });
 
     if (!orders || orders.length === 0) {
-        return next(new AppError('لا توجد طلبات لهذا السائق', 404));
+        return next(new AppError('لا توجد طلبات لديك حاليا', 404));
     }
 
    
