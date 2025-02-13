@@ -181,7 +181,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         // Update the related order with status and driverId
         await Order.findByIdAndUpdate(
             { _id: offer.orderId },
-            { $set: { driverId: offer.driverId } }
+            { $set: { driverId: offer.driverId, price:offer.price } }
         );
 
         // Update other offers with status 'waiting' in the same order to 'ignored'
