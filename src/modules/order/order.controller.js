@@ -9,45 +9,90 @@ import crypto from 'crypto'; // For generating a random string
 import mongoose from "mongoose";
 
 //add order
-const addOrder=catchError(async(req,res,next)=>{
-    if (req.files && req.files.orderImgs) {
-        req.body.orderImgs = [];
-        
-        for (let img of req.files.orderImgs) {
-            try {
-                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'order', img.originalname);
-                req.body.orderImgs.push(cloudinaryResult.secure_url);
-            } catch (error) {
-                console.error('Error uploading to Cloudinary', error);
-                return next(new AppError('حدث خطأ فى تحميل الصور', 500));
+const addOrder = catchError(async (req, res, next) => {
+    try {
+        // Handle image uploads to Cloudinary
+        if (req.files?.orderImgs) {
+            req.body.orderImgs = [];
+
+            for (let img of req.files.orderImgs) {
+                try {
+                    const cloudinaryResult = await uploadToCloudinary(img.buffer, 'order', img.originalname);
+                    req.body.orderImgs.push(cloudinaryResult.secure_url);
+                } catch (error) {
+                    console.error('Error uploading to Cloudinary:', error);
+                    return next(new AppError('حدث خطأ فى تحميل الصور', 500));
+                }
             }
         }
+
+        // Create the order
+        let order = new Order(req.body);
+        order.qrCode = `https://end-order-page.vercel.app?id=${order._id}`;
+
+        // Generate QR code
+        try {
+            const qrCodeDataURL = await QRCode.toDataURL(order.qrCode);
+            const buffer = Buffer.from(qrCodeDataURL.split(",")[1], 'base64');
+            const qrCodeUploadResult = await uploadToCloudinary(buffer, 'order', `${order._id}-qrcode.png`);
+            order.qrCodeImg = qrCodeUploadResult.secure_url;
+        } catch (error) {
+            console.error('Error generating QR code:', error);
+            return next(new AppError('حدث خطأ فى إنشاء QR code', 500));
+        }
+
+        // Save order after setting QR code image URL
+        await order.save();
+
+        // Increment user order count
+        await User.findByIdAndUpdate(req.user._id, { $inc: { numberOfOrders: 1 } });
+
+        res.status(200).json({ message: "تمت الاضافة بنجاح", status: 200, data: { order } });
+    } catch (error) {
+        console.error('Error in addOrder:', error);
+        return next(new AppError('حدث خطأ أثناء إضافة الطلب', 500));
     }
+});
+
+// const addOrder=catchError(async(req,res,next)=>{
+//     if (req.files && req.files.orderImgs) {
+//         req.body.orderImgs = [];
+        
+//         for (let img of req.files.orderImgs) {
+//             try {
+//                 const cloudinaryResult = await uploadToCloudinary(img.buffer, 'order', img.originalname);
+//                 req.body.orderImgs.push(cloudinaryResult.secure_url);
+//             } catch (error) {
+//                 console.error('Error uploading to Cloudinary', error);
+//                 return next(new AppError('حدث خطأ فى تحميل الصور', 500));
+//             }
+//         }
+//     }
      
 
- // Generate a unique string for the QR code
- const qrCodeString = crypto.randomBytes(5).toString('hex'); // Generates a 10-character unique string
- req.body.qrCode = qrCodeString;
+//  // Generate a unique string for the QR code
+//  const qrCodeString = crypto.randomBytes(5).toString('hex'); // Generates a 10-character unique string
+//  req.body.qrCode = qrCodeString;
 
- // Generate QR code image
- try {
-     const qrCodeDataURL = await QRCode.toDataURL(qrCodeString); // Generate QR code as a Data URL
-     const buffer = Buffer.from(qrCodeDataURL.split(",")[1], 'base64'); // Extract the base64 part
-     const qrCodeUploadResult = await uploadToCloudinary(buffer, 'order', `${qrCodeString}-qrcode.png`); // Upload to Cloudinary
-     req.body.qrCodeImg = qrCodeUploadResult.secure_url; // Store the QR code image URL in the body
- } catch (error) {
-     console.error('Error generating QR code', error);
-     return next(new AppError('حدث خطأ فى إنشاء QR code', 500));
- }
+//  // Generate QR code image
+//  try {
+//      const qrCodeDataURL = await QRCode.toDataURL(qrCodeString); // Generate QR code as a Data URL
+//      const buffer = Buffer.from(qrCodeDataURL.split(",")[1], 'base64'); // Extract the base64 part
+//      const qrCodeUploadResult = await uploadToCloudinary(buffer, 'order', `${qrCodeString}-qrcode.png`); // Upload to Cloudinary
+//      req.body.qrCodeImg = qrCodeUploadResult.secure_url; // Store the QR code image URL in the body
+//  } catch (error) {
+//      console.error('Error generating QR code', error);
+//      return next(new AppError('حدث خطأ فى إنشاء QR code', 500));
+//  }
  
-    let order=new Order(req.body)
-    await order.save()
-    await User.findByIdAndUpdate(
-        { _id: req.user._id },
-        { $inc: { numberOfOrders: 1 } },  // Increment numberOfOrders by 1
-    );
-    res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{order}})
-})
+//     let order=new Order(req.body)
+//     await order.save()
+//     await User.findByIdAndUpdate(
+//         { _id: req.user._id },
+//         { $inc: { numberOfOrders: 1 } },  // Increment numberOfOrders by 1
+//     );
+//     res.status(200).json({message:"تمت الاضافة بنجاح", status:200,data:{order}})
+// })
 
 // Generate a unique identifier for the order
     //  const uniqueId = uuidv4();
@@ -260,7 +305,7 @@ const rateOrder = catchError(async (req, res, next) => {
 
 // change order status to ended 
 const endOrder = catchError(async (req, res, next) => {
-    let order = await Order.findOne({_id:req.params.id ,qrCode:req.body.qrCode});
+    let order = await Order.findOne({_id:req.params.id});
     
     if (!order) {
         return next(new AppError("هذا الطلب غير موجود", 404));

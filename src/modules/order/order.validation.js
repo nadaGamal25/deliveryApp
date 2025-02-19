@@ -227,13 +227,13 @@ const recieveOrderVal = Joi.object({
             'string.length': 'يجب أن يكون المعرف 24 حرفاً.',
             'any.required': 'المعرف مطلوب.',
         }),
-    qrCode:Joi.string()
-    .required()
-    .messages({
-        'string.base': 'يجب أن يكون الباركود نصاً صحيحا',
-        'any.required': 'الباركود مطلوب.',
-        'string.empty':'لا يمكن ان يكون الباركود فارغ'
-        }),
+    // qrCode:Joi.string()
+    // .required()
+    // .messages({
+    //     'string.base': 'يجب أن يكون الباركود نصاً صحيحا',
+    //     'any.required': 'الباركود مطلوب.',
+    //     'string.empty':'لا يمكن ان يكون الباركود فارغ'
+    //     }),
 });
 
 
