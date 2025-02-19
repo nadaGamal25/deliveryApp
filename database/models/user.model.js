@@ -102,6 +102,10 @@ const userSchema = new Schema({
     type:[String],
     default:[]
   },
+  licenseVehicleImgs:{
+    type:[String],
+    default:[]
+  },
   isConfirmed:{
     type: Boolean,
     default: false,
@@ -144,14 +148,12 @@ const userSchema = new Schema({
     },
   },
   idCardImg:{
-    type:String,
-    default:""
-
+    type:[String],
+    default:[]
   },
   licenseImg:{ 
-    type:String,
-    default:""
-
+    type:[String],
+    default:[]
   },
     passwordChangedAt:Date,  
     resetPasswordOTP: String,
@@ -191,7 +193,8 @@ const userSchema = new Schema({
       type:Boolean,
       default:false
     },
-    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    interestedClients: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] ,
   },{
     timestamps: true
   });

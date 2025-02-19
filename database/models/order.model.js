@@ -79,6 +79,10 @@ const orderSchema = new Schema({
       type:Number,
       default:0
     },
+    isRated:{
+      type:Boolean,
+      default:false
+    },
     isTips:{
       type:Boolean,
       default:false
@@ -114,6 +118,10 @@ const orderSchema = new Schema({
   payType:{
     type:String,
     default:"cash",
+  },
+  isUrgent:{
+    type:Boolean,
+    default:false
   },
   shopping: [
     {

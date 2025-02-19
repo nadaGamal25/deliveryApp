@@ -9,18 +9,21 @@ export const validate=(schema)=>{
         };
         
         if (req.files) {
-          if (req.files && req.files.profileImg) {
+          if (req.files.profileImg) {
             dataToValidate.profileImg = req.files.profileImg[0];
         }
-        if (req.files && req.files.idCardImg) {
-          dataToValidate.idCardImg = req.files.idCardImg[0];
+        if (req.files.idCardImg) {
+          dataToValidate.idCardImg = req.files.idCardImg;
       }
-      if (req.files && req.files.licenseImg) {
-        dataToValidate.licenseImg = req.files.licenseImg[0];
+      if (req.files.licenseImg) {
+        dataToValidate.licenseImg = req.files.licenseImg;
     }
           if (req.files.vehiclesImgs) {
               dataToValidate.vehiclesImgs = req.files.vehiclesImgs;
           }
+          if (req.files.licenseVehicleImgs) {
+            dataToValidate.licenseVehicleImgs = req.files.licenseVehicleImgs;
+        }
       }
        
         if (req.files && req.files.orderImgs) {

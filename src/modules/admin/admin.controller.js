@@ -119,19 +119,33 @@ const updateUser = catchError(async (req, res, next) => {
                 req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
             }
         }
+        if (req.files && req.files.licenseVehicleImgs) {
+            req.body.licenseVehicleImgs = [];
+            for (let img of req.files.licenseVehicleImgs) {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.licenseVehicleImgs.push(cloudinaryResult.secure_url);
+            }
+        }
 
         // Handle profile image upload
         if (req.files && req.files.profileImg && req.files.profileImg[0]) {
             const cloudinaryResult = await uploadToCloudinary(req.files.profileImg[0].buffer, 'user', req.files.profileImg[0].originalname);
             req.body.profileImg = cloudinaryResult.secure_url;
         }
-        if (req.files && req.files.idCardImg && req.files.idCardImg[0]) {
-            const cloudinaryResult = await uploadToCloudinary(req.files.idCardImg[0].buffer, 'user', req.files.idCardImg[0].originalname);
-            req.body.idCardImg = cloudinaryResult.secure_url;
+        
+        if (req.files && req.files.idCardImg) {
+            req.body.idCardImg = [];
+            for (let img of req.files.idCardImg) {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.idCardImg.push(cloudinaryResult.secure_url);
+            }
         }
-        if (req.files && req.files.licenseImg && req.files.licenseImg[0]) {
-            const cloudinaryResult = await uploadToCloudinary(req.files.licenseImg[0].buffer, 'user', req.files.licenseImg[0].originalname);
-            req.body.licenseImg = cloudinaryResult.secure_url;
+        if (req.files && req.files.licenseImg) {
+            req.body.licenseImg = [];
+            for (let img of req.files.licenseImg) {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.licenseImg.push(cloudinaryResult.secure_url);
+            }
         }
 
         // Find the user

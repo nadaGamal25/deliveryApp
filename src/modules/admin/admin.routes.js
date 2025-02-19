@@ -14,7 +14,7 @@ adminRouter.put('/block-user/:id',protectedRoutes,allowedTo('admin'),validate(bl
 adminRouter.put('/invalid-user/:id',protectedRoutes,allowedTo('admin'),validate(invalidUserVal), invalidUser)
 adminRouter.put('/highlight-user/:id',protectedRoutes,allowedTo('admin'),validate(highlightUserVal), highlightUser)
 adminRouter.put('/update-user/:id',protectedRoutes,allowedTo('admin'),validate(updateUserVal),uploadMixFiles([{name:'profileImg',maxCount:1},
-    {name:'idCardImg',maxCount:1},{name:'licenseImg',maxCount:1},{name:'vehiclesImgs',maxCount:4}],'user'), updateUser)
+    {name:'idCardImg',maxCount:2},{name:'licenseImg',maxCount:2},{name:'vehiclesImgs',maxCount:4},{name:'licenseVehicleImgs',maxCount:2}],'user'), updateUser)
 adminRouter.put('/update-wallet/:id',protectedRoutes,allowedTo('admin'), updateWallet)
 adminRouter.get('/get-clients',protectedRoutes,allowedTo('admin'), getClients)
 adminRouter.get('/get-orders',protectedRoutes,allowedTo('admin'), getOrders)

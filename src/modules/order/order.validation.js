@@ -82,6 +82,11 @@ const addOrderVal = Joi.object({
             'boolean.base': 'يجب أن تكون النصيحة قيمة صحيحة.',
             'any.required': 'حقل النصيحة مطلوب.',
         }),
+    isUrgent:Joi.boolean().
+    messages({
+        'boolean.base': 'يجب أن تكون قيمة صحيحة.',
+        'any.required': 'حقل مطلوب.',
+        }),
     clientId: Joi.string()
         .hex()
         .length(24)

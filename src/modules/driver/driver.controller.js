@@ -291,7 +291,7 @@ const getDriversForClient = catchError(async (req, res, next) => {
         data: { users: [] }
     });
 
-    let query = { rateAvg: { $ne: null } ,role:'driver'};
+    let query = { rateAvg: { $ne: null } ,role:'driver',online:true};
 
     if (position) {
         query['position'] = position; // Assumes `position` is an ID
@@ -416,7 +416,41 @@ const getMyFav = catchError(async (req, res, next) => {
       res.status(200).json({message: 'success', status: 200, data: { users }}); // Return favorite drivers list
     });
 
+// add connect for driver 
+const addConnect = catchError(async (req, res, next) => {
+    const clientId = req.user._id;
+    let user = await User.findById(req.params.id);    
+    if (!user) {
+        return next(new AppError("هذا المستخدم غير موجود", 404));
+    }
+
+    // Check if the client already connected before
+    if (user.interestedClients?.includes(clientId)) {
+        return res.status(400).json({ 
+            message: "لقد قمت بالفعل بإضافة هذا السائق إلى قائمة الاتصال الخاصة بك", 
+            status: 400 ,
+            data: []
+        });
+    }
+
+    // Update the driver's document by adding clientId to interestedClients
+    await User.updateOne(
+        { _id: req.params.id },  
+        { 
+            $inc: { numberOfConnect: 1 }, 
+            $addToSet: { interestedClients: clientId }  // Prevents duplicates
+        }
+    );
+
+    res.status(200).json({ 
+        message: "تمت الإضافة بنجاح", 
+        status: 200,
+        data:[]
+    });
+});
+
+
 export{
     getDriversRate,getDrivers,getFavDrivers,startOrder,changeOnline,getDriversForClient,changeFav,
-    getMyFav
+    getMyFav,addConnect
 }

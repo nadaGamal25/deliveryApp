@@ -244,11 +244,18 @@ const rateOrder = catchError(async (req, res, next) => {
     
     if (!order) {
         return next(new AppError("هذا الطلب غير موجود", 404));
-    } else{
-        order.rate = req.body.orderRate;
-        await order.save();  
-        res.status(200).json({ message: "تم تقييم الاوردر بنجاح " , status:200,data:{order}});
     } 
+
+    if(order.isRated === true){
+        return res.status(400).json({message:'تم تقييم الطلب من قبل',status:400,data:[]})
+    }
+    
+        order.rate = req.body.orderRate;
+        order.isRated = true;
+        await order.save();  
+       
+        res.status(200).json({ message: "تم تقييم الاوردر بنجاح " , status:200,data:{order}});
+    
 });
 
 // change order status to ended 

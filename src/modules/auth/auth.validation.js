@@ -85,6 +85,15 @@ const signupVal = Joi.object({
     vehiclesImgs: Joi.array().items().min(0).messages({
         'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
+    licenseVehicleImgs: Joi.array().items().min(0).messages({
+        'array.base': 'يجب أن تكون الصور في شكل قائمة'
+    }),
+    idCardImg:Joi.array().items().min(0).messages({
+        'array.base': 'يجب أن تكون الصور في شكل قائمة'
+    }),
+    licenseImg:Joi.array().items().min(0).messages({
+        'array.base': 'يجب أن تكون الصور في شكل قائمة'
+    }),
     categoryId: Joi.string().messages({
         'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
@@ -252,6 +261,9 @@ const updateUserVal=Joi.object({
     vehiclesImgs: Joi.array().items().min(0).allow("").messages({
         'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
+    licenseVehicleImgs: Joi.array().items().min(0).messages({
+        'array.base': 'يجب أن تكون الصور في شكل قائمة'
+    }),
     categoryId: Joi.string().hex().length(24).messages({
         'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
@@ -260,11 +272,11 @@ const updateUserVal=Joi.object({
     profileImg: Joi.allow("").messages({
         'object.base': 'يجب أن تكون الصورة صالحة'
     }),
-    idCardImg: Joi.allow("").messages({
-        'object.base': 'يجب أن تكون الصورة صالحة'
+    idCardImg:Joi.array().items().min(0).messages({
+        'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
-    licenseImg: Joi.allow("").messages({
-        'object.base': 'يجب أن تكون الصورة صالحة'
+    licenseImg:Joi.array().items().min(0).messages({
+        'array.base': 'يجب أن تكون الصور في شكل قائمة'
     }),
    
     dateOfBirth:Joi.date().messages({
@@ -355,14 +367,8 @@ const regenerateOtpVal=Joi.object({
     }),
 })
 
-const addConnectVal=Joi.object({
-    id:Joi.string().hex().length(24).required().messages({
-        'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
-        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
-        'any.required': ' مطلوبة'
-    }),
-})
+
 export{
     signupVal,signinVal,updateUserVal,changePasswordVal,forgetPassVal,updatePassVal,
-    regenerateOtpVal,addConnectVal,confirmOtpVal
+    regenerateOtpVal,confirmOtpVal
 }

@@ -27,6 +27,45 @@ const signup=catchError(async(req,res,next)=>{
             }
         }
     }
+    if (req.files && req.files.licenseVehicleImgs) {
+        req.body.licenseVehicleImgs = [];
+        
+        for (let img of req.files.licenseVehicleImgs) {
+            try {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.licenseVehicleImgs.push(cloudinaryResult.secure_url);
+            } catch (error) {
+                console.error('Error uploading to Cloudinary', error);
+                return next(new AppError('خطأ فى تحميل الصور', 400));
+            }
+        }
+    }
+    if (req.files && req.files.idCardImg) {
+        req.body.idCardImg = [];
+        
+        for (let img of req.files.idCardImg) {
+            try {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.idCardImg.push(cloudinaryResult.secure_url);
+            } catch (error) {
+                console.error('Error uploading to Cloudinary', error);
+                return next(new AppError('خطأ فى تحميل الصور', 400));
+            }
+        }
+    }
+    if (req.files && req.files.licenseImg) {
+        req.body.licenseImg = [];
+        
+        for (let img of req.files.licenseImg) {
+            try {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.licenseImg.push(cloudinaryResult.secure_url);
+            } catch (error) {
+                console.error('Error uploading to Cloudinary', error);
+                return next(new AppError('خطأ فى تحميل الصور', 400));
+            }
+        }
+    }
   
     if (req.files && req.files.profileImg && req.files.profileImg[0]) {
         try {
@@ -180,18 +219,31 @@ const updateAccount = catchError(async (req, res, next) => {
                 req.body.vehiclesImgs.push(cloudinaryResult.secure_url);
             }
         }
+        if (req.files && req.files.licenseVehicleImgs) {
+            req.body.licenseVehicleImgs = [];
+            for (let img of req.files.licenseVehicleImgs) {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.licenseVehicleImgs.push(cloudinaryResult.secure_url);
+            }
+        }
+        if (req.files && req.files.idCardImg) {
+            req.body.idCardImg = [];
+            for (let img of req.files.idCardImg) {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.idCardImg.push(cloudinaryResult.secure_url);
+            }
+        }
+        if (req.files && req.files.licenseImg) {
+            req.body.licenseImg = [];
+            for (let img of req.files.licenseImg) {
+                const cloudinaryResult = await uploadToCloudinary(img.buffer, 'user', img.originalname);
+                req.body.licenseImg.push(cloudinaryResult.secure_url);
+            }
+        }
 
         if (req.files && req.files.profileImg && req.files.profileImg[0]) {
             const cloudinaryResult = await uploadToCloudinary(req.files.profileImg[0].buffer, 'user', req.files.profileImg[0].originalname);
             req.body.profileImg = cloudinaryResult.secure_url;
-        }
-        if (req.files && req.files.idCardImg && req.files.idCardImg[0]) {
-            const cloudinaryResult = await uploadToCloudinary(req.files.idCardImg[0].buffer, 'user', req.files.idCardImg[0].originalname);
-            req.body.idCardImg = cloudinaryResult.secure_url;
-        }
-        if (req.files && req.files.licenseImg && req.files.licenseImg[0]) {
-            const cloudinaryResult = await uploadToCloudinary(req.files.licenseImg[0].buffer, 'user', req.files.licenseImg[0].originalname);
-            req.body.licenseImg = cloudinaryResult.secure_url;
         }
 
         console.log('After processing files:', req.body);
@@ -365,19 +417,9 @@ const regenerateOtp = catchError(async (req, res,next) => {
 }
 )
 
-// add connect for user
-const addConnect = catchError(async (req, res, next) => {
-    let user = await User.findById(req.params.id);
-    
-    if (!user) {
-        return next(new AppError("هذا المستخدم غير موجود", 404));
-    } else{
-        await User.updateOne({ _id:req.params.id},  { $inc: { numberOfConnect: 1 } } );
-        res.status(200).json({ message: "تم " , status:200,data:{user}});
-    } 
-});
+
 
 export{
     signup,signin,updateAccount,deleteUser,getAccountData,changePassword,protectedRoutes,allowedTo,
-    forgetPassword,regenerateOtp,addConnect,signout,confirmOTP,setNewPassword
+    forgetPassword,regenerateOtp,signout,confirmOTP,setNewPassword
 }

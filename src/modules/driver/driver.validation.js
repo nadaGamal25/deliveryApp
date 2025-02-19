@@ -20,3 +20,11 @@ export const onlineVal=Joi.object({
         
     })
 })
+
+export const addConnectVal=Joi.object({
+    id:Joi.string().hex().length(24).required().messages({
+        'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
+        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
+        'any.required': ' مطلوبة'
+    }),
+})

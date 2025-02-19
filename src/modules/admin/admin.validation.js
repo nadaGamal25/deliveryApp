@@ -132,6 +132,11 @@ const updateOrderVal = Joi.object({
         'string.base': 'يجب أن يكون نوع التوصيل قيمة صحيحة.',
 
     }),
+    isUrgent:Joi.boolean().
+        messages({
+            'boolean.base': 'يجب أن تكون قيمة صحيحة.',
+            'any.required': 'حقل مطلوب.',
+            }),
     shopping: Joi.array().allow('',null).items(
         Joi.object({
             store: Joi.string()

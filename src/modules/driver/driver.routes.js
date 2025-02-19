@@ -1,8 +1,8 @@
 import express from 'express'
-import { changeFav, changeOnline, getDrivers, getDriversForClient, getDriversRate, getFavDrivers, getMyFav, startOrder } from './driver.controller.js'
+import { addConnect, changeFav, changeOnline, getDrivers, getDriversForClient, getDriversRate, getFavDrivers, getMyFav, startOrder } from './driver.controller.js'
 import { allowedTo, protectedRoutes } from '../auth/auth.controller.js'
 import { validate } from '../../middleware/validate.js'
-import { onlineVal, startOrderVal } from './driver.validation.js'
+import { addConnectVal, onlineVal, startOrderVal } from './driver.validation.js'
 
 const driverRouter=express.Router()
 
@@ -14,5 +14,6 @@ driverRouter.put('/online',protectedRoutes,allowedTo('driver'),validate(onlineVa
 driverRouter.get('/favorites',protectedRoutes,allowedTo('client'),getDriversForClient)
 driverRouter.get('/favorite/:driverId',protectedRoutes,allowedTo('client'),changeFav)
 driverRouter.get('/my-fav',protectedRoutes,allowedTo('client'),getMyFav)
+driverRouter.put('/add-connect/:id',protectedRoutes,allowedTo('client'),validate(addConnectVal),addConnect)
 
 export default driverRouter
