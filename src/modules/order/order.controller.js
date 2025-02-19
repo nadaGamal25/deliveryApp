@@ -309,7 +309,10 @@ const endOrder = catchError(async (req, res, next) => {
     
     if (!order) {
         return next(new AppError("هذا الطلب غير موجود", 404));
-    } else if (order.status === 'current') {
+    } else if (order.status ==='ended'){
+        return next(new AppError("لقد قمت بتأكيد الطلب من قبل", 404));
+    }
+    else if (order.status === 'current') {
         order.status = 'ended';
         await order.save();  
         await User.findByIdAndUpdate(
@@ -320,7 +323,7 @@ const endOrder = catchError(async (req, res, next) => {
         );
         res.status(200).json({ message: "تم التأكيد بنجاح", status:200,data:[] });
     } else {
-        return next(new AppError("لا يمكن تاكيد الطلب الان فانت لم تستلمه اولا", 404));
+        return next(new AppError("لا يمكن تاكيد الطلب قبل بدء الرحلة", 404));
     }
 });
 
