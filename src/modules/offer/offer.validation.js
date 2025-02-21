@@ -1,12 +1,12 @@
 import Joi from 'joi'
 
 const addOfferVal = Joi.object({
-    time: Joi.string()
-        .required()
-        .messages({
-            'string.base': 'يجب أن يكون الوقت نصاً صحيحاً.',
-            'any.required': 'الوقت مطلوب.',
-        }),
+    // time: Joi.string()
+    //     .required()
+    //     .messages({
+    //         'string.base': 'يجب أن يكون الوقت نصاً صحيحاً.',
+    //         'any.required': 'الوقت مطلوب.',
+    //     }),
     price: Joi.number()
         .min(1)
         .required()

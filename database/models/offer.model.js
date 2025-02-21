@@ -6,10 +6,10 @@ const offerSchema = new Schema({
     type: Number,
     required: true,
   },
-  time: {
-    type: String,
-    required: true,
-  }, 
+  // time: {
+  //   type: String,
+  //   required: true,
+  // }, 
     status:{
       type:String,
       default:'waiting'
