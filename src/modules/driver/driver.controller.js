@@ -443,7 +443,7 @@ const addConnect = catchError(async (req, res, next) => {
     );
 
     res.status(200).json({ 
-        message: "تمت الإضافة بنجاح", 
+        message: "يمكنك الان التواصل مع الكابتن", 
         status: 200,
         data:[]
     });
