@@ -164,7 +164,8 @@ const signout=catchError(async(req,res,next)=>{
 const changePassword=catchError(async(req,res,next)=>{
     let user = await User.findById(req.user._id)
     // console.log(req.body.oldPassword,user.password)
-
+    if(!user || !bcrypt.compareSync(req.body.oldPassword,user.password))
+        return next(new AppError('كلمة المرور القديمة غير صحيحة', 400));
     if (req.body.oldPassword ===  req.body.newPassword)
         return next(new AppError('لا يمكن ادخال نفس كلمة المرور القديمة', 400));
     if(user && bcrypt.compareSync(req.body.oldPassword,user.password)){
