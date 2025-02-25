@@ -1,9 +1,14 @@
 import { FavDriver } from "../../../database/models/favDriver.js";
+import { Notification } from "../../../database/models/notification.model.js";
 import { Order } from "../../../database/models/order.model.js";
 import { User } from "../../../database/models/user.model.js";
+import { sendNotification } from "../../../public/js/firebase.js"
 import { catchError } from "../../middleware/catchError.js";
 import { ApiFeatures } from "../../utils/apiFeatures.js";
 import { AppError } from "../../utils/appError.js";
+
+
+
 
 // const getDriversRate = catchError(async (req, res, next) => {
 //     let users = await User.find({ rateAvg: { $ne: null } }) // Ensure only users with a valid `rateAvg` are included
@@ -254,19 +259,41 @@ const getFavDrivers = catchError(async (req, res, next) => {
 
 //start order  driver not available
 const startOrder = catchError(async (req, res, next) => {
-    let user = await User.findByIdAndUpdate(
-            { _id: req.user._id },
-            { $set: { available: false ,online:false} },{new:true}
+    let user = await User.findByIdAndUpdate(req.user._id, { available: false, online: false }, { new: true });
 
-        );
-    // Update the related order with status and driverId
-        await Order.findByIdAndUpdate(
-            { _id: req.body.orderId },
-            { $set: { status: 'current'} }
-        );    
-        res.status(200).json({ message: "تم بدء الرحلة", status:200,data:{user} });
-    
+    await Order.findByIdAndUpdate(req.body.orderId, { status: "current" });
+
+    // Notify client
+    const order = await Order.findById(req.body.orderId);
+    if (order && order.clientId) {
+        const client = await User.findById(order.clientId);
+        if (client && client.fcmToken) {
+            const title = "طلبك بدأ";
+            const body = "السائق في طريقه إليك.";
+            await sendNotification(client.fcmToken, title, body);
+
+            // Store in database
+            await Notification.create({ userId: client._id, title, body });
+        }
+    }
+
+    res.status(200).json({ message: "تم بدء الرحلة", status: 200, data: { user } });
 });
+
+// const startOrder = catchError(async (req, res, next) => {
+//     let user = await User.findByIdAndUpdate(
+//             { _id: req.user._id },
+//             { $set: { available: false ,online:false} },{new:true}
+
+//         );
+//     // Update the related order with status and driverId
+//         await Order.findByIdAndUpdate(
+//             { _id: req.body.orderId },
+//             { $set: { status: 'current'} }
+//         );    
+//         res.status(200).json({ message: "تم بدء الرحلة", status:200,data:{user} });
+    
+// });
 const changeOnline = catchError(async (req, res, next) => {
     let user = await User.findByIdAndUpdate(
             { _id: req.user._id },
