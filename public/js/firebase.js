@@ -18,23 +18,29 @@ import { fileURLToPath } from "url";
 import path from "path";
 import dotenv from 'dotenv';
 dotenv.config();
-// Convert import.meta.url to __dirname equivalent
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Correct the path to your JSON file
-const serviceAccountPath = path.join(__dirname, process.env.GOOGLE_APPLICATION_CREDENTIALS);
-
-if (!fs.existsSync(serviceAccountPath)) {
-  console.error(`Firebase service account file not found at: ${serviceAccountPath}`);
-  process.exit(1); // Stop execution if the file is missing
-}
-
-// Read and parse the JSON file
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
+const serviceAccountJson = Buffer.from(process.env.FIREBASE_CREDENTIALS_BASE64, "base64").toString("utf-8");
+const serviceAccount = JSON.parse(serviceAccountJson);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount)
 });
+// Convert import.meta.url to __dirname equivalent
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// // Correct the path to your JSON file
+// const serviceAccountPath = path.join(__dirname, process.env.GOOGLE_APPLICATION_CREDENTIALS);
+
+// if (!fs.existsSync(serviceAccountPath)) {
+//   console.error(`Firebase service account file not found at: ${serviceAccountPath}`);
+//   process.exit(1); // Stop execution if the file is missing
+// }
+
+// // Read and parse the JSON file
+// const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount)
+// });
 
 const sendNotification = async (fcmToken, title, body) => {
   const message = {
