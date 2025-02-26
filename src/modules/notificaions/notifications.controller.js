@@ -1,76 +1,121 @@
 import { Notification } from "../../../database/models/notification.model.js";
 import { User } from "../../../database/models/user.model.js";
-import { sendNotification } from "../../../public/js/firebase.js";
+import { sendNotification, validateFCMToken } from "../../../public/js/firebase.js";
 import { catchError } from "../../middleware/catchError.js";
 
-
 const notifyAllDrivers = async (req, res, next) => {
-    const { title, description } = req.body;
+    const { title, body } = req.body;
+
     try {
         const drivers = await User.find({ role: "driver", fcmToken: { $ne: "" } });
 
-        // Send notification & store it for each driver
-        const notifications = drivers.map(driver => ({
-            userId: driver._id,
-            title,
-            description,
-        }));
+        if (drivers.length === 0) {
+            return res.status(404).json({ message: "No drivers found" });
+        }
 
-        // Send notifications via FCM
-        drivers.forEach(driver => sendNotification(driver.fcmToken, title, description));
+        let successfulNotifications = [];
 
-        // Store notifications in MongoDB
-        await Notification.insertMany(notifications);
+        for (const driver of drivers) {
+            const isValid = await validateFCMToken(driver.fcmToken);
+            if (isValid) {
+                const sent = await sendNotification(driver.fcmToken, title, body);
+                if (sent) {
+                    successfulNotifications.push({ userId: driver._id, title, body });
+                }
+            } else {
+                console.warn(`Skipping invalid FCM token for driver: ${driver._id}`);
+            }
+        }
 
-        res.status(200).json({ message: "Notifications sent to all drivers" });
+        if (successfulNotifications.length > 0) {
+            await Notification.insertMany(successfulNotifications);
+        }
+
+        res.status(200).json({
+            message: `Notifications sent to ${successfulNotifications.length} drivers`,
+            totalDrivers: drivers.length,
+            successful: successfulNotifications.length,
+            failed: drivers.length - successfulNotifications.length,
+        });
+
     } catch (error) {
         next(error);
     }
 };
 
-// Send Notification to All Clients & Store in Database
+//  Send Notification to All Clients & Store in Database
 const notifyAllClients = async (req, res, next) => {
-    const { title, description } = req.body;
+    const { title, body } = req.body;
+
     try {
         const clients = await User.find({ role: "client", fcmToken: { $ne: "" } });
 
-        // Send notification & store it for each client
-        const notifications = clients.map(client => ({
-            userId: client._id,
-            title,
-            description,
-        }));
+        if (!clients || clients.length === 0) {
+            return res.status(404).json({ message: "No clients found" });
+        }
 
-        clients.forEach(client => sendNotification(client.fcmToken, title, description));
+        let successfulNotifications = [];
 
-        // Store notifications in MongoDB
-        await Notification.insertMany(notifications);
+        for (const client of clients) {
+            const isValid = await validateFCMToken(client.fcmToken);
+            if (isValid) {
+                const sent = await sendNotification(client.fcmToken, title, body);
+                if (sent) {
+                    successfulNotifications.push({
+                        userId: client._id,
+                        title,
+                        body,
+                    });
+                }
+            } else {
+                console.warn(`Skipping invalid FCM token for user: ${client._id}`);
+            }
+        }
 
-        res.status(200).json({ message: "Notifications sent to all clients" });
+        if (successfulNotifications.length > 0) {
+            await Notification.insertMany(successfulNotifications);
+        }
+
+        res.status(200).json({
+            message: `Notifications sent to ${successfulNotifications.length} clients`,
+            totalClients: clients.length,
+            successful: successfulNotifications.length,
+            failed: clients.length - successfulNotifications.length,
+        });
+
     } catch (error) {
         next(error);
     }
 };
 
-//Send Notification to Specific User & Store in Database
+
+//  Send Notification to Specific User & Store in Database
 const notifyUser = async (req, res, next) => {
     const { userId } = req.params;
-    const { title, description } = req.body;
+    const { title, body } = req.body;
 
     try {
         const user = await User.findById(userId);
         if (!user || !user.fcmToken) return res.status(404).json({ message: "User not found or no FCM token" });
 
-        await sendNotification(user.fcmToken, title, description);
+        const isValid = await validateFCMToken(user.fcmToken);
+        if (!isValid) {
+            console.warn(`Invalid FCM token for user: ${userId}`);
+            return res.status(400).json({ message: "Invalid FCM token" });
+        }
 
-        // Store notification in MongoDB
-        await Notification.create({ userId, title, description });
+        const sent = await sendNotification(user.fcmToken, title, body);
+        if (!sent) return res.status(500).json({ message: "Failed to send notification" });
+
+        await Notification.create({ userId, title, body });
 
         res.status(200).json({ message: "Notification sent successfully" });
+
     } catch (error) {
         next(error);
     }
 };
+
 
 
 const getNotifications =catchError(async (req, res, next) => {

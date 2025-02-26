@@ -268,17 +268,21 @@ const startOrder = catchError(async (req, res, next) => {
     if (order && order.clientId) {
         const client = await User.findById(order.clientId);
         if (client && client.fcmToken) {
-            const title = "طلبك بدأ";
-            const body = "السائق في طريقه إليك.";
-            await sendNotification(client.fcmToken, title, body);
-
-            // Store in database
-            await Notification.create({ userId: client._id, title, body });
+            const isValid = await validateFCMToken(client.fcmToken);
+            if (isValid) {
+                const title = "طلبك بدأ";
+                const body = "السائق في طريقه إليك.";
+                const sent = await sendNotification(client.fcmToken, title, body);
+                if (sent) await Notification.create({ userId: client._id, title, body });
+            } else {
+                console.warn(`Invalid FCM token for client: ${client._id}`);
+            }
         }
     }
 
     res.status(200).json({ message: "تم بدء الرحلة", status: 200, data: { user } });
 });
+
 
 // const startOrder = catchError(async (req, res, next) => {
 //     let user = await User.findByIdAndUpdate(

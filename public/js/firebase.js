@@ -16,12 +16,13 @@ import admin from "firebase-admin";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
-
+import dotenv from 'dotenv';
+dotenv.config();
 // Convert import.meta.url to __dirname equivalent
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Correct the path to your JSON file
-const serviceAccountPath = path.join(__dirname, "../json/foriraapp-406c0-46705e1df39c.json");
+const serviceAccountPath = path.join(__dirname, process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 if (!fs.existsSync(serviceAccountPath)) {
   console.error(`Firebase service account file not found at: ${serviceAccountPath}`);
@@ -35,21 +36,40 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const sendNotification = async (fcmToken, title, description) => {
-    const message = {
-        token: fcmToken,
-        notification: {
-            title,
-            description
-        }
-    };
+const sendNotification = async (fcmToken, title, body) => {
+  const message = {
+      token: fcmToken,
+      notification: { title, body },
+  };
 
-    try {
-        await admin.messaging().send(message);
-        console.log("Notification sent successfully");
-    } catch (error) {
-        console.error("Error sending notification:", error);
-    }
+  try {
+      await admin.messaging().send(message);
+      console.log("Notification sent successfully to:", fcmToken);
+      return true; // Successfully sent
+  } catch (error) {
+      console.error("Error sending notification:", error);
+
+      if (error.code === "messaging/invalid-argument") {
+          console.warn("Invalid FCM token detected:", fcmToken);
+          return false; // Invalid token
+      }
+
+      throw error; // Re-throw other errors
+  }
 };
 
-export { sendNotification };
+const validateFCMToken = async (fcmToken) => {
+  try {
+      await admin.messaging().send({ token: fcmToken, notification: { title: "Test", body: "Checking token" } });
+      return true; // Valid token
+  } catch (error) {
+      if (error.code === "messaging/invalid-argument") {
+          console.error("Invalid FCM token:", fcmToken);
+          return false;
+      }
+      throw error; // Re-throw other errors
+  }
+};
+
+
+export { sendNotification ,validateFCMToken };

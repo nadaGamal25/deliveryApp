@@ -109,42 +109,42 @@ const changeOfferStatus = catchError(async (req, res, next) => {
     let driver = await User.findById(offer.driverId);
     if (!driver || !driver.fcmToken) return next(new AppError("السائق غير موجود", 404));
 
+    const isValid = await validateFCMToken(driver.fcmToken);
+    if (!isValid) {
+        console.warn(`Invalid FCM token for driver: ${driver._id}`);
+        return res.status(400).json({ message: "Invalid FCM token لا يمكن ارسال اشعار لهذا السائق",status:400,data:[] });
+    }
+
+    let title, body;
+
     if (req.body.status === "deleted") {
         offer.status = "deleted";
         await offer.save();
-
         await User.findByIdAndUpdate(offer.driverId, { $inc: { numberOfConnect: -1 } });
         await Order.findByIdAndUpdate(offer.orderId, { status: "waiting", $unset: { driverId: "" } });
         await Offer.updateMany({ orderId: offer.orderId, status: "ignored" }, { status: "waiting" });
 
-        const title = "تم رفض عرضك";
-        const body = "تم رفض العرض من قبل العميل.";
-        await sendNotification(driver.fcmToken, title, body);
-
-        // Store in database
-        await Notification.create({ userId: driver._id, title, body });
-
-        res.status(200).json({ message: "تم تجاهل هذا العرض", status: 200 });
+        title = "تم رفض عرضك";
+        body = "تم رفض العرض من قبل العميل.";
     } else if (req.body.status === "accepted") {
         offer.status = "accepted";
         await offer.save();
-
         await User.findByIdAndUpdate(offer.driverId, { $inc: { numberOfConnect: 1 } });
         await Order.findByIdAndUpdate(offer.orderId, { driverId: offer.driverId, price: offer.price });
         await Offer.updateMany({ orderId: offer.orderId, status: "waiting", _id: { $ne: req.params.id } }, { status: "ignored" });
 
-        const title = "تم قبول عرضك";
-        const body = "تم قبول العرض من قبل العميل.";
-        await sendNotification(driver.fcmToken, title, body);
-
-        // Store in database
-        await Notification.create({ userId: driver._id, title, body });
-
-        res.status(200).json({ message: "تم قبول هذا العرض", status: 200 });
+        title = "تم قبول عرضك";
+        body = "تم قبول العرض من قبل العميل.";
     } else {
         return next(new AppError("حدث خطأ ما", 404));
     }
+
+    const sent = await sendNotification(driver.fcmToken, title, body);
+    if (sent) await Notification.create({ userId: driver._id, title, body });
+
+    res.status(200).json({ message: `تم ${req.body.status === "deleted" ? "رفض" : "قبول"} هذا العرض`, status: 200 });
 });
+
 
 // const changeOfferStatus = catchError(async (req, res, next) => {
 //     // Find the offer by ID
