@@ -5,8 +5,11 @@ const notificationSchema = new mongoose.Schema(
       userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
       title: String,
       body: String, // Ensure "body" is used consistently
-      data: Object,
       isRead: { type: Boolean, default: false },
+      type:{
+        type:String,
+        default:"user"
+      }
     },
     { timestamps: true }
   );

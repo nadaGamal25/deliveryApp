@@ -28,7 +28,8 @@ const notifyAllDrivers = async (req, res, next) => {
         }
 
         if (successfulNotifications.length > 0) {
-            await Notification.insertMany(successfulNotifications);
+            const msg=  await Notification.insertMany(successfulNotifications);
+            await Notification.updateOne({ _id: msg._id }, { $set: { type: 'admin' } }, { new: true });
         }
 
         res.status(200).json({
@@ -73,8 +74,8 @@ const notifyAllClients = async (req, res, next) => {
         }
 
         if (successfulNotifications.length > 0) {
-            await Notification.insertMany(successfulNotifications);
-        }
+            const msg=  await Notification.insertMany(successfulNotifications);
+            await Notification.updateOne({ _id: msg._id }, { $set: { type: 'admin' } }, { new: true });        }
 
         res.status(200).json({
             message: `Notifications sent to ${successfulNotifications.length} clients`,
@@ -107,7 +108,8 @@ const notifyUser = async (req, res, next) => {
         const sent = await sendNotification(user.fcmToken, title, body);
         if (!sent) return res.status(500).json({ message: "Failed to send notification" });
 
-        await Notification.create({ userId, title, body });
+        const msg=  await Notification.create({ userId, title, body });
+            await Notification.updateOne({ _id: msg._id }, { $set: { type: 'admin' } }, { new: true });
 
         res.status(200).json({ message: "Notification sent successfully" });
 
@@ -122,7 +124,10 @@ const getNotifications =catchError(async (req, res, next) => {
     const { userId } = req.params;
     
     // Fetch notifications for the user
-    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 });
+    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).populate({
+        path: 'userId',
+        select: 'name profileImg' 
+    })
 
         res.status(200).json({ message: "success", status:200,data:{notifications} });
     
