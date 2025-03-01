@@ -5,6 +5,7 @@ import { catchError } from "../../middleware/catchError.js";
 
 const notifyAllDrivers = async (req, res, next) => {
     const { title, body } = req.body;
+    const from=req.user._id
 
     try {
         const drivers = await User.find({ role: "driver", fcmToken: { $ne: "" } });
@@ -20,17 +21,19 @@ const notifyAllDrivers = async (req, res, next) => {
             if (isValid) {
                 const sent = await sendNotification(driver.fcmToken, title, body);
                 if (sent) {
-                    successfulNotifications.push({ userId: driver._id, title, body });
+                    successfulNotifications.push({ userId: driver._id, title, body, from });
                 }
             } else {
                 console.warn(`Skipping invalid FCM token for driver: ${driver._id}`);
             }
         }
-
         if (successfulNotifications.length > 0) {
-            const msg=  await Notification.insertMany(successfulNotifications);
-            await Notification.updateOne({ _id: msg._id }, { $set: { type: 'admin' } }, { new: true });
-        }
+            const msg = await Notification.insertMany(successfulNotifications);
+            await Notification.updateMany(
+                { _id: { $in: msg.map((m) => m._id) } },
+                { $set: { type: 'admin' } }
+            );
+        }        
 
         res.status(200).json({
             message: `Notifications sent to ${successfulNotifications.length} drivers`,
@@ -47,6 +50,7 @@ const notifyAllDrivers = async (req, res, next) => {
 //  Send Notification to All Clients & Store in Database
 const notifyAllClients = async (req, res, next) => {
     const { title, body } = req.body;
+    const from=req.user._id
 
     try {
         const clients = await User.find({ role: "client", fcmToken: { $ne: "" } });
@@ -66,6 +70,7 @@ const notifyAllClients = async (req, res, next) => {
                         userId: client._id,
                         title,
                         body,
+                        from
                     });
                 }
             } else {
@@ -74,9 +79,13 @@ const notifyAllClients = async (req, res, next) => {
         }
 
         if (successfulNotifications.length > 0) {
-            const msg=  await Notification.insertMany(successfulNotifications);
-            await Notification.updateOne({ _id: msg._id }, { $set: { type: 'admin' } }, { new: true });        }
-
+            const msg = await Notification.insertMany(successfulNotifications);
+            await Notification.updateMany(
+                { _id: { $in: msg.map((m) => m._id) } },
+                { $set: { type: 'admin' } }
+            );
+        }
+        
         res.status(200).json({
             message: `Notifications sent to ${successfulNotifications.length} clients`,
             totalClients: clients.length,
@@ -94,7 +103,7 @@ const notifyAllClients = async (req, res, next) => {
 const notifyUser = async (req, res, next) => {
     const { userId } = req.params;
     const { title, body } = req.body;
-
+    const from=req.user._id
     try {
         const user = await User.findById(userId);
         if (!user || !user.fcmToken) return res.status(404).json({ message: "User not found or no FCM token" });
@@ -108,7 +117,7 @@ const notifyUser = async (req, res, next) => {
         const sent = await sendNotification(user.fcmToken, title, body);
         if (!sent) return res.status(500).json({ message: "Failed to send notification" });
 
-        const msg=  await Notification.create({ userId, title, body });
+        const msg=  await Notification.create({ userId, title, body,from });
             await Notification.updateOne({ _id: msg._id }, { $set: { type: 'admin' } }, { new: true });
 
         res.status(200).json({ message: "Notification sent successfully" });
@@ -124,8 +133,9 @@ const getNotifications =catchError(async (req, res, next) => {
     const { userId } = req.params;
     
     // Fetch notifications for the user
-    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).populate({
-        path: 'userId',
+    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 })
+    .populate({
+        path: 'from',
         select: 'name profileImg' 
     })
 

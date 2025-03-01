@@ -2,7 +2,7 @@ import { FavDriver } from "../../../database/models/favDriver.js";
 import { Notification } from "../../../database/models/notification.model.js";
 import { Order } from "../../../database/models/order.model.js";
 import { User } from "../../../database/models/user.model.js";
-import { sendNotification } from "../../../public/js/firebase.js"
+import { sendNotification, validateFCMToken } from "../../../public/js/firebase.js"
 import { catchError } from "../../middleware/catchError.js";
 import { ApiFeatures } from "../../utils/apiFeatures.js";
 import { AppError } from "../../utils/appError.js";
@@ -272,8 +272,9 @@ const startOrder = catchError(async (req, res, next) => {
             if (isValid) {
                 const title = "طلبك بدأ";
                 const body = "السائق في طريقه إليك.";
+                const from=order.driverId;
                 const sent = await sendNotification(client.fcmToken, title, body);
-                if (sent) await Notification.create({ userId: client._id, title, body });
+                if (sent) await Notification.create({ userId: client._id, title, body ,from });
             } else {
                 console.warn(`Invalid FCM token for client: ${client._id}`);
             }

@@ -2,7 +2,7 @@ import { Notification } from '../../../database/models/notification.model.js'
 import {Offer} from '../../../database/models/offer.model.js'
 import { Order } from '../../../database/models/order.model.js'
 import { User } from '../../../database/models/user.model.js'
-import { sendNotification } from '../../../public/js/firebase.js'
+import { sendNotification, validateFCMToken } from '../../../public/js/firebase.js'
 import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/appError.js"
 
@@ -103,23 +103,34 @@ const getOffersForUser=catchError(async(req,res)=>{
 })
 
 const changeOfferStatus = catchError(async (req, res, next) => {
+    // console.log("Request received with status:", req.body.status);
+    
     let offer = await Offer.findById(req.params.id);
-    if (!offer) return next(new AppError("هذا العرض غير موجود", 404));
-
+    if (!offer) {
+        return next(new AppError("هذا العرض غير موجود", 404));
+    }
+    
     let driver = await User.findById(offer.driverId);
-    if (!driver || !driver.fcmToken) return next(new AppError("السائق غير موجود", 404));
-
+    if (!driver) {
+        return next(new AppError("السائق غير موجود", 404));
+    }
+    
+    if (!driver.fcmToken) {
+        return next(new AppError("لا يمكن ارسال اشعار لهذا السائق", 400));
+    }
+    
     const isValid = await validateFCMToken(driver.fcmToken);
     if (!isValid) {
-        console.warn(`Invalid FCM token for driver: ${driver._id}`);
-        return res.status(400).json({ message: "Invalid FCM token لا يمكن ارسال اشعار لهذا السائق",status:400,data:[] });
+        return res.status(400).json({ message: "Invalid FCM token", status: 400, data: [] });
     }
-
+    
     let title, body;
-
+    const from=req.user._id
+    const order=offer.orderId
     if (req.body.status === "deleted") {
         offer.status = "deleted";
         await offer.save();
+        
         await User.findByIdAndUpdate(offer.driverId, { $inc: { numberOfConnect: -1 } });
         await Order.findByIdAndUpdate(offer.orderId, { status: "waiting", $unset: { driverId: "" } });
         await Offer.updateMany({ orderId: offer.orderId, status: "ignored" }, { status: "waiting" });
@@ -129,6 +140,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
     } else if (req.body.status === "accepted") {
         offer.status = "accepted";
         await offer.save();
+
         await User.findByIdAndUpdate(offer.driverId, { $inc: { numberOfConnect: 1 } });
         await Order.findByIdAndUpdate(offer.orderId, { driverId: offer.driverId, price: offer.price });
         await Offer.updateMany({ orderId: offer.orderId, status: "waiting", _id: { $ne: req.params.id } }, { status: "ignored" });
@@ -136,14 +148,20 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         title = "تم قبول عرضك";
         body = "تم قبول العرض من قبل العميل.";
     } else {
-        return next(new AppError("حدث خطأ ما", 404));
+        console.log("Invalid status provided");
+        return next(new AppError("حدث خطأ ما", 400));
     }
 
+    console.log("Sending notification...");
     const sent = await sendNotification(driver.fcmToken, title, body);
-    if (sent) await Notification.create({ userId: driver._id, title, body });
+    if (sent) {
+        await Notification.create({ userId: driver._id, title, body ,from ,order });
+    }
 
+    console.log("Success response sent");
     res.status(200).json({ message: `تم ${req.body.status === "deleted" ? "رفض" : "قبول"} هذا العرض`, status: 200 });
 });
+
 
 
 // const changeOfferStatus = catchError(async (req, res, next) => {
