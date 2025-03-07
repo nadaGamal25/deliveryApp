@@ -28,6 +28,12 @@ import questionRouter from './src/modules/Q&A/Q&A.routes.js'
 import staticsRouter from './src/modules/statics/statics.routes.js'
 import { User } from './database/models/user.model.js'
 import notificationRouter from './src/modules/notificaions/notifications.routes.js'
+import privacyRouter from './src/modules/privacyPolicy/privacyPolicy.routes.js'
+import subDurationRouter from './src/modules/subscriptionDuration/subscriptionDuration.routes.js'
+import subStartingPlaceRouter from './src/modules/subStartingPlace/subStartingPlace.routes.js'
+import subMovingTimeRouter from './src/modules/subMovingTime/subMovingTime.routes.js'
+import subReturnTimeRouter from './src/modules/subReturnTime/subReturnTime.routes.js'
+import subGoPlaceRouter from './src/modules/subGoPlace/subGoPlace.routes.js'
 // mongoose.set('debug', true);
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -58,6 +64,12 @@ app.use('/api/social',socialRouter)
 app.use('/api/question',questionRouter)
 app.use('/api/statics',staticsRouter)
 app.use('/api/notifications',notificationRouter)
+app.use('/api/privacy-policy',privacyRouter)
+app.use('/api/sub-duration',subDurationRouter)
+app.use('/api/sub-starting-place',subStartingPlaceRouter)
+app.use('/api/sub-go-place',subGoPlaceRouter)
+app.use('/api/sub-moving-time',subMovingTimeRouter)
+app.use('/api/sub-return-time',subReturnTimeRouter)
 
 
 //notifications
