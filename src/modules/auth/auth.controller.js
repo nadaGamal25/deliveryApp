@@ -209,7 +209,6 @@ const allowedTo=(...roles)=>{
 } 
 
 const updateAccount = catchError(async (req, res, next) => {
-    try {
         console.log('Before processing:', req.body, req.files);
 
         // Process files
@@ -258,10 +257,7 @@ const updateAccount = catchError(async (req, res, next) => {
         // Update user
         const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
         res.status(200).json({ message: 'تم تعديل البيانات بنجاح', status: 200, data: { updatedUser } });
-    } catch (error) {
-        console.error('Error in updateAccount:', error);
-        return next(new AppError(error.message || 'خطأ غير معروف', 500));
-    }
+   
 });
 
 
