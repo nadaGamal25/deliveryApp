@@ -35,12 +35,12 @@ const userSchema = new Schema({
       type:mongoose.Types.ObjectId,
       ref:'Position',
   },
-  village: {
-    type: mongoose.Schema.Types.ObjectId, // ObjectId to reference the Village model
-    ref: 'Village',  // Reference the Village model
-    required: false, // Make it optional if it's not always populated
-    default:"675068dd3f3723057f53b24e", // Set default value if empty
-  },
+  // village: {
+  //   type: mongoose.Schema.Types.ObjectId, // ObjectId to reference the Village model
+  //   ref: 'Village',  // Reference the Village model
+  //   required: false, // Make it optional if it's not always populated
+  //   default:"675068dd3f3723057f53b24e", // Set default value if empty
+  // },
   
   // village: {
   //   type: mongoose.Schema.Types.Mixed,

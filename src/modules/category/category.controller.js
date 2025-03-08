@@ -73,7 +73,7 @@ const getDriversByCategory = catchError(async (req, res) => {
         .populate({ path: "myReviews", select: "comment rate client" })
         .populate({ path: "categoryId", select: "name", strictPopulate: false })
         .populate({ path: "position", select: "name", strictPopulate: false })
-        .populate({ path: "village", select: "name", strictPopulate: false });
+        // .populate({ path: "village", select: "name", strictPopulate: false });
 
     if (users.length === 0) {
         return res.status(200).json({

@@ -22,19 +22,19 @@ const getStaticsClient = catchError(async (req, res, next) => {
     // *** 1. Number of Orders ***
     const numberOfOrders = user.numberOfOrders;
 
-    // *** 2. Most Ordered Areas ***
+    // *** 2. Most Ordered Areas (Top 3) ***
     const areaCounts = orders.reduce((acc, order) => {
         const areaName = order.recieverPosition?.name || 'غير معروف'; // Handle missing names
         acc[areaName] = (acc[areaName] || 0) + 1;
         return acc;
     }, {});
 
-    const mostOrderedAreas = Object.entries(areaCounts).map(([name, count]) => ({
-        name,
-        count,
-    }));
+    const mostOrderedAreas = Object.entries(areaCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count) // Sort in descending order
+        .slice(0, 3); // Get top 3
 
-    // *** 3. Most Ordered Drivers ***
+    // *** 3. Most Ordered Drivers (Top 3) ***
     const driverCounts = orders.reduce((acc, order) => {
         if (order.driverId) {
             const driverName = order.driverId.name;
@@ -43,10 +43,10 @@ const getStaticsClient = catchError(async (req, res, next) => {
         return acc;
     }, {});
 
-    const mostOrderedDrivers = Object.entries(driverCounts).map(([name, count]) => ({
-        driverName: name,
-        orderCount: count,
-    }));
+    const mostOrderedDrivers = Object.entries(driverCounts)
+        .map(([name, count]) => ({ driverName: name, orderCount: count }))
+        .sort((a, b) => b.orderCount - a.orderCount) // Sort in descending order
+        .slice(0, 3); // Get top 3
 
     // *** 4. Most Ordered Times ***
     const periods = {
@@ -85,6 +85,7 @@ const getStaticsClient = catchError(async (req, res, next) => {
     });
 });
 
+
 const getStaticsDriver = catchError(async (req, res, next) => {
     // Fetch driver (user) data
     const user = await User.findById(req.user._id);
@@ -116,7 +117,8 @@ const getStaticsDriver = catchError(async (req, res, next) => {
     const mostOrderedAreas = Object.entries(areaCounts).map(([name, count]) => ({
         name,
         count,
-    }));
+    })).sort((a, b) => b.count - a.count) // Sort in descending order
+    .slice(0, 3); // Get top 3
 
     // *** 3. Most Ordered Clients ***
     const clientCounts = orders.reduce((acc, order) => {
@@ -130,7 +132,8 @@ const getStaticsDriver = catchError(async (req, res, next) => {
     const mostOrderedClients = Object.entries(clientCounts).map(([name, count]) => ({
         clientName: name,
         orderCount: count,
-    }));
+    })).sort((a, b) => b.orderCount - a.orderCount) // Sort in descending order
+    .slice(0, 3); // Get top 3
 
     // *** 4. Most Ordered Times ***
     const periods = {

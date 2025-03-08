@@ -34,6 +34,7 @@ import subStartingPlaceRouter from './src/modules/subStartingPlace/subStartingPl
 import subMovingTimeRouter from './src/modules/subMovingTime/subMovingTime.routes.js'
 import subReturnTimeRouter from './src/modules/subReturnTime/subReturnTime.routes.js'
 import subGoPlaceRouter from './src/modules/subGoPlace/subGoPlace.routes.js'
+import subscriptionRouter from './src/modules/subscriptions/subscriptions.routes.js'
 // mongoose.set('debug', true);
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -70,6 +71,7 @@ app.use('/api/sub-starting-place',subStartingPlaceRouter)
 app.use('/api/sub-go-place',subGoPlaceRouter)
 app.use('/api/sub-moving-time',subMovingTimeRouter)
 app.use('/api/sub-return-time',subReturnTimeRouter)
+app.use('/api/subscription',subscriptionRouter)
 
 
 //notifications

@@ -40,7 +40,7 @@ const getOffersByOrderId = catchError(async (req, res, next) => {
         path: 'driverId',
         populate: [
             { path: 'categoryId', select: 'name', strictPopulate: false },
-            { path: 'village', select: 'name', strictPopulate: false },
+            { path: '', select: 'name', strictPopulate: false },
             { path: 'position', select: 'name', strictPopulate: false }
         ]
     });

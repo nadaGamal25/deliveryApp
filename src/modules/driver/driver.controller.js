@@ -120,7 +120,7 @@ const getDrivers = catchError(async (req, res, next) => {
         })
         .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
         .populate({ path: 'position', select: 'name', strictPopulate: false })
-        .populate({ path: 'village', select: 'name', strictPopulate: false });
+        // .populate({ path: 'village', select: 'name', strictPopulate: false });
 
         if (users.length === 0) {
             return res.status(200).json({
@@ -171,7 +171,7 @@ const getDriversRate = catchError(async (req, res, next) => {
         })
         .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
         .populate({ path: 'position', select: 'name', strictPopulate: false })
-        .populate({ path: 'village', select: 'name', strictPopulate: false });
+        // .populate({ path: 'village', select: 'name', strictPopulate: false });
 
         if (users.length === 0) {
             return res.status(200).json({
@@ -356,7 +356,7 @@ const getDriversForClient = catchError(async (req, res, next) => {
     })
     .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
     .populate({ path: 'position', select: 'name', strictPopulate: false })
-    .populate({ path: 'village', select: 'name', strictPopulate: false });
+    .populate({ path: '', select: 'name', strictPopulate: false });
 // .find({ role: "driver" })
 //       .sort({ rateAvg: -1 }) // Order by highest rating
 //       .select("name rateAvg profileImg")

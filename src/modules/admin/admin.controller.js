@@ -99,7 +99,7 @@ const getClients = catchError(async (req, res, next) => {
     // Execute the query with the appropriate population
     let users = await User.find(query)
         .populate({ path: 'position', select: 'name', strictPopulate: false })
-        .populate({ path: 'village', select: 'name', strictPopulate: false })
+        // .populate({ path: 'village', select: 'name', strictPopulate: false })
 
     if (!users || users.length === 0) {
         return next(new AppError('لم يتم العثور على المستخدمين', 404));

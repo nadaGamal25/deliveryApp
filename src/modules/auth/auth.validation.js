@@ -35,10 +35,10 @@ const signupVal = Joi.object({
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'المنطقة مطلوبة'
     }),
-    village: Joi.string().allow("").messages({
-        'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
-        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
-    }),
+    // village: Joi.string().allow("").messages({
+    //     'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
+    //     'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
+    // }),
     address: Joi.string().min(3).max(200).required().messages({
         'string.min': 'يجب أن يحتوي العنوان على 3 أحرف على الأقل',
         'string.max': 'يجب ألا يزيد العنوان عن 200 حرف',
@@ -211,10 +211,10 @@ const updateUserVal=Joi.object({
         'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
         'any.required': 'المنطقة مطلوبة'
     }),
-    village: Joi.string().messages({
-        'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
-        'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
-    }),
+    // village: Joi.string().messages({
+    //     'string.hex': 'يجب أن يكون معرّف الفئة بتنسيق صحيح',
+    //     'string.length': 'يجب أن يكون معرّف الفئة 24 حرفًا',
+    // }),
     address: Joi.string().min(3).max(200).messages({
         'string.min': 'يجب أن يحتوي العنوان على 3 أحرف على الأقل',
         'string.max': 'يجب ألا يزيد العنوان عن 200 حرف',

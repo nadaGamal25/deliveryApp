@@ -311,7 +311,7 @@ const getAccountData = catchError(async (req, res, next) => {
         select: 'comment rate client', 
       }).populate({ path: 'categoryId', select: 'name', strictPopulate: false })
         .populate({ path: 'position', select: 'name', strictPopulate: false })
-        .populate({ path: 'village', select: 'name ', strictPopulate: false })
+        // .populate({ path: 'village', select: 'name ', strictPopulate: false })
         
 
     if (!user) {
