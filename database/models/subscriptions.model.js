@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const schema = new Schema({
   duration: {
@@ -9,6 +9,10 @@ const schema = new Schema({
     type: String,
     default:"persons",
     enum:["persons","schools"]
+  },
+  numOfChildren:{
+    type:Number,
+    default:0
   },
   goTime: {
     type: String,
@@ -34,9 +38,11 @@ const schema = new Schema({
     type:String,
     default:"pending"
   },
+  clientId: {
+      type:mongoose.Types.ObjectId,
+      ref:'User',
+  },
    
-   
- 
   },{
     timestamps: true
   });

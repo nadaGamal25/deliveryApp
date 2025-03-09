@@ -22,6 +22,11 @@ const highlightUserVal=Joi.object({
     value:Joi.boolean().required()
 
 })
+const confirmSubVal=Joi.object({
+    id:Joi.string().hex().length(24).required(),
+    price:Joi.number().required()
+
+})
 const updateOrderVal = Joi.object({
     id:Joi.string().hex().length(24).required(),
     clientAddress: Joi.string().allow('',null)
@@ -166,5 +171,5 @@ const updateOrderVal = Joi.object({
 
 });
 export{
-    confirmUserVal,blockUserVal,invalidUserVal,highlightUserVal,updateOrderVal
+    confirmUserVal,blockUserVal,invalidUserVal,highlightUserVal,updateOrderVal,confirmSubVal
 }

@@ -1,8 +1,8 @@
 import express from 'express'
-import { blockUser, confirmUser, deleteUser, getClients, getOrders, getUsersOrderedOrders, highlightUser, invalidUser, updateOrder, updateUser, updateWallet } from './admin.controller.js'
+import { blockUser, confirmSubscription, confirmUser, deleteUser, getClients, getOrders, getUsersOrderedOrders, highlightUser, invalidUser, updateOrder, updateUser, updateWallet } from './admin.controller.js'
 import { allowedTo, protectedRoutes } from '../auth/auth.controller.js'
 import { validate } from '../../middleware/validate.js'
-import { blockUserVal, confirmUserVal, highlightUserVal, invalidUserVal, updateOrderVal } from './admin.validation.js'
+import { blockUserVal, confirmSubVal, confirmUserVal, highlightUserVal, invalidUserVal, updateOrderVal } from './admin.validation.js'
 import { updateUserVal } from '../auth/auth.validation.js'
 import { uploadMixFiles } from '../../fileUpload/fileUpload.js'
 
@@ -20,6 +20,7 @@ adminRouter.get('/get-clients',protectedRoutes,allowedTo('admin'), getClients)
 adminRouter.get('/get-orders',protectedRoutes,allowedTo('admin'), getOrders)
 adminRouter.get('/get-users-numberOfOrders',protectedRoutes,allowedTo('admin'), getUsersOrderedOrders)
 adminRouter.delete('/delete-user/:id',protectedRoutes,allowedTo('admin'), deleteUser)
+adminRouter.put('/confirm-sub/:id',protectedRoutes,allowedTo('admin'), validate(confirmSubVal),confirmSubscription)
 adminRouter.put('/update-order/:id',protectedRoutes,allowedTo('admin'),uploadMixFiles([{name:'orderImgs',maxCount:10}],'order'),validate(updateOrderVal),updateOrder)
 
 

@@ -5,6 +5,7 @@ import { uploadToCloudinary } from "../../fileUpload/fileUpload.js";
 import dotenv from 'dotenv';
 import { Order } from "../../../database/models/order.model.js";
 import { ApiFeatures } from "../../utils/apiFeatures.js";
+import { Subscription } from "../../../database/models/subscriptions.model.js";
 dotenv.config();
 const secretKey = process.env.SECRET_KEY;
 
@@ -335,7 +336,30 @@ const deleteUser=catchError(async(req,res,next)=>{
     })
 
 
+//confirm subscription
+const confirmSubscription = catchError(async (req, res, next) => {
+    // Find the subscription
+    let sub = await Subscription.findById(req.params.id);
+    if (!sub) {
+        return next(new AppError("الاشتراك غير موجود", 404));
+    }
+
+    // Update subscription
+    sub = await Subscription.findByIdAndUpdate(
+        req.params.id,
+        { $set: { price: req.body.price, status: "current" } },
+        { new: true }
+    );
+
+    res.status(200).json({ 
+        message: "تم تأكيد الاشتراك بنجاح", 
+        status: 200, 
+        data: { sub } 
+    });
+});
+
+
 export{
     confirmUser,blockUser,invalidUser,getClients,updateUser,getOrders,getUsersOrderedOrders,updateWallet,
-    deleteUser,highlightUser,updateOrder
+    deleteUser,highlightUser,updateOrder,confirmSubscription
 }
