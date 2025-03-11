@@ -66,7 +66,7 @@ const sendNotification = async (fcmToken, title, body) => {
 
 const validateFCMToken = async (fcmToken) => {
   try {
-      await admin.messaging().send({ token: fcmToken, notification: { title: "Test", body: "Checking token" } });
+    //   await admin.messaging().send({ token: fcmToken, notification: { title: "Test", body: "Checking token" } });
       return true; // Valid token
   } catch (error) {
       if (error.code === "messaging/invalid-argument") {
