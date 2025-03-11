@@ -8,13 +8,38 @@ import { AppError } from "../../utils/appError.js"
 
 
 //add offer
-const addOffer=catchError(async(req,res,next)=>{
-    if (req.user.isValid === false)
+const addOffer = catchError(async (req, res, next) => {
+    // Ensure the driver has a valid subscription before allowing them to make an offer
+    if (!req.user.isValid) {
         return next(new AppError('يجب دفع اشتراك التطبيق لتتمكن من تقديم عروض..تواصل مع الادمن', 400));
-  let offer=new Offer(req.body)
-    await offer.save()
-    res.status(200).json({message:"تمت اضافة عرضك بجاح فى انتظار موافقة العميل", status:200,data:{offer}})
-})
+    }
+
+    // Check if an offer already exists for this driver on the same order
+    let existingOffer = await Offer.findOne({ orderId: req.body.orderId, driverId: req.body.driverId });
+
+    if (existingOffer) {
+        // If the offer exists, update the price and return success message
+        existingOffer.price = req.body.price;
+        await existingOffer.save();
+
+        return res.status(200).json({
+            message: "تم تحديث عرضك في انتظار موافقة العميل",
+            status: 200,
+            data: { offer: existingOffer },
+        });
+    }
+
+    // If no existing offer, create a new one
+    let newOffer = new Offer(req.body);
+    await newOffer.save();
+
+    res.status(200).json({
+        message: "تمت إضافة عرضك بنجاح في انتظار موافقة العميل",
+        status: 200,
+        data: { offer: newOffer },
+    });
+});
+
 
 
 // delete offer
@@ -131,8 +156,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         offer.status = "deleted";
         await offer.save();
         
-        await User.findByIdAndUpdate(offer.driverId, { $inc: { numberOfConnect: -1 } });
-        await Order.findByIdAndUpdate(offer.orderId, { status: "waiting", $unset: { driverId: "" } });
+        await Order.findByIdAndUpdate(offer.orderId, { status: "waiting", $set: { driverId: null } });
         await Offer.updateMany({ orderId: offer.orderId, status: "ignored" }, { status: "waiting" });
 
         title = "تم رفض عرضك";
@@ -141,7 +165,6 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         offer.status = "accepted";
         await offer.save();
 
-        await User.findByIdAndUpdate(offer.driverId, { $inc: { numberOfConnect: 1 } });
         await Order.findByIdAndUpdate(offer.orderId, { driverId: offer.driverId, price: offer.price });
         await Offer.updateMany({ orderId: offer.orderId, status: "waiting", _id: { $ne: req.params.id } }, { status: "ignored" });
 
@@ -177,15 +200,10 @@ const changeOfferStatus = catchError(async (req, res, next) => {
 //         offer.status = 'deleted';
 //         await offer.save();
 
-//         await User.findByIdAndUpdate(
-//             { _id: offer.driverId },
-//             { $inc: { numberOfConnect: -1 } }
-//         );
-
 //         // Update the related order with status and driverId
 //         await Order.findByIdAndUpdate(
 //             { _id: offer.orderId },
-//             { $set: { status: 'waiting' }, $unset: { driverId: "" } }
+//             { $set: { status: 'waiting' }, $set: { driverId: null } }
 //         );
 
 //         // Update offers with status 'ignored' in the same order to 'waiting'
@@ -199,12 +217,6 @@ const changeOfferStatus = catchError(async (req, res, next) => {
 //         // Update the status of the selected offer to 'accepted'
 //         offer.status = 'accepted';
 //         await offer.save();
-
-//         // Increment the number of connects for the user
-//         await User.findByIdAndUpdate(
-//             { _id: offer.driverId },
-//             { $inc: { numberOfConnect: 1 } }
-//         );
 
 //         // Update the related order with status and driverId
 //         await Order.findByIdAndUpdate(

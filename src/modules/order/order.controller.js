@@ -7,6 +7,9 @@ import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid'; // To ensure uniqueness
 import crypto from 'crypto'; // For generating a random string
 import mongoose from "mongoose";
+import { Offer } from "../../../database/models/offer.model.js";
+import { sendNotification } from "../../../public/js/firebase.js";
+import { Notification } from "../../../database/models/notification.model.js";
 
 //add order
 const addOrder = catchError(async (req, res, next) => {
@@ -117,6 +120,29 @@ const cancelOrder = catchError(async (req, res, next) => {
         res.status(200).json({ message: "تم الالغاء بنجاح" , status:200,data:[]});
     } else {
         return next(new AppError("لا يمكن الغاء الطلب لان السائق ف الطريق اليك", 404));
+    }
+});
+const cancelOrderByDriver = catchError(async (req, res, next) => {
+    let ordery = await Order.findById(req.params.id);
+    let title, body;
+    const from=req.user._id
+    const order=ordery._id
+    let client = await User.findById(ordery.clientId);
+    if (!ordery) {
+        return next(new AppError("هذا الطلب غير موجود", 404));
+    } else if (ordery.status === 'waiting') {
+        await Offer.updateOne({ orderId: ordery._id,driverId:ordery.driverId ,status: "accepted" }, { status: "deleted" });
+        await Offer.updateMany({ orderId: ordery._id, status: "ignored" }, { status: "waiting" });
+        await Order.findByIdAndUpdate(ordery._id, { status: "waiting", $set: { driverId: null } });
+        title = "تعطلت رحلتك";
+        body = "تم الغاء الرحلة من قبل السواق ,يرجى اختيار عرض اخر."; 
+        const sent = await sendNotification(client.fcmToken, title, body);
+    if (sent) {
+        await Notification.create({ userId: client._id, title, body ,from ,order });
+    }
+        res.status(200).json({ message: "تم الالغاء بنجاح" , status:200,data:[]});
+    } else {
+        return next(new AppError("لا يمكن الغاء الرحلة", 404));
     }
 });
 
@@ -330,5 +356,5 @@ const endOrder = catchError(async (req, res, next) => {
 
 export{
     addOrder,cancelOrder,getOrderById,getOrderByStatus,getOrdersForClient,getOrdersForDriver
-    ,rateOrder,endOrder,getWaitingOrders
+    ,rateOrder,endOrder,getWaitingOrders,cancelOrderByDriver
 }
