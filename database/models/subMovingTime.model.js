@@ -5,6 +5,10 @@ const schema = new Schema({
       type: String,
       required: true,
     }, 
+    place: {
+      type: String,
+      default: "",
+    }, 
   emptySeats:{
     type: Number,
     required: true,

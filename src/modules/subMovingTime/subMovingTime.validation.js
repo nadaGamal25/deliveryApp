@@ -5,6 +5,10 @@ const addSubMovingTimeVal = Joi.object({
         'string.empty': ' مطلوب',
         'any.required': ' مطلوب'
     }),
+    place:Joi.string().messages({
+            'string.empty': ' مطلوب',
+            'any.required': ' مطلوب'
+        }),
     emptySeats:Joi.number().required().messages({
         'number.empty': ' مطلوب',
         'any.required': ' مطلوب'
@@ -17,6 +21,10 @@ const updateSubMovingTimeVal = Joi.object({
         'string.empty': ' مطلوب',
         'any.required': ' مطلوب'
     }),
+    place:Joi.string().messages({
+            'string.empty': ' مطلوب',
+            'any.required': ' مطلوب'
+        }),
     emptySeats:Joi.number().required().messages({
         'number.empty': ' مطلوب',
         'any.required': ' مطلوب'

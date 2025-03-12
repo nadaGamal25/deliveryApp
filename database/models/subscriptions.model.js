@@ -16,11 +16,19 @@ const schema = new Schema({
   },
   goTime: {
     type: String,
-    required: true,
+    default: "00:00",
   },
   returnTime: {
     type: String,
-    required: true,
+    default: "00:00",
+  },
+  goTimeSchools: {
+    type: String,
+    default: "00:00",
+  },
+  returnTimeSchools: {
+    type: String,
+    default: "00:00",
   },
   startingPlace: {
     type: String,

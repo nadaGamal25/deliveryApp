@@ -13,11 +13,19 @@ const addSubscriptionVal = Joi.object({
         'number.empty': ' مطلوب',
         'any.required': ' مطلوب'
     }),
-    goTime: Joi.string().required().messages({
+    goTime: Joi.string().messages({
         'string.empty': ' مطلوب',
         'any.required': ' مطلوب'
     }),
-    returnTime: Joi.string().required().messages({
+    returnTime: Joi.string().messages({
+        'string.empty': ' مطلوب',
+        'any.required': ' مطلوب'
+    }),
+    goTimeSchools: Joi.string().messages({
+        'string.empty': ' مطلوب',
+        'any.required': ' مطلوب'
+    }),
+    returnTimeSchools: Joi.string().messages({
         'string.empty': ' مطلوب',
         'any.required': ' مطلوب'
     }),
@@ -64,6 +72,14 @@ const updateSubscriptionVal = Joi.object({
         'any.required': ' مطلوب'
     }),
     returnTime: Joi.string().messages({
+        'string.empty': ' مطلوب',
+        'any.required': ' مطلوب'
+    }),
+    goTimeSchools: Joi.string().messages({
+        'string.empty': ' مطلوب',
+        'any.required': ' مطلوب'
+    }),
+    returnTimeSchools: Joi.string().messages({
         'string.empty': ' مطلوب',
         'any.required': ' مطلوب'
     }),
