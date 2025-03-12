@@ -38,6 +38,12 @@ const addSubscriptionVal = Joi.object({
                 'string.length': 'يجب أن يكون معرف العميل 24 حرفاً.',
                 'any.required': 'معرف العميل مطلوب.',
     }),
+    position: Joi.string().hex().length(24).messages({
+        "string.base": "يجب أن يكون معرف المنطقة صالحاً",
+        "string.hex": "يجب أن يكون معرف المنطقة بتنسيق سداسي عشري",
+        "string.length": "يجب أن يكون معرف المنطقة بطول 24 حرفاً",
+        "any.required": "معرف المنطقة مطلوب"
+    })
 });
 
 const updateSubscriptionVal = Joi.object({
@@ -73,6 +79,12 @@ const updateSubscriptionVal = Joi.object({
         "string.base": "يجب أن يكون معرف المراجعة صالحاً",
         "string.hex": "يجب أن يكون معرف المراجعة بتنسيق سداسي عشري",
         "string.length": "يجب أن يكون معرف المراجعة بطول 24 حرفاً"
+    }),
+    position: Joi.string().hex().length(24).messages({
+        "string.base": "يجب أن يكون معرف المنطقة صالحاً",
+        "string.hex": "يجب أن يكون معرف المنطقة بتنسيق سداسي عشري",
+        "string.length": "يجب أن يكون معرف المنطقة بطول 24 حرفاً",
+        "any.required": "معرف المنطقة مطلوب"
     })
 });
 

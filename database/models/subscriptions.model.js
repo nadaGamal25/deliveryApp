@@ -42,6 +42,11 @@ const schema = new Schema({
       type:mongoose.Types.ObjectId,
       ref:'User',
   },
+  position: {
+        type:mongoose.Types.ObjectId,
+        ref:'Position',
+        default:null,
+    },
    
   },{
     timestamps: true

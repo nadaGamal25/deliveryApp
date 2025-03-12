@@ -43,7 +43,7 @@ const getsubscriptions = catchError(async (req, res, next) => {
     let subscriptions = await Subscription.find(query).populate(
         'clientId',
         'name phone'
-    )
+    ).populate({ path: 'position', select: 'name', strictPopulate: false })
 
     res.status(200).json({ message: "success", status: 200, data: { subscriptions } });
 });
@@ -52,7 +52,7 @@ const getsubscriptionsForClient = catchError(async (req, res, next) => {
     let subscriptions = await Subscription.find({
         clientId: req.user._id,
         status: { $ne: "canceled" } // Exclude canceled subscriptions
-    });
+    }).populate({ path: 'position', select: 'name', strictPopulate: false })
 
     res.status(200).json({ message: "success", status: 200, data: { subscriptions } });
 });
