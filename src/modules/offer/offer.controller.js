@@ -9,6 +9,12 @@ import { AppError } from "../../utils/appError.js"
 
 //add offer
 const addOffer = catchError(async (req, res, next) => {
+    let title="عرض جديد على طلبك";
+    let body="تم إضافة عرض جديد على طلبك من قبل "+req.user.name;
+    const from=req.user._id
+    const order=req.body.orderId
+    let theOrder = await Order.findById(req.body.orderId);
+    let client = await User.findById(theOrder.clientId)
     // Ensure the driver has a valid subscription before allowing them to make an offer
     if (!req.user.isValid) {
         return next(new AppError('يجب دفع اشتراك التطبيق لتتمكن من تقديم عروض..تواصل مع الادمن', 400));
@@ -18,7 +24,22 @@ const addOffer = catchError(async (req, res, next) => {
     let existingOffer = await Offer.findOne({ orderId: req.body.orderId, driverId: req.body.driverId });
 
     if (existingOffer) {
-        // If the offer exists, update the price and return success message
+        if(existingOffer.status === "deleted"){
+            existingOffer.price = req.body.price;
+            existingOffer.status = "waiting";
+            await existingOffer.save();
+
+            const sent = await sendNotification(client.fcmToken, title, body);
+    if (sent) {
+        await Notification.create({ userId: client._id, title, body ,from ,order });
+    }
+            return res.status(200).json({
+                message: "تم اضافة عرضك مرة اخرى في انتظار موافقة العميل",
+                status: 200,
+                data: { offer: existingOffer },
+            });
+        }else{
+            // If the offer exists, update the price and return success message
         existingOffer.price = req.body.price;
         await existingOffer.save();
 
@@ -27,11 +48,18 @@ const addOffer = catchError(async (req, res, next) => {
             status: 200,
             data: { offer: existingOffer },
         });
+        }
+        
     }
 
     // If no existing offer, create a new one
     let newOffer = new Offer(req.body);
     await newOffer.save();
+
+    const sent = await sendNotification(client.fcmToken, title, body);
+    if (sent) {
+        await Notification.create({ userId: client._id, title, body ,from ,order });
+    }
 
     res.status(200).json({
         message: "تمت إضافة عرضك بنجاح في انتظار موافقة العميل",
@@ -160,7 +188,7 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         await Offer.updateMany({ orderId: offer.orderId, status: "ignored" }, { status: "waiting" });
 
         title = "تم رفض عرضك";
-        body = "تم رفض العرض من قبل العميل.";
+        body = "تم رفض العرض من قبل العميل..ربما عليك تخفيض السعر";
     } else if (req.body.status === "accepted") {
         offer.status = "accepted";
         await offer.save();
@@ -175,13 +203,11 @@ const changeOfferStatus = catchError(async (req, res, next) => {
         return next(new AppError("حدث خطأ ما", 400));
     }
 
-    console.log("Sending notification...");
     const sent = await sendNotification(driver.fcmToken, title, body);
     if (sent) {
         await Notification.create({ userId: driver._id, title, body ,from ,order });
     }
 
-    console.log("Success response sent");
     res.status(200).json({ message: `تم ${req.body.status === "deleted" ? "رفض" : "قبول"} هذا العرض`, status: 200 });
 });
 

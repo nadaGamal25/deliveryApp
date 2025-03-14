@@ -311,42 +311,58 @@ const getOrdersForDriver = catchError(async (req, res, next) => {
 
 // rate order 
 const rateOrder = catchError(async (req, res, next) => {
-    let order = await Order.findById(req.params.id);
-    
-    if (!order) {
+    let ordery = await Order.findById(req.params.id);
+    const from=req.user._id
+    const order=req.params.id
+    let driver = await User.findById(ordery.driverId)
+    let title="تم تقييم الرحلة من قبل العميل"
+    let body= "اطلع على التقييم فى الطلبات السابقة لديك"
+    if (!ordery) {
         return next(new AppError("هذا الطلب غير موجود", 404));
     } 
 
-    if(order.isRated === true){
+    if(ordery.isRated === true){
         return res.status(400).json({message:'تم تقييم الطلب من قبل',status:400,data:[]})
     }
     
-        order.rate = req.body.orderRate;
-        order.isRated = true;
-        await order.save();  
+        ordery.rate = req.body.orderRate;
+        ordery.isRated = true;
+        await ordery.save();  
        
-        res.status(200).json({ message: "تم تقييم الاوردر بنجاح " , status:200,data:{order}});
+        const sent = await sendNotification(driver.fcmToken, title, body);
+    if (sent) {
+        await Notification.create({ userId: driver._id, title, body ,from ,order });
+    }
+        res.status(200).json({ message: "تم تقييم الاوردر بنجاح " , status:200,data:{ordery}});
     
 });
 
 // change order status to ended 
 const endOrder = catchError(async (req, res, next) => {
-    let order = await Order.findOne({_id:req.params.id});
-    
-    if (!order) {
+    let ordery = await Order.findOne({_id:req.params.id});
+    const from=null
+    const order=req.params.id
+    let client = await User.findById(ordery.clientId)
+    let title="تم انهاء رحلتك بنجاح"
+    let body="شكراً لاستخدامك خدماتنا"
+    if (!ordery) {
         return next(new AppError("هذا الطلب غير موجود", 404));
-    } else if (order.status ==='ended'){
+    } else if (ordery.status ==='ended'){
         return next(new AppError("لقد قمت بتأكيد الطلب من قبل", 404));
     }
-    else if (order.status === 'current') {
-        order.status = 'ended';
-        await order.save();  
+    else if (ordery.status === 'current') {
+        ordery.status = 'ended';
+        await ordery.save();  
         await User.findByIdAndUpdate(
-            { _id: order.driverId },
+            { _id: ordery.driverId },
             { $inc: { numberOfOrders: 1 } } ,
             { $set: { available: true} }
 
         );
+        const sent = await sendNotification(client.fcmToken, title, body);
+    if (sent) {
+        await Notification.create({ userId: client._id, title, body ,from ,order });
+    }
         res.status(200).json({ message: "تم التأكيد بنجاح", status:200,data:[] });
     } else {
         return next(new AppError("لا يمكن تاكيد الطلب قبل بدء الرحلة", 404));

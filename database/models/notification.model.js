@@ -3,7 +3,7 @@ import mongoose,{model} from "mongoose";
 const notificationSchema = new mongoose.Schema(
     {
       userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-      from: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      from: { type: mongoose.Schema.Types.ObjectId, ref: "User", default:null  },
       order: { type: mongoose.Schema.Types.ObjectId, ref: "Order" ,default:null },
       title: String,
       body: String, // Ensure "body" is used consistently
