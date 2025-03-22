@@ -340,7 +340,7 @@ const rateOrder = catchError(async (req, res, next) => {
 // change order status to ended 
 const endOrder = catchError(async (req, res, next) => {
     let ordery = await Order.findOne({_id:req.params.id});
-    const from=null
+    const from="6736023f5583a031c9b8279f"
     const order=req.params.id
     let client = await User.findById(ordery.clientId)
     let title="تم انهاء رحلتك بنجاح"
