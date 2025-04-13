@@ -343,6 +343,7 @@ const endOrder = catchError(async (req, res, next) => {
     const from="6736023f5583a031c9b8279f"
     const order=req.params.id
     let client = await User.findById(ordery.clientId)
+    let driver = await User.findById(ordery.driverId)
     let title="تم انهاء رحلتك بنجاح"
     let body="شكراً لاستخدامك خدماتنا"
     if (!ordery) {
@@ -360,8 +361,12 @@ const endOrder = catchError(async (req, res, next) => {
 
         );
         const sent = await sendNotification(client.fcmToken, title, body);
+        const sent2 = await sendNotification(driver.fcmToken, title, body);
     if (sent) {
         await Notification.create({ userId: client._id, title, body ,from ,order });
+    }
+    if (sent2) {
+        await Notification.create({ userId: driver._id, title, body ,from ,order });
     }
         res.status(200).json({ message: "تم التأكيد بنجاح", status:200,data:[] });
     } else {
