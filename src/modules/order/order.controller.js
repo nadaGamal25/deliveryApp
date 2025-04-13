@@ -357,7 +357,7 @@ const endOrder = catchError(async (req, res, next) => {
         await User.findByIdAndUpdate(
             { _id: ordery.driverId },
             { $inc: { numberOfOrders: 1 } } ,
-            { $set: { available: true} }
+            { $set: { available: true ,online: true} }
 
         );
         const sent = await sendNotification(client.fcmToken, title, body);
