@@ -28,6 +28,10 @@ const addOffer = catchError(async (req, res, next) => {
             existingOffer.price = req.body.price;
             existingOffer.status = "waiting";
             await existingOffer.save();
+            // Emit socket event to all clients in the order room
+           global.io.to(req.body.orderId).emit('newOffer', {
+              offer: existingOffer || newOffer,
+             });
 
             const sent = await sendNotification(client.fcmToken, title, body);
     if (sent) {
@@ -42,6 +46,10 @@ const addOffer = catchError(async (req, res, next) => {
             // If the offer exists, update the price and return success message
         existingOffer.price = req.body.price;
         await existingOffer.save();
+        // Emit socket event to all clients in the order room
+        global.io.to(req.body.orderId).emit('newOffer', {
+            offer: existingOffer || newOffer,
+          });
 
         return res.status(200).json({
             message: "تم تحديث عرضك في انتظار موافقة العميل",
@@ -51,11 +59,13 @@ const addOffer = catchError(async (req, res, next) => {
         }
         
     }
-
     // If no existing offer, create a new one
     let newOffer = new Offer(req.body);
     await newOffer.save();
-
+    // Emit socket event to all clients in the order room
+    global.io.to(req.body.orderId).emit('newOffer', {
+        offer: existingOffer || newOffer,
+      });
     const sent = await sendNotification(client.fcmToken, title, body);
     if (sent) {
         await Notification.create({ userId: client._id, title, body ,from ,order });

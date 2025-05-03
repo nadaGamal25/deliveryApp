@@ -35,6 +35,8 @@ import subMovingTimeRouter from './src/modules/subMovingTime/subMovingTime.route
 import subReturnTimeRouter from './src/modules/subReturnTime/subReturnTime.routes.js'
 import subGoPlaceRouter from './src/modules/subGoPlace/subGoPlace.routes.js'
 import subscriptionRouter from './src/modules/subscriptions/subscriptions.routes.js'
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 // mongoose.set('debug', true);
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -74,93 +76,6 @@ app.use('/api/sub-return-time',subReturnTimeRouter)
 app.use('/api/subscription',subscriptionRouter)
 
 
-//notifications
-// import * as admin from 'firebase-admin';
-// // import admin from 'firebase-admin';
-// import serviceAccount from './path/to/serviceAccountKey.json' assert { type: "json" };
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
-
-
-
-// // Send notifications to all drivers
-// app.post('/notifications/drivers', async (req, res) => {
-//   const { title, body } = req.body;
-
-//   try {
-//     // Get tokens of all drivers
-//     const drivers = await find({ role: 'driver', fcmToken: { $exists: true } }).select('fcmToken');
-//     const tokens = drivers.map((driver) => driver.fcmToken);
-
-//     if (!tokens.length) {
-//       return res.status(404).json({ message: 'No drivers found with valid tokens' });
-//     }
-
-//     const payload = {
-//       notification: { title, body },
-//     };
-
-//     await admin.messaging().sendToDevice(tokens, payload);
-//     res.status(200).json({ message: 'Notifications sent to all drivers' });
-//   } catch (error) {
-//     console.error('Error sending notifications:', error);
-//     res.status(500).json({ message: 'Failed to send notifications', error });
-//   }
-// });
-
-// // Send notifications to all clients
-// app.post('/notifications/clients', async (req, res) => {
-//   const { title, body } = req.body;
-
-//   try {
-//     // Get tokens of all clients
-//     const clients = await User.find({ role: 'client', fcmToken: { $exists: true } }).select('fcmToken');
-//     const tokens = clients.map((client) => client.fcmToken);
-
-//     if (!tokens.length) {
-//       return res.status(404).json({ message: 'No clients found with valid tokens' });
-//     }
-
-//     const payload = {
-//       notification: { title, body },
-//     };
-
-//     await admin.messaging().sendToDevice(tokens, payload);
-//     res.status(200).json({ message: 'Notifications sent to all clients' });
-//   } catch (error) {
-//     console.error('Error sending notifications:', error);
-//     res.status(500).json({ message: 'Failed to send notifications', error });
-//   }
-// });
-
-// // Send notification to a specific user
-// app.post('/notifications/user/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const { title, body } = req.body;
-
-//   try {
-//     // Get the user's FCM token
-//     const user = await User.findById(id).select('fcmToken');
-
-//     if (!user || !user.fcmToken) {
-//       return res.status(404).json({ message: 'User not found or does not have a valid token' });
-//     }
-
-//     const payload = {
-//       notification: { title, body },
-//     };
-
-//     await admin.messaging().sendToDevice(user.fcmToken, payload);
-//     res.status(200).json({ message: 'Notification sent to the user' });
-//   } catch (error) {
-//     console.error('Error sending notification:', error);
-//     res.status(500).json({ message: 'Failed to send notification', error });
-//   }
-// });
-
-
 
 
 app.use('*',(req,res,next)=>{
@@ -172,4 +87,35 @@ app.use(globalError)
 process.on('unhandledRejection',(err)=>{
     console.log('error outside express',err)
 })
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+
+// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: '*', // or restrict to your Flutter app's domain
+  }
+});
+
+// Make io globally accessible
+global.io = io;
+
+// Listen for new connections
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('joinOrderRoom', (orderId) => {
+    socket.join(orderId); // Join room based on order ID
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+httpServer.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+   
