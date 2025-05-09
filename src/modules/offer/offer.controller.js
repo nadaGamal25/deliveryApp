@@ -3,6 +3,7 @@ import {Offer} from '../../../database/models/offer.model.js'
 import { Order } from '../../../database/models/order.model.js'
 import { User } from '../../../database/models/user.model.js'
 import { sendNotification, validateFCMToken } from '../../../public/js/firebase.js'
+import pusher from '../../../pusher.js'
 import { catchError } from "../../middleware/catchError.js"
 import { AppError } from "../../utils/appError.js"
 
@@ -28,11 +29,14 @@ const addOffer = catchError(async (req, res, next) => {
             existingOffer.price = req.body.price;
             existingOffer.status = "waiting";
             await existingOffer.save();
-            // Emit socket event to all clients in the order room
-           global.io.to(req.body.orderId).emit('newOffer', {
-              offer: existingOffer || newOffer,
-             });
-
+        //     // Emit socket event to all clients in the order room
+        //    global.io.to(req.body.orderId).emit('newOffer', {
+        //       offer: existingOffer || newOffer,
+        //      });
+         // Notify via Pusher for updated offer
+    pusher.trigger(`order-${req.body.orderId}`, "offer-updated", {
+        offer: existingOffer
+    });
             const sent = await sendNotification(client.fcmToken, title, body);
     if (sent) {
         await Notification.create({ userId: client._id, title, body ,from ,order });
@@ -46,10 +50,13 @@ const addOffer = catchError(async (req, res, next) => {
             // If the offer exists, update the price and return success message
         existingOffer.price = req.body.price;
         await existingOffer.save();
-        // Emit socket event to all clients in the order room
-        global.io.to(req.body.orderId).emit('newOffer', {
-            offer: existingOffer || newOffer,
-          });
+        // // Emit socket event to all clients in the order room
+        // global.io.to(req.body.orderId).emit('newOffer', {
+        //     offer: existingOffer || newOffer,
+        //   });
+         pusher.trigger(`order-${req.body.orderId}`, "offer-updated", {
+        offer: existingOffer
+    });
 
         return res.status(200).json({
             message: "تم تحديث عرضك في انتظار موافقة العميل",
@@ -62,10 +69,14 @@ const addOffer = catchError(async (req, res, next) => {
     // If no existing offer, create a new one
     let newOffer = new Offer(req.body);
     await newOffer.save();
-    // Emit socket event to all clients in the order room
-    global.io.to(req.body.orderId).emit('newOffer', {
-        offer: existingOffer || newOffer,
-      });
+    // // Emit socket event to all clients in the order room
+    // global.io.to(req.body.orderId).emit('newOffer', {
+    //     offer: existingOffer || newOffer,
+    //   });
+    // Notify via Pusher for new offer
+    pusher.trigger(`order-${req.body.orderId}`, "new-offer", {
+        offer: newOffer
+    });
     const sent = await sendNotification(client.fcmToken, title, body);
     if (sent) {
         await Notification.create({ userId: client._id, title, body ,from ,order });
