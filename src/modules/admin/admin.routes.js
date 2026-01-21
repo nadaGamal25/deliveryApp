@@ -1,5 +1,5 @@
 import express from 'express'
-import { blockUser, confirmSubscription, confirmUser, deleteUser, getClients, getOrders, getUsersOrderedOrders, highlightUser, invalidUser, updateOrder, updateUser, updateWallet } from './admin.controller.js'
+import { blockUser, confirmSubscription, confirmUser, deleteUser, getClients, getClientsPagination, getDriversPagination, getOrders, getUsersOrderedOrders, highlightUser, invalidUser, updateOrder, updateUser, updateWallet } from './admin.controller.js'
 import { allowedTo, protectedRoutes } from '../auth/auth.controller.js'
 import { validate } from '../../middleware/validate.js'
 import { blockUserVal, confirmSubVal, confirmUserVal, highlightUserVal, invalidUserVal, updateOrderVal } from './admin.validation.js'
@@ -17,6 +17,8 @@ adminRouter.put('/update-user/:id',protectedRoutes,allowedTo('admin'),validate(u
     {name:'idCardImg',maxCount:2},{name:'licenseImg',maxCount:2},{name:'vehiclesImgs',maxCount:4},{name:'licenseVehicleImgs',maxCount:2}],'user'), updateUser)
 adminRouter.put('/update-wallet/:id',protectedRoutes,allowedTo('admin'), updateWallet)
 adminRouter.get('/get-clients',protectedRoutes,allowedTo('admin'), getClients)
+adminRouter.get('/get-clients-pag',protectedRoutes,allowedTo('admin'), getClientsPagination)
+adminRouter.get('/get-drivers-pag',protectedRoutes,allowedTo('admin'), getDriversPagination)
 adminRouter.get('/get-orders',protectedRoutes,allowedTo('admin'), getOrders)
 adminRouter.get('/get-users-numberOfOrders',protectedRoutes,allowedTo('admin'), getUsersOrderedOrders)
 adminRouter.delete('/delete-user/:id',protectedRoutes,allowedTo('admin'), deleteUser)

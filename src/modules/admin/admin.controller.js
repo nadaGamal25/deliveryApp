@@ -108,6 +108,130 @@ const getClients = catchError(async (req, res, next) => {
 
     res.status(200).json({ message: 'success', status: 200, data: { users } });
 });
+//get clients pagination
+const getClientsPagination = catchError(async (req, res, next) => {
+    const { 
+        page = 1, 
+        limit = 10, 
+        position, 
+        age, 
+        phone, 
+        name 
+    } = req.query;
+
+    // Build query
+    let filter = { role: 'client' };
+
+    if (position) filter.position = position;
+    if (age) filter.age = { $gte: parseInt(age, 10) };
+    if (phone) filter.phone = phone;
+    if (name) {
+        filter.name = { $regex: name, $options: 'i' }; // partial match
+    }
+
+    // Pagination
+    const skip = (page - 1) * limit;
+    const total = await User.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+
+    const users = await User.find(filter)
+        .populate({ path: 'position', select: 'name', strictPopulate: false })
+        .skip(skip)
+        .limit(+limit);
+
+    if (!users || users.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد عملاء',
+            status: 200,
+            data: {
+                users: [],
+                page: +page,
+                totalPages,
+                total
+            }
+        });
+    }
+
+    res.status(200).json({
+        message: 'success',
+        status: 200,
+        data: {
+            page: +page,
+            totalPages,
+            total,
+            users
+        }
+    });
+});
+
+//get drivers
+const getDriversPagination = catchError(async (req, res, next) => {
+    const { 
+        page = 1, 
+        limit = 10, 
+        position, 
+        minAge, 
+        maxAge, 
+        rateAvg, 
+        category, 
+        online 
+    } = req.query;
+
+    // Build query
+    let filter = { role: 'driver' };
+
+    if (position) filter.position = position;
+
+    if (minAge || maxAge) {
+        filter.age = {};
+        if (minAge) filter.age.$gte = parseInt(minAge, 10);
+        if (maxAge) filter.age.$lte = parseInt(maxAge, 10);
+    }
+
+    if (rateAvg) filter.rateAvg = { $gte: parseFloat(rateAvg) };
+    if (category) filter.categoryId = category;
+    if (online !== undefined) filter.online = online === 'true';
+
+    // Pagination
+    const skip = (page - 1) * limit;
+    const total = await User.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+
+    const users = await User.find(filter)
+        .populate({
+            path: 'myReviews',
+            select: 'comment rate client',
+        })
+        .populate({ path: 'categoryId', select: 'name', strictPopulate: false })
+        .populate({ path: 'position', select: 'name', strictPopulate: false })
+        .skip(skip)
+        .limit(+limit);
+
+    if (!users || users.length === 0) {
+        return res.status(200).json({
+            message: 'لا يوجد سائقين',
+            status: 200,
+            data: {
+                users: [],
+                page: +page,
+                totalPages,
+                total
+            }
+        });
+    }
+
+    res.status(200).json({
+        message: 'success',
+        status: 200,
+        data: {
+            page: +page,
+            totalPages,
+            total,
+            users
+        }
+    });
+});
+
 
 //update user.
 const updateUser = catchError(async (req, res, next) => {
@@ -361,5 +485,5 @@ const confirmSubscription = catchError(async (req, res, next) => {
 
 export{
     confirmUser,blockUser,invalidUser,getClients,updateUser,getOrders,getUsersOrderedOrders,updateWallet,
-    deleteUser,highlightUser,updateOrder,confirmSubscription
+    deleteUser,highlightUser,updateOrder,confirmSubscription,getClientsPagination,getDriversPagination
 }
