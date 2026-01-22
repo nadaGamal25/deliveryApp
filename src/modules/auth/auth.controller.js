@@ -335,7 +335,9 @@ const forgetPassword = catchError(async (req, res, next) => {
     const mail=user.email
     sendEmail(mail,otp);
 
-    res.status(200).json({ message: 'تم ارسال الكود..قم بتفقد بريدك الالكترونى',status:200,data:[]});
+   // res.status(200).json({ message: 'تم ارسال الكود..قم بتفقد بريدك الالكترونى',status:200,data:[]});
+    res.status(200).json({ message: 'تم ارسال الكود..',status:200,data:{otpCode:otp}});
+    
 });
 
 // send otp to Update password 
